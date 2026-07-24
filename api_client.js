@@ -1,4 +1,4 @@
-/* 月考核系統 V4｜版本：1.0.1*/
+/* 月考核系統 V3｜版本：1.0.1*/
 (function () {
   'use strict';
 
@@ -95,9 +95,14 @@
       runSingleDispatchRepair: 120000,
       previewBatchDispatchRepair: 90000,
       runBatchDispatchRepair: 180000,
+      previewManualDispatch: 120000,
+      runManualDispatch: 300000,
       dispatchMonthAnalysis: 90000,
       forceClosePreview: 60000,
-      forceCloseEvaluation: 90000
+      forceCloseEvaluation: 90000,
+      schemaManagementCenter: 90000,
+      schemaRepairPreview: 90000,
+      schemaRepair: 240000
     };
     var timeoutMs = Number(actionTimeouts[String(action || '')] || defaultTimeout);
     var timeoutId = window.setTimeout(function () {
@@ -147,7 +152,7 @@
     } catch (error) {
       if (error && error.name === 'AbortError') {
         var abortedCode = activeRecord.cancelledByUser ? 'REQUEST_CANCELLED' : 'REQUEST_TIMEOUT';
-        var abortedMessage = activeRecord.cancelledByUser ? '已切換PDF檢視方式。' : '連線逾時，請確認網路後再試一次。';
+        var abortedMessage = activeRecord.cancelledByUser ? '已切換PDF檢視方式。' : '後端處理時間較長，請先查詢派發狀態；若尚未建立再重新執行。';
         var abortedError = new ApiError(abortedCode, abortedMessage);
         abortedError.clientPerformance = {
           action: String(action || ''),
