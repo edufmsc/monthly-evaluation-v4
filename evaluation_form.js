@@ -108,6 +108,13 @@
   };
 
   function getActionLabel(record, action) {
+    var customWorkflow = record && record.customWorkflow;
+    if (customWorkflow && customWorkflow.mode === '自訂' && Array.isArray(customWorkflow.steps)) {
+      var currentStep = Number(customWorkflow.currentStep || 0);
+      var nextStep = customWorkflow.steps.filter(function(step) { return Number(step.order || 0) === currentStep + 1; })[0];
+      if (nextStep) return '完成本階段並送交 ' + String(nextStep.role || '') + '｜' + String(nextStep.employeeName || nextStep.employeeId || '');
+      return '完成本階段並結案';
+    }
     var status = String(value(record, '流程狀態') || '').trim();
     if (action === 'edu_submit' && status === '待教育中心成員修改') {
       return '修改完成，送教育中心主管重新簽核';
@@ -330,7 +337,7 @@
       var areaCurrent = areaIsVersionB
         ? (value(record, 'B版區主管評分') === '' ? 0 : value(record, 'B版區主管評分'))
         : (value(record, '區主管增減分') === '' ? 0 : value(record, '區主管增減分'));
-      html += '<div class="section-title-row"><div><h3>' + escapeHtml(ACTION_LABELS[action] || '區主管簽核') + '</h3></div>' +
+      html += '<div class="section-title-row"><div><h3>' + escapeHtml(getActionLabel(record, action) || '區主管簽核') + '</h3></div>' +
         '<div class="score-total-badge"><span>區主管小計</span><strong data-area-total data-area-mode="' + (areaIsVersionB ? 'score' : 'adjustment') + '">' +
         (areaIsVersionB ? escapeHtml(areaCurrent) + '／20分' : formatSignedNumberText(areaCurrent) + '分') + '</strong></div></div>';
       if (areaIsVersionB) {
@@ -339,7 +346,7 @@
         html += plainNumberField('adjustment', '區主管增減分（-10～10）', areaCurrent, -10, 10, true);
       }
     } else {
-      html += '<h3>' + escapeHtml(ACTION_LABELS[action] || '簽核') + '</h3>';
+      html += '<h3>' + escapeHtml(getActionLabel(record, action) || '簽核') + '</h3>';
     }
     if (action === 'employee_confirm') {
       html += '<p class="section-help approval-only-note">確認時不需要填寫評語；選擇退回時，系統會要求輸入疑慮說明。</p>';
