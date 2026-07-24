@@ -2518,7 +2518,18 @@
       var result = await window.V3WorkflowService.getEvaluation(evaluationNo);
       state.currentDetail = result.data || {};
       if (settings.readOnly) {
-        state.currentDetail.allowedActions = [];
+        var openSource = String(settings.source || '').trim();
+        var originalAllowedActions = Array.isArray(state.currentDetail.allowedActions)
+          ? state.currentDetail.allowedActions.slice()
+          : [];
+        if (openSource === 'progress' && isEducationPdfManagerUi()) {
+          // 流程追蹤維持評核內容唯讀，但教育中心保留必要的案件轉派能力。
+          state.currentDetail.allowedActions = originalAllowedActions.filter(function(action) {
+            return action === 'force_transition' || action === 'reassign';
+          });
+        } else {
+          state.currentDetail.allowedActions = [];
+        }
         state.currentDetail.readOnly = true;
       }
       renderEvaluationDetail();
@@ -2533,9 +2544,16 @@
     }
   }
 
+  function getEvaluationOpenSourceUi_() {
+    return String(state.evaluationOpenContext && state.evaluationOpenContext.source || '').trim();
+  }
+
   function isReadOnlyEvaluationContextUi_() {
-    var source = String(state.evaluationOpenContext && state.evaluationOpenContext.source || '').trim();
-    return ['outcome', 'progress', 'history', 'readonly'].indexOf(source) !== -1;
+    return ['outcome', 'progress', 'history', 'readonly'].indexOf(getEvaluationOpenSourceUi_()) !== -1;
+  }
+
+  function isProgressManagementContextUi_() {
+    return getEvaluationOpenSourceUi_() === 'progress' && isEducationPdfManagerUi();
   }
 
   function closeEvaluation(options) {
@@ -2796,16 +2814,23 @@
   }
 
   function renderActionPanel(record) {
-    if (isReadOnlyEvaluationContextUi_()) { elements.actionPanel.hidden = true; return; }
+    var progressManagementOnly = isProgressManagementContextUi_();
+    if (isReadOnlyEvaluationContextUi_() && !progressManagementOnly) {
+      elements.actionPanel.hidden = true;
+      return;
+    }
     var allowed = Array.isArray(record.allowedActions) ? record.allowedActions : [];
     var actions = allowed.filter(function (action) {
+      if (progressManagementOnly) {
+        return action === 'force_transition' || action === 'reassign';
+      }
       if (action === 'force_transition') {
         return isEducationPdfManagerUi() && String(record['流程狀態'] || '').trim() !== '作廢';
       }
       if (isManagementActionUi_(action)) return isEducationPdfManagerUi();
       return NORMAL_ACTIONS.indexOf(action) !== -1;
     });
-    if (canShowForceClose(record) && actions.indexOf('force_close') === -1) actions.push('force_close');
+    if (!progressManagementOnly && canShowForceClose(record) && actions.indexOf('force_close') === -1) actions.push('force_close');
     if (!actions.length) {
       elements.actionPanel.hidden = true;
       return;
