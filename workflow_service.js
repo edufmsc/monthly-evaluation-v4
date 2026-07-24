@@ -68,11 +68,13 @@
     dispatchManagementCenter: function (filters) {
       return call('dispatchManagementCenter', filters || {});
     },
-    previewManualDispatch: function (employeeIds, evaluationMonth, evaluationVersion) {
+    previewManualDispatch: function (employeeIds, evaluationMonth, options) {
+      var settings = options && typeof options === 'object' ? options : { mode: String(options || 'AUTO') };
       return call('previewManualDispatch', {
         employeeIds: Array.isArray(employeeIds) ? employeeIds : [],
         evaluationMonth: String(evaluationMonth || ''),
-        evaluationVersion: String(evaluationVersion || 'A')
+        evaluationVersionMode: String(settings.mode || 'AUTO'),
+        evaluationVersions: settings.evaluationVersions || {}
       });
     },
     runManualDispatch: function (payload, requestId) {
