@@ -6,7 +6,7 @@
   var IDLE_LOGOUT_MS = 5 * 60 * 1000;
   var IDLE_DRAFT_WAIT_MS = 8000;
   var IDLE_STORAGE_KEY = 'monthlyEvaluationV3IdleActivity';
-  var SESSION_NOTICE_STORAGE_KEY = 'monthlyEvaluationV3SessionNotice';
+  var SESSION_NOTICE_STORAGE_KEY = 'monthlyEvaluationV4SessionNotice';
   var elements = {};
   var state = {
     session: null,
