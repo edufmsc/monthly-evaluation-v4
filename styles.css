@@ -2591,3 +2591,234 @@ body.idle-warning-open {
   .background-job-table .col-job-status,
   .background-job-table .col-job-action { width: auto; }
 }
+
+/* V4｜系統管理「每日作業」手機版完整顯示修正 */
+@media (max-width: 760px) {
+  body.system-management-active,
+  body.system-management-active .app-main,
+  body.system-management-active #systemPanel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  #backgroundJobCard,
+  #notificationManagementCard,
+  #pdfManagementCard {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 14px 10px;
+    overflow: visible;
+  }
+
+  #backgroundJobCard form,
+  #backgroundJobCard section,
+  #backgroundJobCard details,
+  #backgroundJobCard > div,
+  #notificationManagementCard form,
+  #notificationManagementCard section,
+  #notificationManagementCard details,
+  #notificationManagementCard > div,
+  #pdfManagementCard form,
+  #pdfManagementCard section,
+  #pdfManagementCard details,
+  #pdfManagementCard > div {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #backgroundJobCard input,
+  #backgroundJobCard select,
+  #backgroundJobCard textarea,
+  #notificationManagementCard input,
+  #notificationManagementCard select,
+  #notificationManagementCard textarea,
+  #pdfManagementCard input,
+  #pdfManagementCard select,
+  #pdfManagementCard textarea {
+    min-width: 0;
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  #backgroundJobCard .management-card-heading,
+  #notificationManagementCard .management-card-heading,
+  #pdfManagementCard .management-card-heading {
+    flex-direction: column !important;
+    align-items: stretch;
+  }
+
+  #backgroundJobCard .management-refresh-button,
+  #notificationManagementCard .management-refresh-button,
+  #pdfManagementCard .management-refresh-button {
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  #backgroundJobCard .filter-grid,
+  #backgroundJobCard .background-job-filter,
+  #notificationManagementCard .notification-settings-grid,
+  #notificationManagementCard .notification-log-filter,
+  #pdfManagementCard .filter-grid,
+  #pdfManagementCard .pdf-management-filter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #backgroundJobCard .background-job-keyword,
+  #backgroundJobCard .test-dispatch-actions,
+  #notificationManagementCard .notification-url-field,
+  #notificationManagementCard .test-dispatch-actions,
+  #pdfManagementCard .test-dispatch-actions {
+    grid-column: auto !important;
+  }
+
+  #backgroundJobCard .test-dispatch-actions,
+  #notificationManagementCard .test-dispatch-actions,
+  #pdfManagementCard .test-dispatch-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch;
+    justify-content: stretch;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #backgroundJobCard .test-dispatch-actions > *,
+  #notificationManagementCard .test-dispatch-actions > *,
+  #pdfManagementCard .test-dispatch-actions > * {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #backgroundJobCard .admin-result-grid,
+  #notificationManagementCard .admin-result-grid,
+  #pdfManagementCard .admin-result-grid,
+  #pdfManagementCard .pdf-management-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #backgroundJobCard .test-dispatch-heading,
+  #notificationManagementCard .test-dispatch-heading,
+  #pdfManagementCard .test-dispatch-heading,
+  #notificationManagementCard .notification-recipient-header,
+  #pdfManagementCard .evaluation-card__top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #backgroundJobCard .test-dispatch-heading > strong,
+  #notificationManagementCard .test-dispatch-heading > strong,
+  #pdfManagementCard .test-dispatch-heading > strong {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+  }
+
+  #backgroundJobCard .background-schedule-card > div,
+  #pdfManagementCard .pdf-retry-result-list > div {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #notificationManagementCard .notification-selection-tools strong,
+  #notificationManagementCard .notification-failure-center .test-dispatch-heading > strong,
+  #pdfManagementCard .pdf-management-tags,
+  #pdfManagementCard .pdf-management-selected-count {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+    text-align: left;
+    white-space: normal;
+  }
+
+  #backgroundJobList,
+  #backgroundJobSummary,
+  #backgroundScheduleHealth,
+  #notificationSummary,
+  #notificationRecipientList,
+  #notificationDeliveryStats,
+  #notificationFailureReasons,
+  #notificationFailedList,
+  #notificationLogList,
+  #pdfManagementSummary,
+  #pdfManagementList,
+  #pdfManagementActionPanel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  #backgroundJobCard .management-data-table-wrap,
+  #notificationManagementCard .management-data-table-wrap,
+  #pdfManagementCard .management-data-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #backgroundJobCard h3,
+  #backgroundJobCard h4,
+  #backgroundJobCard p,
+  #backgroundJobCard span,
+  #backgroundJobCard strong,
+  #backgroundJobCard small,
+  #notificationManagementCard h3,
+  #notificationManagementCard h4,
+  #notificationManagementCard p,
+  #notificationManagementCard span,
+  #notificationManagementCard strong,
+  #notificationManagementCard small,
+  #pdfManagementCard h3,
+  #pdfManagementCard h4,
+  #pdfManagementCard p,
+  #pdfManagementCard span,
+  #pdfManagementCard strong,
+  #pdfManagementCard small {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 390px) {
+  body.system-management-active .app-shell {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  #backgroundJobCard,
+  #notificationManagementCard,
+  #pdfManagementCard {
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 16px;
+  }
+
+  #backgroundJobCard .detail-section,
+  #notificationManagementCard .detail-section,
+  #pdfManagementCard .detail-section,
+  #backgroundJobCard .test-dispatch-preview,
+  #notificationManagementCard .test-dispatch-preview,
+  #pdfManagementCard .test-dispatch-preview {
+    padding: 12px 10px;
+  }
+}
+
