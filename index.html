@@ -6,15 +6,15 @@
   <meta name="theme-color" content="#8f3b12">
   <meta name="color-scheme" content="light">
   <meta name="robots" content="noindex,nofollow">
-  <title>月考核系統 V4</title>
-  <link rel="stylesheet" href="styles.css?v=1.0.2-mobile">
+  <title>月考核系統</title>
+  <link rel="stylesheet" href="styles.css?v=1.0.3-ui">
 </head>
 <body>
   <div class="app-shell">
     <header class="app-header">
       <div>
         <p class="eyebrow">鬍鬚張｜教育中心</p>
-        <h1>月考核系統 V4</h1>
+        <h1>月考核系統</h1>
       </div>
       <span id="connectionBadge" class="status-badge status-badge--checking">檢查連線中</span>
     </header>
@@ -28,19 +28,18 @@
       <section id="loginView" class="card login-card" aria-labelledby="loginTitle">
         <div class="card-heading">
           <p class="step-label">登入</p>
-          <h2 id="loginTitle">使用工號與 4 碼密碼登入</h2>
-          <p>不需要 Google 帳號。帳號與密碼由教育中心在員工主檔管理。</p>
+          <h2 id="loginTitle">使用員工工號+身份證後4碼登入</h2>
         </div>
 
         <form id="loginForm" novalidate>
           <div class="field-group">
-            <label for="employeeId">員工工號</label>
-            <input id="employeeId" name="employeeId" type="text" inputmode="text" autocomplete="username" maxlength="40" placeholder="例如 0000 或 FMSC0000123" required>
-            <p class="field-hint">工號會保留英文字母與前導 0。</p>
+            <label for="employeeId">帳號</label>
+            <input id="employeeId" name="employeeId" type="text" inputmode="text" autocomplete="username" maxlength="40" placeholder="例如0123456或FMSC0000123" required>
+            <p class="field-hint">帳號會保留英文字母與前導 0。</p>
           </div>
 
           <div class="field-group">
-            <label for="password">登入密碼</label>
+            <label for="password">密碼</label>
             <div class="password-wrap">
               <input id="password" name="password" type="password" inputmode="numeric" autocomplete="current-password" maxlength="4" pattern="[0-9]{4}" placeholder="4 碼數字" required>
               <button id="togglePassword" class="icon-button" type="button" aria-label="顯示密碼" aria-pressed="false">顯示</button>
@@ -203,7 +202,7 @@
           <article class="card test-dispatch-card">
             <div class="test-dispatch-heading">
               <div>
-                <p class="step-label">流程測試工具</p>
+                <p class="step-label">流程測試工具｜1.0</p>
                 <h3>建立測試月考核表</h3>
                 <p>一次只建立一位受評人員的 R0 測試表。建立前先預覽完整上呈路線，正式每月派發尚未啟用。</p>
               </div>
@@ -255,7 +254,6 @@
 
     <footer class="app-footer">
       <span id="appVersion">V3</span>
-      <span>V4 流程與派發測試</span>
     </footer>
   </div>
 
@@ -312,12 +310,12 @@
     </section>
   </div>
 
-  <script src="api_config.js?v=1.0.1" defer></script>
+  <script src="api_config.js?v=1.0.3-ui" defer></script>
   <script src="api_client.js?v=1.0.1" defer></script>
   <script src="auth_service.js?v=1.0.1" defer></script>
   <script src="workflow_service.js?v=1.0.1" defer></script>
   <script src="signature_pad.js?v=1.0.1" defer></script>
   <script src="evaluation_form.js?v=1.0.1" defer></script>
-  <script src="app.js?v=1.0.2-mobile" defer></script>
+  <script src="app.js?v=1.0.3-ui" defer></script>
 </body>
 </html>
