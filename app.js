@@ -40,6 +40,8 @@
     dispatchPersonPageSize: 10,
     dispatchAttemptPageSize: 10,
     batchDispatchRepairPreview: null,
+    batchDispatchRoutePreview: {},
+    batchDispatchCustomWorkflows: {},
     batchDispatchSelectedEmployees: {},
     batchDispatchSelectionRequirements: {},
     dispatchManagementSelectionMonth: '',
@@ -169,6 +171,7 @@
     ensureNotificationPreviewDialogV3_();
     ensureNotificationEmailFixDialogV3_();
     ensureBackgroundJobDetailDialogV3_();
+    ensureBatchDispatchRouteDialogV3_();
     ensureSystemManagementWorkspaceV3_();
     ensureContinuousReviewToolbar();
     ensureIdleWarningDialogV3_();
@@ -492,6 +495,234 @@
     document.body.appendChild(overlay);
   }
 
+  function ensureBatchDispatchRouteDialogV3_() {
+    if (document.getElementById('batchDispatchRouteOverlay')) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'batchDispatchRouteOverlay';
+    overlay.className = 'management-confirm-overlay';
+    overlay.hidden = true;
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'batchDispatchRouteTitle');
+    overlay.innerHTML = '<section class="management-confirm-dialog batch-dispatch-route-dialog">' +
+      '<div class="test-dispatch-heading"><div><p class="step-label">本張人工派發考核表</p><h2 id="batchDispatchRouteTitle">自訂簽核流程</h2></div>' +
+      '<button id="batchDispatchRouteCloseButton" class="secondary-button secondary-button--small" type="button">關閉</button></div>' +
+      '<div id="batchDispatchRouteSummary" class="batch-dispatch-route-summary"></div>' +
+      '<label class="choice-card custom-workflow-toggle"><input id="batchDispatchCustomWorkflowEnabled" type="checkbox"> 這張考核表使用自訂簽核流程</label>' +
+      '<div id="batchDispatchCustomWorkflowEditor" hidden>' +
+        '<div class="custom-workflow-add-row"><label class="field-group"><span>增加簽核人</span><select id="batchDispatchWorkflowCandidate"></select></label>' +
+        '<button id="batchDispatchWorkflowAddButton" class="secondary-button" type="button">加入流程</button></div>' +
+        '<p class="section-help">可自由增加、刪除並拖曳調整順序；手機可使用上移、下移。為避免同一組分數與簽名互相覆蓋，同一簽核角色限加入一次。自訂流程只套用本張考核表，正式建立後即鎖定。</p>' +
+        '<div id="batchDispatchRouteContent"></div>' +
+      '</div>' +
+      '<div id="batchDispatchDefaultRouteContent"></div>' +
+      '<div class="test-dispatch-actions custom-workflow-dialog-actions">' +
+        '<button id="batchDispatchWorkflowResetButton" class="secondary-button" type="button">恢復預設流程</button>' +
+        '<button id="batchDispatchWorkflowSaveButton" class="primary-button" type="button">套用本張流程</button>' +
+      '</div></section>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function(event) {
+      if (event.target === overlay) closeBatchDispatchRouteDialogV3_();
+      var removeButton = event.target.closest('[data-custom-workflow-remove]');
+      if (removeButton) { removeCustomWorkflowStepV4_(Number(removeButton.getAttribute('data-custom-workflow-remove'))); return; }
+      var moveButton = event.target.closest('[data-custom-workflow-move]');
+      if (moveButton) { moveCustomWorkflowStepV4_(Number(moveButton.getAttribute('data-index')), Number(moveButton.getAttribute('data-custom-workflow-move'))); return; }
+    });
+    overlay.querySelector('#batchDispatchRouteCloseButton').addEventListener('click', closeBatchDispatchRouteDialogV3_);
+    overlay.querySelector('#batchDispatchCustomWorkflowEnabled').addEventListener('change', renderCustomWorkflowEditorV4_);
+    overlay.querySelector('#batchDispatchWorkflowAddButton').addEventListener('click', addCustomWorkflowStepV4_);
+    overlay.querySelector('#batchDispatchWorkflowResetButton').addEventListener('click', resetCustomWorkflowEditorV4_);
+    overlay.querySelector('#batchDispatchWorkflowSaveButton').addEventListener('click', saveCustomWorkflowEditorV4_);
+  }
+
+  function cloneCustomWorkflowStepsV4_(steps) {
+    return (Array.isArray(steps) ? steps : []).map(function(step, index) {
+      return {
+        stepId: String(step.stepId || ('step-' + index + '-' + Date.now())),
+        order: index + 1,
+        stageType: String(step.stageType || ''),
+        role: String(step.role || ''),
+        employeeId: String(step.employeeId || ''),
+        employeeName: String(step.employeeName || ''),
+        label: String(step.label || step.role || '簽核')
+      };
+    });
+  }
+
+  function openBatchDispatchRouteDialogV3_(key) {
+    var context = state.batchDispatchRoutePreview && state.batchDispatchRoutePreview[String(key || '')];
+    var overlay = document.getElementById('batchDispatchRouteOverlay');
+    if (!context || !overlay) return;
+    overlay.setAttribute('data-route-key', String(key || ''));
+    var saved = state.batchDispatchCustomWorkflows[context.employeeId] || null;
+    context.editingEnabled = Boolean(saved && saved.enabled);
+    context.editingSteps = cloneCustomWorkflowStepsV4_(saved && saved.steps || context.defaultSteps || context.routeOrder || []);
+    var title = document.getElementById('batchDispatchRouteTitle');
+    var summary = document.getElementById('batchDispatchRouteSummary');
+    if (title) title.textContent = context.employeeLabel ? context.employeeLabel + '｜自訂簽核流程' : '自訂簽核流程';
+    if (summary) summary.innerHTML = '<span>' + escapeHtml(context.evaluationLabel || '') + '</span><strong>只套用本張人工派發考核表</strong>';
+    document.getElementById('batchDispatchCustomWorkflowEnabled').checked = context.editingEnabled;
+    renderCustomWorkflowEditorV4_();
+    overlay.hidden = false;
+    document.body.classList.add('modal-open');
+  }
+
+  function currentCustomWorkflowContextV4_() {
+    var overlay = document.getElementById('batchDispatchRouteOverlay');
+    var key = overlay && overlay.getAttribute('data-route-key');
+    return key && state.batchDispatchRoutePreview ? state.batchDispatchRoutePreview[key] : null;
+  }
+
+  function renderCustomWorkflowEditorV4_() {
+    var context = currentCustomWorkflowContextV4_();
+    if (!context) return;
+    var enabled = Boolean(document.getElementById('batchDispatchCustomWorkflowEnabled').checked);
+    context.editingEnabled = enabled;
+    var editor = document.getElementById('batchDispatchCustomWorkflowEditor');
+    var defaultContent = document.getElementById('batchDispatchDefaultRouteContent');
+    if (editor) editor.hidden = !enabled;
+    if (defaultContent) defaultContent.hidden = enabled;
+    var candidates = Array.isArray(context.candidates) ? context.candidates : [];
+    var candidateSelect = document.getElementById('batchDispatchWorkflowCandidate');
+    if (candidateSelect) candidateSelect.innerHTML = '<option value="">選擇要加入的人員</option>' + candidates.map(function(candidate, index) {
+      return '<option value="' + index + '">' + escapeHtml(candidate.label || joinText(candidate.employeeId, candidate.employeeName)) + '</option>';
+    }).join('');
+    renderCustomWorkflowStepsV4_(context);
+    if (defaultContent) {
+      var routeOrder = Array.isArray(context.routeOrder) ? context.routeOrder : [];
+      defaultContent.innerHTML = '<h3>系統預設流程</h3>' + renderCustomWorkflowReadOnlyListV4_(routeOrder);
+    }
+  }
+
+  function renderCustomWorkflowReadOnlyListV4_(steps) {
+    return steps.length ? '<ol class="batch-dispatch-flow-list batch-dispatch-flow-list--dialog">' + steps.map(function(stage, index) {
+      var assignee = stage.shared ? ('共同待辦 ' + Number(stage.enabledCount || stage.memberCount || 0) + ' 人') : joinText(stage.employeeId, stage.employeeName);
+      return '<li><span class="batch-dispatch-flow-order">' + (index + 1) + '</span><div><strong>' + escapeHtml(stage.label || stage.role || '流程階段') + '</strong><small>' + escapeHtml(assignee) + '</small></div></li>';
+    }).join('') + '</ol>' : '<p class="section-help">目前沒有可顯示的派發流程。</p>';
+  }
+
+  function renderCustomWorkflowStepsV4_(context) {
+    var content = document.getElementById('batchDispatchRouteContent');
+    if (!content) return;
+    var steps = Array.isArray(context.editingSteps) ? context.editingSteps : [];
+    content.innerHTML = steps.length ? '<ol class="custom-workflow-sortable" id="customWorkflowSortable">' + steps.map(function(step, index) {
+      return '<li class="custom-workflow-step" draggable="true" data-custom-workflow-index="' + index + '">' +
+        '<button class="custom-workflow-drag" type="button" aria-label="拖曳調整">☰</button>' +
+        '<span class="batch-dispatch-flow-order">' + (index + 1) + '</span>' +
+        '<div class="custom-workflow-step-main"><strong>' + escapeHtml(step.label || step.role) + '</strong><small>' + escapeHtml(joinText(step.employeeId, step.employeeName)) + '</small></div>' +
+        '<div class="custom-workflow-step-actions"><button type="button" class="small-button" data-index="' + index + '" data-custom-workflow-move="-1"' + (index === 0 ? ' disabled' : '') + '>上移</button>' +
+        '<button type="button" class="small-button" data-index="' + index + '" data-custom-workflow-move="1"' + (index === steps.length - 1 ? ' disabled' : '') + '>下移</button>' +
+        '<button type="button" class="small-button danger-button" data-custom-workflow-remove="' + index + '">刪除</button></div></li>';
+    }).join('') + '</ol>' : '<div class="form-message form-message--error">請至少加入一位簽核人。</div>';
+    initializeCustomWorkflowDragV4_();
+  }
+
+  function initializeCustomWorkflowDragV4_() {
+    var list = document.getElementById('customWorkflowSortable');
+    if (!list || list.__dragReady) return;
+    list.__dragReady = true;
+    var draggedIndex = -1;
+    list.addEventListener('dragstart', function(event) {
+      var item = event.target.closest('[data-custom-workflow-index]');
+      if (!item) return;
+      draggedIndex = Number(item.getAttribute('data-custom-workflow-index'));
+      item.classList.add('is-dragging');
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+    });
+    list.addEventListener('dragend', function(event) {
+      var item = event.target.closest('[data-custom-workflow-index]');
+      if (item) item.classList.remove('is-dragging');
+      draggedIndex = -1;
+    });
+    list.addEventListener('dragover', function(event) { event.preventDefault(); });
+    list.addEventListener('drop', function(event) {
+      event.preventDefault();
+      var target = event.target.closest('[data-custom-workflow-index]');
+      if (!target || draggedIndex < 0) return;
+      var targetIndex = Number(target.getAttribute('data-custom-workflow-index'));
+      if (targetIndex === draggedIndex) return;
+      var context = currentCustomWorkflowContextV4_();
+      var steps = context.editingSteps;
+      var moved = steps.splice(draggedIndex, 1)[0];
+      steps.splice(targetIndex, 0, moved);
+      renderCustomWorkflowStepsV4_(context);
+    });
+  }
+
+  function addCustomWorkflowStepV4_() {
+    var context = currentCustomWorkflowContextV4_();
+    var select = document.getElementById('batchDispatchWorkflowCandidate');
+    if (!context || !select || select.value === '') return;
+    var candidate = context.candidates[Number(select.value)];
+    if (!candidate) return;
+    if (context.editingSteps.length >= 12) { alert('單張考核表最多12個簽核階段。'); return; }
+    if (context.editingSteps.some(function(step) { return String(step.role || '') === String(candidate.role || ''); })) {
+      alert('同一張考核表不可重複加入相同簽核角色：' + candidate.role);
+      return;
+    }
+    if (context.evaluationVersion === 'B' && (candidate.role === '門市店主管' || candidate.role === '區主管') &&
+        context.editingSteps.some(function(step) { return step.role === '門市店主管' || step.role === '區主管'; })) {
+      alert('B版主要評核人請擇一：門市店主管或區主管，不能同時加入。');
+      return;
+    }
+    var stageType = candidate.role === '區主管' && context.evaluationVersion === 'B' ? 'B_AREA_ASSESS' : '';
+    context.editingSteps.push({
+      stepId: 'step-' + Date.now() + '-' + Math.random().toString(16).slice(2),
+      role: candidate.role, employeeId: candidate.employeeId, employeeName: candidate.employeeName,
+      stageType: stageType, label: candidate.role
+    });
+    renderCustomWorkflowStepsV4_(context);
+    select.value = '';
+  }
+
+  function removeCustomWorkflowStepV4_(index) {
+    var context = currentCustomWorkflowContextV4_();
+    if (!context || index < 0 || index >= context.editingSteps.length) return;
+    context.editingSteps.splice(index, 1);
+    renderCustomWorkflowStepsV4_(context);
+  }
+
+  function moveCustomWorkflowStepV4_(index, delta) {
+    var context = currentCustomWorkflowContextV4_();
+    if (!context) return;
+    var target = index + delta;
+    if (target < 0 || target >= context.editingSteps.length) return;
+    var moved = context.editingSteps.splice(index, 1)[0];
+    context.editingSteps.splice(target, 0, moved);
+    renderCustomWorkflowStepsV4_(context);
+  }
+
+  function resetCustomWorkflowEditorV4_() {
+    var context = currentCustomWorkflowContextV4_();
+    if (!context) return;
+    context.editingEnabled = false;
+    context.editingSteps = cloneCustomWorkflowStepsV4_(context.defaultSteps || context.routeOrder || []);
+    document.getElementById('batchDispatchCustomWorkflowEnabled').checked = false;
+    renderCustomWorkflowEditorV4_();
+  }
+
+  function saveCustomWorkflowEditorV4_() {
+    var context = currentCustomWorkflowContextV4_();
+    if (!context) return;
+    var enabled = Boolean(document.getElementById('batchDispatchCustomWorkflowEnabled').checked);
+    if (enabled && !context.editingSteps.length) { alert('自訂簽核流程至少需要一位簽核人。'); return; }
+    state.batchDispatchCustomWorkflows[context.employeeId] = {
+      employeeId: context.employeeId,
+      enabled: enabled,
+      steps: cloneCustomWorkflowStepsV4_(context.editingSteps)
+    };
+    var button = document.querySelector('[data-batch-dispatch-route-key="' + String(context.routeKey || '').replace(/"/g, '\"') + '"]');
+    if (button) button.textContent = enabled ? '自訂流程（' + context.editingSteps.length + '階段）' : '查看流程（' + context.routeOrder.length + '階段）';
+    closeBatchDispatchRouteDialogV3_();
+    updateBatchDispatchRunState();
+  }
+
+  function closeBatchDispatchRouteDialogV3_() {
+    var overlay = document.getElementById('batchDispatchRouteOverlay');
+    if (overlay) overlay.hidden = true;
+    document.body.classList.remove('modal-open');
+  }
+
   function ensureNotificationManagementPanelV3_() {
     if (document.getElementById('notificationManagementCard')) return;
     var systemPanel = document.getElementById('systemPanel');
@@ -513,9 +744,9 @@
         '<label class="field-group"><span>每日摘要時間</span><select id="notificationDailyHour">' + hourOptions.join('') + '</select></label>' +
         '<label class="field-group"><span>逾期天數</span><input id="notificationOverdueDays" type="number" min="1" max="30" value="3"></label>' +
         '<label class="field-group"><span>每批寄送上限</span><input id="notificationBatchSize" type="number" min="1" max="40" value="20"></label>' +
+        '<p class="notification-overdue-note">逾期提醒：超過3天後在摘要中再次提醒承辦人</p>' +
         '<div class="test-dispatch-actions notification-settings-actions"><button id="notificationSaveButton" class="primary-button" type="submit"><span class="button-label">儲存設定</span><span class="button-spinner"></span></button></div>' +
       '</form>' +
-      '<p class="notification-overdue-note">逾期提醒：超過3天後在摘要中再次提醒承辦人</p>' +
       '<div id="notificationMessage" class="form-message" role="status" aria-live="polite" hidden></div>' +
       '<div id="notificationSummary"></div>' +
       '<section class="detail-section"><div class="test-dispatch-heading"><div><h4>一鍵通知</h4><p class="section-help">建立通知工作後立即回覆，實際Email由背景工作器分批寄送，不會讓畫面長時間等待。</p></div></div>' +
@@ -824,6 +1055,11 @@
 
   function bindEvents() {
     document.addEventListener('click', function(event) {
+      var routeButton = event.target.closest('[data-batch-dispatch-route-key]');
+      if (routeButton && !routeButton.disabled) {
+        openBatchDispatchRouteDialogV3_(routeButton.getAttribute('data-batch-dispatch-route-key'));
+        return;
+      }
       var button = event.target.closest('[data-list-page-scope]');
       if (!button || button.disabled) return;
       var page = Number(button.getAttribute('data-list-page') || 1);
@@ -5251,6 +5487,8 @@
   }
 
   function renderBatchDispatchRepairPreview(data, refreshedBecauseStale) {
+    state.batchDispatchRoutePreview = {};
+    state.batchDispatchCustomWorkflows = {};
     var summary = data.summary || {};
     var items = data.items || [];
     elements.batchDispatchRepairContent.innerHTML = '<h4>人工派發／補派預覽</h4>' +
@@ -5263,23 +5501,28 @@
         metaItem('已有R0跳過', summary.duplicateCount || 0) +
         metaItem('路線／資格異常', summary.routeErrorCount || 0) +
         metaItem('提醒數', summary.warningCount || 0) +
-      '</div><div class="batch-dispatch-person-list">' + items.map(function (item) {
+      '</div><div class="batch-dispatch-person-list">' + items.map(function (item, itemIndex) {
         var employee = item.employee || {};
         var organization = item.organization || {};
         var label = item.repairIncomplete === true ? '安全補齊' : (item.action === 'CREATE' ? '預計建立' : (item.action === 'DUPLICATE' ? '重複跳過' : '不可建立'));
         var tone = item.action === 'CREATE' ? 'tag--success' : (item.action === 'DUPLICATE' ? 'tag--warning' : 'tag--danger');
         var reason = item.reason || (item.errors || []).join('；') || '簽核流程檢查通過';
         var routeOrder = Array.isArray(item.routeOrder) ? item.routeOrder : [];
-        var routeHtml = routeOrder.length ? '<ol class="batch-dispatch-flow-list">' + routeOrder.map(function(stage) {
-          var assignee = stage.shared
-            ? ('共同待辦 ' + Number(stage.enabledCount || stage.memberCount || 0) + ' 人')
-            : joinText(stage.employeeId, stage.employeeName);
-          return '<li><span class="batch-dispatch-flow-order">' + Number(stage.order || 0) + '</span><div><strong>' + escapeHtml(stage.label || stage.role || '流程階段') + '</strong><small>' + escapeHtml(assignee) + '</small></div></li>';
-        }).join('') + '</ol>' : '<p class="section-help">目前沒有可顯示的派發流程。</p>';
+        var routeKey = 'dispatch-route-' + itemIndex;
+        state.batchDispatchRoutePreview[routeKey] = {
+          routeKey: routeKey,
+          employeeId: String(employee.employeeId || ''),
+          employeeLabel: joinText(employee.employeeId, employee.employeeName),
+          evaluationVersion: String(data.evaluationVersion || 'A').toUpperCase() === 'B' ? 'B' : 'A',
+          evaluationLabel: String(data.evaluationVersion || 'A') === 'B' ? '店副理進階月考核表' : '一般月考核表',
+          routeOrder: routeOrder,
+          defaultSteps: cloneCustomWorkflowStepsV4_(item.defaultCustomWorkflow || []),
+          candidates: Array.isArray(item.workflowCandidates) ? item.workflowCandidates : []
+        };
         return '<article class="batch-dispatch-person-card"><header><div><span class="tag ' + tone + '">' + escapeHtml(label) + '</span><strong>' +
           escapeHtml(joinText(employee.employeeId, employee.employeeName)) + '</strong><small>' + escapeHtml(joinStore(organization.storeCode, organization.storeName)) + '</small></div>' +
           '<small>' + escapeHtml(item.plannedEvaluationNo || item.existingEvaluationNo || '') + '</small></header>' +
-          '<div class="batch-dispatch-flow-block"><span>派發流程</span>' + routeHtml + '</div>' +
+          '<div class="batch-dispatch-flow-trigger"><span>派發流程</span><button class="secondary-button secondary-button--small" type="button" data-batch-dispatch-route-key="' + escapeHtml(routeKey) + '">查看／自訂流程（' + routeOrder.length + '階段）</button></div>' +
           '<p class="batch-dispatch-person-reason">' + escapeHtml(reason) + '</p></article>';
       }).join('') + '</div><p class="section-help">' + escapeHtml(data.note || '') + '</p>';
     elements.batchDispatchRepairPanel.hidden = false;
@@ -5292,6 +5535,9 @@
 
   function closeBatchDispatchRepairPanel() {
     state.batchDispatchRepairPreview = null;
+    state.batchDispatchRoutePreview = {};
+    state.batchDispatchCustomWorkflows = {};
+    closeBatchDispatchRouteDialogV3_();
     if (elements.batchDispatchRepairPanel) elements.batchDispatchRepairPanel.hidden = true;
     if (elements.batchDispatchRepairReason) elements.batchDispatchRepairReason.value = '';
     if (elements.batchDispatchRepairConfirm) elements.batchDispatchRepairConfirm.checked = false;
@@ -5367,6 +5613,9 @@
         evaluationMonth: preview.evaluationMonth,
         evaluationVersion: preview.evaluationVersion || 'A',
         previewToken: preview.previewToken,
+        customWorkflows: Object.keys(state.batchDispatchCustomWorkflows || {}).map(function(employeeId) {
+          return state.batchDispatchCustomWorkflows[employeeId];
+        }),
         reason: reason,
         secondConfirmed: true,
         confirmed: true
@@ -5496,6 +5745,14 @@
     }
   }
 
+  function splitDispatchDateTimeV3_(value) {
+    var text = String(value == null ? '' : value).trim();
+    if (!text) return ['—'];
+    var normalized = text.replace('T', ' ');
+    var match = normalized.match(/^(.+?)\s+(\d{1,2}:\d{2}(?::\d{2})?)(?:\s.*)?$/);
+    return match ? [match[1], match[2]] : [text];
+  }
+
   function renderDispatchScheduleStatusV3_(data) {
     var source = data || {};
     var main = source.main || {};
@@ -5509,7 +5766,7 @@
       elements.dispatchScheduleSummary.innerHTML =
         metaItem('排程狀態', source.valid ? '已安裝且完整' : (source.triggerCount ? '排程不完整' : '未安裝')) +
         '<div class="dispatch-schedule-meta-item"><span>主派發</span><strong><em>' + escapeHtml(mainDateText) + '</em><em>' + escapeHtml(mainTimeText) + '</em></strong></div>' +
-        metaItem('下次主派發', main.nextRun || '—') +
+        '<div class="dispatch-schedule-meta-item"><span>下次主派發</span><strong>' + splitDispatchDateTimeV3_(main.nextRun || '—').map(function(text) { return '<em>' + escapeHtml(text) + '</em>'; }).join('') + '</strong></div>' +
         '<div class="dispatch-schedule-meta-item"><span>安全補跑</span><strong>' + retryLines.map(function(text) { return '<em>' + escapeHtml(text) + '</em>'; }).join('') + '</strong></div>' +
         metaItem('觸發器', Number(source.triggerCount || 0) + '／3') +
         metaItem('時區', source.timezone || 'Asia/Taipei') +
