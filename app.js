@@ -1554,7 +1554,7 @@
     if (item.isVoid) pushTag('已作廢', ' tag--danger');
     if (item.isException) pushTag('例外流程', ' tag--warning');
 
-    var actions = '<button type="button" class="secondary-button" data-open-evaluation="' + escapeHtml(item.evaluationNo) + '">' +
+    var actions = '<button type="button" class="secondary-button" data-open-evaluation="' + escapeHtml(item.evaluationNo) + '" data-open-mode="' + escapeHtml(mode || '') + '">' +
       (mode === 'pending' ? '開啟處理' : mode === 'progress' ? '查看動態' : '查看內容') + '</button>';
 
     var effectivePdfStatus = pdfStatus || (effectiveClosed && !item.pdfHasFile ? '待處理' : '');
@@ -1623,7 +1623,13 @@
       button.addEventListener('click', startContinuousReview);
     });
     Array.prototype.slice.call(container.querySelectorAll('[data-open-evaluation]')).forEach(function (button) {
-      button.addEventListener('click', function () { openEvaluation(button.getAttribute('data-open-evaluation')); });
+      button.addEventListener('click', function () {
+        var mode = String(button.getAttribute('data-open-mode') || '').trim();
+        openEvaluation(button.getAttribute('data-open-evaluation'), {
+          readOnly: mode !== 'pending',
+          source: mode === 'progress' ? 'progress' : mode === 'history' ? 'history' : mode === 'pending' ? 'pending' : 'readonly'
+        });
+      });
     });
     Array.prototype.slice.call(container.querySelectorAll('[data-generate-pdf]')).forEach(function (button) {
       button.addEventListener('click', function () { generatePdfFromCard(button.getAttribute('data-generate-pdf'), button); });
@@ -2511,6 +2517,10 @@
     try {
       var result = await window.V3WorkflowService.getEvaluation(evaluationNo);
       state.currentDetail = result.data || {};
+      if (settings.readOnly) {
+        state.currentDetail.allowedActions = [];
+        state.currentDetail.readOnly = true;
+      }
       renderEvaluationDetail();
       elements.evaluationContent.hidden = false;
       renderContinuousReviewBar();
@@ -2523,10 +2533,15 @@
     }
   }
 
+  function isReadOnlyEvaluationContextUi_() {
+    var source = String(state.evaluationOpenContext && state.evaluationOpenContext.source || '').trim();
+    return ['outcome', 'progress', 'history', 'readonly'].indexOf(source) !== -1;
+  }
+
   function closeEvaluation(options) {
     var settings = options || {};
     if (settings.saveDraft !== false && !state.isSubmitting && !isManagementActionUi_(state.currentAction) &&
-        !(state.evaluationOpenContext && state.evaluationOpenContext.source === 'outcome')) saveLocalDraft();
+        !isReadOnlyEvaluationContextUi_()) saveLocalDraft();
     clearDraftTimers();
     elements.evaluationOverlay.hidden = true;
     document.body.classList.remove('is-locked');
@@ -2770,7 +2785,7 @@
   }
 
   function renderClaimPanel(record) {
-    if (state.evaluationOpenContext && state.evaluationOpenContext.source === 'outcome') { elements.claimPanel.hidden = true; return; }
+    if (isReadOnlyEvaluationContextUi_()) { elements.claimPanel.hidden = true; return; }
     var allowed = Array.isArray(record.allowedActions) ? record.allowedActions : [];
     var canClaim = allowed.indexOf('edu_claim') !== -1;
     var canRelease = allowed.indexOf('edu_release') !== -1;
@@ -2781,7 +2796,7 @@
   }
 
   function renderActionPanel(record) {
-    if (state.evaluationOpenContext && state.evaluationOpenContext.source === 'outcome') { elements.actionPanel.hidden = true; return; }
+    if (isReadOnlyEvaluationContextUi_()) { elements.actionPanel.hidden = true; return; }
     var allowed = Array.isArray(record.allowedActions) ? record.allowedActions : [];
     var actions = allowed.filter(function (action) {
       if (action === 'force_transition') {
