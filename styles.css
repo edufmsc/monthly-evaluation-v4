@@ -3412,3 +3412,40 @@ body.modal-open {
     gap: 4px;
   }
 }
+
+/* V4｜人工派發逐人考核表版本調整 */
+.batch-dispatch-person-version {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: end;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: #fffaf6;
+  border: 1px solid var(--line);
+}
+.batch-dispatch-person-version label {
+  display: grid;
+  gap: 6px;
+}
+.batch-dispatch-person-version label > span {
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 800;
+}
+.batch-dispatch-person-version select {
+  width: 100%;
+  min-width: 0;
+}
+.batch-dispatch-person-version > small {
+  display: block;
+  color: var(--muted);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 680px) {
+  .batch-dispatch-person-version {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+}
