@@ -43,6 +43,7 @@
     batchDispatchRoutePreview: {},
     batchDispatchCustomWorkflows: {},
     batchDispatchSelectedEmployees: {},
+    batchDispatchVersionOverrides: {},
     batchDispatchSelectionRequirements: {},
     dispatchManagementSelectionMonth: '',
     dispatchMonthAnalysis: null,
@@ -265,7 +266,7 @@
       '</form>' +
       '<div id="dispatchManagementMessage" class="form-message" role="status" aria-live="polite" hidden></div><div id="dispatchManagementSummary"></div>' +
       '<section id="batchDispatchTools" class="detail-section"><div class="test-dispatch-heading"><div><h4>人工派發／補派</h4><p class="section-help">勾選1人或多人，先選擇考核表類型再預覽；建立後考核表類型即鎖定。</p></div><strong id="batchDispatchSelectedCount">已選0人</strong></div>' +
-        '<div class="batch-dispatch-version-row"><label class="field-group"><span>考核表類型</span><select id="batchDispatchEvaluationVersion"><option value="A">一般月考核表</option><option value="B">店副理進階月考核表</option></select></label><p class="section-help">店副理進階月考核表會依受評人角色套用對應流程；門市店主管作為受評人時使用店長受評專用流程。</p></div>' +
+        '<div class="batch-dispatch-version-row"><label class="field-group"><span>考核表類型</span><select id="batchDispatchEvaluationVersion"><option value="AUTO">自動判定（建議）</option><option value="A">全部先套用一般月考核表</option><option value="B">全部先套用店副理進階月考核表</option></select></label><p class="section-help">自動判定會依月份計畫、員工主檔預設與角色逐人套用；預覽後仍可逐人調整 A／B 版。門市店主管固定使用店副理進階月考核表。</p></div>' +
         '<div class="test-dispatch-actions"><button id="batchDispatchSelectVisibleButton" class="secondary-button secondary-button--small" type="button">勾選目前可派發人員</button><button id="batchDispatchClearButton" class="secondary-button secondary-button--small" type="button">清除勾選</button><button id="batchDispatchPreviewButton" class="primary-button" type="button" disabled><span class="button-label">預覽人工派發</span><span class="button-spinner" aria-hidden="true"></span></button></div></section>' +
       '<section id="dispatchManagementPersons" class="test-dispatch-preview"></section>' +
       '<details id="dispatchManagementAttemptsPanel" class="detail-section"><summary>查看本月份派發嘗試紀錄</summary><p class="section-help">每頁固定顯示10筆，可使用上一頁／下一頁切換。</p><div id="dispatchManagementAttempts"></div></details>' +
@@ -1082,21 +1083,11 @@
     if (elements.batchDispatchClearButton) elements.batchDispatchClearButton.addEventListener('click', clearBatchDispatchSelection);
     if (elements.batchDispatchPreviewButton) elements.batchDispatchPreviewButton.addEventListener('click', previewBatchDispatchRepair);
     if (elements.batchDispatchEvaluationVersion) elements.batchDispatchEvaluationVersion.addEventListener('change', function() {
+      state.batchDispatchVersionOverrides = {};
       closeBatchDispatchRepairPanel();
-      if (elements.batchDispatchEvaluationVersion.value === 'A') {
-        var removed = 0;
-        Object.keys(state.batchDispatchSelectedEmployees || {}).forEach(function(employeeId) {
-          if (state.batchDispatchSelectionRequirements[employeeId] === 'B') {
-            delete state.batchDispatchSelectedEmployees[employeeId];
-            removed += 1;
-          }
-        });
-        if (removed && elements.dispatchManagementPersons) {
-          Array.prototype.forEach.call(elements.dispatchManagementPersons.querySelectorAll('[data-batch-dispatch][data-required-version="B"]'), function(input) { input.checked = false; });
-          showDispatchManagementMessage('info', '已取消' + removed + '位門市店主管；門市店主管只能使用店副理進階月考核表。');
-          updateBatchDispatchSelectionState(Boolean(state.dispatchManagement && state.dispatchManagement.isCurrentMonth));
-        }
-      }
+      showDispatchManagementMessage('info', elements.batchDispatchEvaluationVersion.value === 'AUTO'
+        ? '已切換為逐人自動判定考核表類型。'
+        : '已套用整批初始類型；預覽後仍可逐人調整。');
     });
     if (elements.batchDispatchRepairReason) elements.batchDispatchRepairReason.addEventListener('input', updateBatchDispatchRunState);
     if (elements.batchDispatchRepairConfirm) elements.batchDispatchRepairConfirm.addEventListener('change', updateBatchDispatchRunState);
@@ -5236,6 +5227,7 @@
       var loadedMonth = state.dispatchManagement.evaluationMonth || currentRocMonthFirstDay();
       if (state.dispatchManagementSelectionMonth && state.dispatchManagementSelectionMonth !== loadedMonth) {
         state.batchDispatchSelectedEmployees = {};
+        state.batchDispatchVersionOverrides = {};
         state.batchDispatchRepairPreview = null;
         closeBatchDispatchRepairPanel();
         state.dispatchMonthAnalysis = null;
@@ -5346,14 +5338,10 @@
         if (checkbox.checked) {
           state.batchDispatchSelectedEmployees[employeeId] = true;
           state.batchDispatchSelectionRequirements[employeeId] = requiredVersion;
-          if (requiredVersion === 'B' && elements.batchDispatchEvaluationVersion && elements.batchDispatchEvaluationVersion.value !== 'B') {
-            elements.batchDispatchEvaluationVersion.value = 'B';
-            closeBatchDispatchRepairPanel();
-            showDispatchManagementMessage('info', '已選取門市店主管，考核表類型已自動切換為店副理進階月考核表。');
-          }
         } else {
           delete state.batchDispatchSelectedEmployees[employeeId];
           delete state.batchDispatchSelectionRequirements[employeeId];
+          delete state.batchDispatchVersionOverrides[employeeId];
         }
         updateBatchDispatchSelectionState(isCurrentMonth);
       });
@@ -5440,22 +5428,20 @@
 
   function selectVisibleBatchDispatchEmployees() {
     if (!elements.dispatchManagementPersons) return;
-    var requiresB = false;
     Array.prototype.slice.call(elements.dispatchManagementPersons.querySelectorAll('[data-batch-dispatch]')).forEach(function (checkbox) {
       checkbox.checked = true;
       var employeeId = checkbox.getAttribute('data-batch-dispatch');
       var requiredVersion = String(checkbox.getAttribute('data-required-version') || '');
       state.batchDispatchSelectedEmployees[employeeId] = true;
       state.batchDispatchSelectionRequirements[employeeId] = requiredVersion;
-      if (requiredVersion === 'B') requiresB = true;
     });
-    if (requiresB && elements.batchDispatchEvaluationVersion) elements.batchDispatchEvaluationVersion.value = 'B';
     updateBatchDispatchSelectionState(Boolean(state.dispatchManagement && state.dispatchManagement.isCurrentMonth));
   }
 
   function clearBatchDispatchSelection() {
     state.batchDispatchSelectedEmployees = {};
     state.batchDispatchSelectionRequirements = {};
+    state.batchDispatchVersionOverrides = {};
     if (elements.dispatchManagementPersons) {
       Array.prototype.slice.call(elements.dispatchManagementPersons.querySelectorAll('[data-batch-dispatch]')).forEach(function (checkbox) {
         checkbox.checked = false;
@@ -5475,7 +5461,10 @@
       var result = await window.V3WorkflowService.previewManualDispatch(
         employeeIds,
         String(elements.dispatchManagementMonth.value || currentRocMonthFirstDay()).trim(),
-        String(elements.batchDispatchEvaluationVersion && elements.batchDispatchEvaluationVersion.value || 'A')
+        {
+          mode: String(elements.batchDispatchEvaluationVersion && elements.batchDispatchEvaluationVersion.value || 'AUTO'),
+          evaluationVersions: Object.assign({}, state.batchDispatchVersionOverrides || {})
+        }
       );
       state.batchDispatchRepairPreview = result.data || {};
       renderBatchDispatchRepairPreview(state.batchDispatchRepairPreview, false);
@@ -5499,7 +5488,9 @@
       (refreshedBecauseStale ? '<div class="form-message form-message--info">資料已變動，系統已自動更新預覽；請重新確認後執行。</div>' : '') +
       '<div class="admin-result-grid">' +
         metaItem('考核月份', data.evaluationMonth) +
-        metaItem('考核表類型', String(data.evaluationVersion || 'A') === 'B' ? '店副理進階月考核表' : '一般月考核表') +
+        metaItem('判定方式', data.evaluationVersionMode === 'AUTO' ? '逐人自動判定' : (data.evaluationVersionMode === 'B' ? '整批先套用B版' : '整批先套用A版')) +
+        metaItem('一般月考核表', summary.versionACount || 0) +
+        metaItem('店副理進階月考核表', summary.versionBCount || 0) +
         metaItem('本次選取', summary.selectedCount || 0) +
         metaItem('預計建立', summary.createCount || 0) +
         metaItem('已有R0跳過', summary.duplicateCount || 0) +
@@ -5517,8 +5508,8 @@
           routeKey: routeKey,
           employeeId: String(employee.employeeId || ''),
           employeeLabel: joinText(employee.employeeId, employee.employeeName),
-          evaluationVersion: String(data.evaluationVersion || 'A').toUpperCase() === 'B' ? 'B' : 'A',
-          evaluationLabel: String(data.evaluationVersion || 'A') === 'B' ? '店副理進階月考核表' : '一般月考核表',
+          evaluationVersion: String(item.evaluationVersion || 'A').toUpperCase() === 'B' ? 'B' : 'A',
+          evaluationLabel: String(item.evaluationVersion || 'A').toUpperCase() === 'B' ? '店副理進階月考核表' : '一般月考核表',
           routeOrder: routeOrder,
           defaultSteps: cloneCustomWorkflowStepsV4_(item.defaultCustomWorkflow || []),
           candidates: Array.isArray(item.workflowCandidates) ? item.workflowCandidates : []
@@ -5526,9 +5517,20 @@
         return '<article class="batch-dispatch-person-card"><header><div><span class="tag ' + tone + '">' + escapeHtml(label) + '</span><strong>' +
           escapeHtml(joinText(employee.employeeId, employee.employeeName)) + '</strong><small>' + escapeHtml(joinStore(organization.storeCode, organization.storeName)) + '</small></div>' +
           '<small>' + escapeHtml(item.plannedEvaluationNo || item.existingEvaluationNo || '') + '</small></header>' +
+          '<div class="batch-dispatch-person-version"><label><span>本張考核表</span><select data-batch-dispatch-version-employee="' + escapeHtml(employee.employeeId || '') + '"' + ((item.versionLocked || item.action === 'DUPLICATE') ? ' disabled' : '') + '><option value="A"' + (String(item.evaluationVersion || 'A') !== 'B' ? ' selected' : '') + '>一般月考核表</option><option value="B"' + (String(item.evaluationVersion || 'A') === 'B' ? ' selected' : '') + '>店副理進階月考核表</option></select></label><small>' + escapeHtml(item.versionSource || '') + (item.versionLocked ? '｜門市店主管固定使用B版' : (item.action === 'DUPLICATE' ? '｜既有R0不可在此變更類型' : '｜可於派發前調整')) + '</small></div>' +
           '<div class="batch-dispatch-flow-trigger"><span>派發流程</span><button class="secondary-button secondary-button--small" type="button" data-batch-dispatch-route-key="' + escapeHtml(routeKey) + '">查看／自訂流程（' + routeOrder.length + '階段）</button></div>' +
           '<p class="batch-dispatch-person-reason">' + escapeHtml(reason) + '</p></article>';
       }).join('') + '</div><p class="section-help">' + escapeHtml(data.note || '') + '</p>';
+    Array.prototype.slice.call(elements.batchDispatchRepairContent.querySelectorAll('[data-batch-dispatch-version-employee]')).forEach(function(select) {
+      select.addEventListener('change', function() {
+        var employeeId = String(select.getAttribute('data-batch-dispatch-version-employee') || '').trim();
+        if (!employeeId) return;
+        state.batchDispatchVersionOverrides[employeeId] = String(select.value || 'A').toUpperCase() === 'B' ? 'B' : 'A';
+        state.batchDispatchCustomWorkflows = {};
+        showDispatchManagementMessage('info', '已調整 ' + employeeId + ' 的考核表類型，正在重新驗證派發流程。');
+        previewBatchDispatchRepair();
+      });
+    });
     elements.batchDispatchRepairPanel.hidden = false;
     elements.batchDispatchRepairResult.hidden = true;
     elements.batchDispatchRepairReason.value = '';
@@ -5597,6 +5599,7 @@
     state.dispatchManagement.summary = summary;
     state.dispatchManagement.filteredSummary = Object.assign({}, summary);
     state.batchDispatchSelectedEmployees = {};
+    state.batchDispatchVersionOverrides = {};
     state.dispatchMonthAnalysis = null;
     if (elements.dispatchMonthAnalysisResult) elements.dispatchMonthAnalysisResult.hidden = true;
     renderDispatchManagementCenter(state.dispatchManagement);
@@ -5615,7 +5618,8 @@
     try {
       var result = await window.V3WorkflowService.runManualDispatch({
         evaluationMonth: preview.evaluationMonth,
-        evaluationVersion: preview.evaluationVersion || 'A',
+        evaluationVersionMode: preview.evaluationVersionMode || 'AUTO',
+        evaluationVersions: Object.assign({}, state.batchDispatchVersionOverrides || {}),
         previewToken: preview.previewToken,
         customWorkflows: Object.keys(state.batchDispatchCustomWorkflows || {}).map(function(employeeId) {
           return state.batchDispatchCustomWorkflows[employeeId];
