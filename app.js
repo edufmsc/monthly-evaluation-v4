@@ -5253,6 +5253,10 @@
       state.dispatchManagementLoading = false;
       setButtonLoading(elements.dispatchManagementSearchButton, false, '查詢派發狀態');
       elements.dispatchManagementRefreshButton.disabled = false;
+      // renderDispatchManagementCenter() 會在資料仍標記為載入中時先繪製畫面；
+      // 載入完成後必須重新計算人工派發按鈕狀態，否則已勾選人員時
+      // 「預覽人工派發」仍可能維持 disabled，造成畫面顯示已選人數卻無法操作。
+      updateBatchDispatchSelectionState(Boolean(state.dispatchManagement && state.dispatchManagement.isCurrentMonth));
     }
   }
 
