@@ -3322,3 +3322,93 @@ body.modal-open {
     margin-bottom: 2px;
   }
 }
+
+/* V4 1.0.8｜資料結構中心：桌機表格與手機完整卡片分流 */
+.schema-mobile-card-list {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  #schemaManagementCard .schema-desktop-table {
+    display: none !important;
+  }
+
+  #schemaManagementCard .schema-mobile-card-list {
+    display: grid;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 12px;
+  }
+
+  #schemaManagementCard .schema-mobile-card {
+    display: grid;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    box-shadow: 0 6px 16px rgba(72, 42, 26, .06);
+  }
+
+  #schemaManagementCard .schema-mobile-field {
+    display: grid;
+    grid-template-columns: minmax(94px, 30%) minmax(0, 1fr);
+    gap: 10px 12px;
+    align-items: start;
+    padding: 11px 13px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  #schemaManagementCard .schema-mobile-field:last-child {
+    border-bottom: 0;
+  }
+
+  #schemaManagementCard .schema-mobile-label {
+    color: var(--muted);
+    font-size: .8rem;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  #schemaManagementCard .schema-mobile-value {
+    min-width: 0;
+    color: var(--ink);
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  #schemaManagementCard .schema-mobile-value > strong,
+  #schemaManagementCard .schema-mobile-value > span,
+  #schemaManagementCard .schema-mobile-value > small {
+    display: block;
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  #schemaManagementCard .schema-mobile-value > small {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: .78rem;
+  }
+
+  #schemaManagementCard .schema-mobile-field--title {
+    background: var(--surface-soft);
+  }
+
+  #schemaManagementCard .schema-mobile-field--title .schema-mobile-value strong {
+    font-size: 1.02rem;
+  }
+}
+
+@media (max-width: 460px) {
+  #schemaManagementCard .schema-mobile-field {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}
