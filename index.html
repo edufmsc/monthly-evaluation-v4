@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="light">
   <meta name="robots" content="noindex,nofollow">
   <title>月考核系統</title>
-  <link rel="stylesheet" href="styles.css?v=1.0.3-ui">
+  <link rel="stylesheet" href="styles.css?v=1.0.5-custom-flow">
 </head>
 <body>
   <div class="app-shell">
@@ -28,14 +28,13 @@
       <section id="loginView" class="card login-card" aria-labelledby="loginTitle">
         <div class="card-heading">
           <p class="step-label">登入</p>
-          <h2 id="loginTitle">使用員工工號+身份證後4碼登入</h2>
+          <h2 id="loginTitle">員工工號+身份證後4碼登入</h2>
         </div>
 
         <form id="loginForm" novalidate>
           <div class="field-group">
             <label for="employeeId">帳號</label>
             <input id="employeeId" name="employeeId" type="text" inputmode="text" autocomplete="username" maxlength="40" placeholder="例如0123456或FMSC0000123" required>
-            <p class="field-hint">帳號會保留英文字母與前導 0。</p>
           </div>
 
           <div class="field-group">
@@ -310,12 +309,12 @@
     </section>
   </div>
 
-  <script src="api_config.js?v=1.0.3-ui" defer></script>
+  <script src="api_config.js?v=1.0.4-ui" defer></script>
   <script src="api_client.js?v=1.0.1" defer></script>
   <script src="auth_service.js?v=1.0.1" defer></script>
   <script src="workflow_service.js?v=1.0.1" defer></script>
   <script src="signature_pad.js?v=1.0.1" defer></script>
-  <script src="evaluation_form.js?v=1.0.1" defer></script>
-  <script src="app.js?v=1.0.3-ui" defer></script>
+  <script src="evaluation_form.js?v=1.0.5-custom-flow" defer></script>
+  <script src="app.js?v=1.0.5-custom-flow" defer></script>
 </body>
 </html>
