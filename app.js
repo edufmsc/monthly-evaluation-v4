@@ -5984,15 +5984,56 @@
       archiveSummaryCardV3_('缺少欄位', summary.missingHeaders || 0, '只會附加到最右側') + archiveSummaryCardV3_('待標準化欄名', summary.approvedRenames || 0, '只更新已確認同義的欄名') + '</div><p class="section-help">資料結構版本：<strong>' + escapeHtml(source.schemaVersion || '') + '</strong>｜檢查時間：' + escapeHtml(source.generatedAt || '') + '</p>';
     if (elements.schemaSafetyRules) elements.schemaSafetyRules.innerHTML = (source.safetyRules || []).map(function(rule) { return '<div><span aria-hidden="true">✓</span><p>' + escapeHtml(rule) + '</p></div>'; }).join('');
     renderSchemaSheetListV3_(source.sheets || []);
-    if (elements.schemaVersionList) elements.schemaVersionList.innerHTML = (source.recentVersions || []).length ? '<div class="management-data-table-wrap"><table class="management-data-table schema-version-table"><thead><tr><th>版本</th><th>時間／執行人</th><th>原因</th><th>結果</th></tr></thead><tbody>' + source.recentVersions.map(function(item) { return '<tr><td data-label="版本"><strong>' + escapeHtml(item.version || '') + '</strong></td><td data-label="時間／執行人"><span>' + escapeHtml(item.executedAt || '') + '</span><small>' + escapeHtml(item.executedBy || '') + '</small></td><td data-label="原因"><span>' + escapeHtml(item.action || '') + '</span></td><td data-label="結果"><span>' + escapeHtml(item.summary || '') + '</span></td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="section-help">尚無資料結構維護紀錄。</p>';
+    if (elements.schemaVersionList) {
+      var versions = source.recentVersions || [];
+      elements.schemaVersionList.innerHTML = versions.length ?
+        '<div class="management-data-table-wrap schema-desktop-table"><table class="management-data-table schema-version-table"><thead><tr><th>版本</th><th>時間／執行人</th><th>原因</th><th>結果</th></tr></thead><tbody>' + versions.map(function(item) { return '<tr><td data-label="版本"><strong>' + escapeHtml(item.version || '') + '</strong></td><td data-label="時間／執行人"><span>' + escapeHtml(item.executedAt || '') + '</span><small>' + escapeHtml(item.executedBy || '') + '</small></td><td data-label="原因"><span>' + escapeHtml(item.action || '') + '</span></td><td data-label="結果"><span>' + escapeHtml(item.summary || '') + '</span></td></tr>'; }).join('') + '</tbody></table></div>' +
+        '<div class="schema-mobile-card-list" aria-label="資料結構維護紀錄">' + versions.map(function(item) {
+          return '<article class="schema-mobile-card">' +
+            schemaMobileFieldV3_('版本', '<strong>' + escapeHtml(item.version || '—') + '</strong>') +
+            schemaMobileFieldV3_('時間', escapeHtml(item.executedAt || '—')) +
+            schemaMobileFieldV3_('執行人', escapeHtml(item.executedBy || '—')) +
+            schemaMobileFieldV3_('原因', escapeHtml(item.action || '—')) +
+            schemaMobileFieldV3_('結果', escapeHtml(item.summary || '—')) +
+          '</article>';
+        }).join('') + '</div>' : '<p class="section-help">尚無資料結構維護紀錄。</p>';
+    }
+  }
+
+  function schemaMobileFieldV3_(label, valueHtml, extraClass) {
+    return '<div class="schema-mobile-field' + (extraClass ? ' ' + extraClass : '') + '"><span class="schema-mobile-label">' + escapeHtml(label || '') + '</span><div class="schema-mobile-value">' + (valueHtml || '—') + '</div></div>';
+  }
+
+  function schemaMissingDetailV3_(item) {
+    var parts = [];
+    if (item.missingHeaders && item.missingHeaders.length) parts.push('<span>' + escapeHtml(item.missingHeaders.join('、')) + '</span>');
+    else parts.push('<span>—</span>');
+    if (item.headerMigrations && item.headerMigrations.length) parts.push('<small>欄名標準化：' + escapeHtml(item.headerMigrations.map(function(change) { return (change.from || '') + ' → ' + (change.to || ''); }).join('、')) + '</small>');
+    if (item.extraHeaders && item.extraHeaders.length) parts.push('<small>保留自訂欄位：' + escapeHtml(item.extraHeaders.slice(0, 5).join('、')) + (item.extraHeaders.length > 5 ? '…' : '') + '</small>');
+    return parts.join('');
   }
 
   function renderSchemaSheetListV3_(rows) {
     if (!elements.schemaSheetList) return;
-    elements.schemaSheetList.innerHTML = rows.length ? '<div class="management-data-table-wrap"><table class="management-data-table schema-table"><colgroup><col class="col-schema-name"><col class="col-schema-status"><col class="col-schema-size"><col class="col-schema-missing"><col class="col-schema-message"></colgroup><thead><tr><th>工作表</th><th>狀態</th><th>列／欄</th><th>缺少欄位</th><th>處理說明</th></tr></thead><tbody>' + rows.map(function(item) {
+    if (!rows.length) {
+      elements.schemaSheetList.innerHTML = '<p class="section-help">沒有可檢查的工作表定義。</p>';
+      return;
+    }
+    var desktopRows = rows.map(function(item) {
       var group = item.status === 'OK' ? 'SUCCESS' : (item.status === 'MISSING' || item.status === 'EMPTY' ? 'PENDING' : 'FAILED');
-      return '<tr><td data-label="工作表"><strong>' + escapeHtml(item.sheetName || '') + '</strong></td><td data-label="狀態"><span class="tag ' + backgroundStatusTagClassV3_(group) + '">' + escapeHtml(item.statusLabel || item.status || '') + '</span></td><td data-label="列／欄"><span>' + Number(item.rows || 0) + '／' + Number(item.columns || 0) + '</span></td><td data-label="缺少欄位"><span>' + (item.missingHeaders && item.missingHeaders.length ? escapeHtml(item.missingHeaders.join('、')) : '—') + '</span>' + (item.headerMigrations && item.headerMigrations.length ? '<small>欄名標準化：' + escapeHtml(item.headerMigrations.map(function(change) { return (change.from || '') + ' → ' + (change.to || ''); }).join('、')) + '</small>' : '') + (item.extraHeaders && item.extraHeaders.length ? '<small>保留自訂欄位：' + escapeHtml(item.extraHeaders.slice(0, 5).join('、')) + (item.extraHeaders.length > 5 ? '…' : '') + '</small>' : '') + '</td><td data-label="處理說明"><span>' + escapeHtml(item.message || '') + '</span></td></tr>';
-    }).join('') + '</tbody></table></div>' : '<p class="section-help">沒有可檢查的工作表定義。</p>';
+      return '<tr><td data-label="工作表"><strong>' + escapeHtml(item.sheetName || '') + '</strong></td><td data-label="狀態"><span class="tag ' + backgroundStatusTagClassV3_(group) + '">' + escapeHtml(item.statusLabel || item.status || '') + '</span></td><td data-label="列／欄"><span>' + Number(item.rows || 0) + '／' + Number(item.columns || 0) + '</span></td><td data-label="缺少欄位">' + schemaMissingDetailV3_(item) + '</td><td data-label="處理說明"><span>' + escapeHtml(item.message || '') + '</span></td></tr>';
+    }).join('');
+    var mobileCards = rows.map(function(item) {
+      var group = item.status === 'OK' ? 'SUCCESS' : (item.status === 'MISSING' || item.status === 'EMPTY' ? 'PENDING' : 'FAILED');
+      return '<article class="schema-mobile-card">' +
+        schemaMobileFieldV3_('工作表', '<strong>' + escapeHtml(item.sheetName || '—') + '</strong>', 'schema-mobile-field--title') +
+        schemaMobileFieldV3_('狀態', '<span class="tag ' + backgroundStatusTagClassV3_(group) + '">' + escapeHtml(item.statusLabel || item.status || '—') + '</span>') +
+        schemaMobileFieldV3_('列／欄', '<span>' + Number(item.rows || 0) + '／' + Number(item.columns || 0) + '</span>') +
+        schemaMobileFieldV3_('缺少欄位', schemaMissingDetailV3_(item)) +
+        schemaMobileFieldV3_('處理說明', '<span>' + escapeHtml(item.message || '—') + '</span>') +
+      '</article>';
+    }).join('');
+    elements.schemaSheetList.innerHTML = '<div class="management-data-table-wrap schema-desktop-table"><table class="management-data-table schema-table"><colgroup><col class="col-schema-name"><col class="col-schema-status"><col class="col-schema-size"><col class="col-schema-missing"><col class="col-schema-message"></colgroup><thead><tr><th>工作表</th><th>狀態</th><th>列／欄</th><th>缺少欄位</th><th>處理說明</th></tr></thead><tbody>' + desktopRows + '</tbody></table></div><div class="schema-mobile-card-list" aria-label="工作表健康狀態">' + mobileCards + '</div>';
   }
 
   async function previewSchemaRepairV3_() {
@@ -6034,6 +6075,18 @@
     if (elements.schemaRepairPanel) elements.schemaRepairPanel.hidden = true;
   }
 
+  async function confirmSchemaRepairAfterTimeoutV3_() {
+    for (var attempt = 0; attempt < 8; attempt += 1) {
+      await new Promise(function(resolve) { window.setTimeout(resolve, 5000); });
+      try {
+        var previewResponse = await window.V3WorkflowService.schemaRepairPreview();
+        var previewData = previewResponse.data || {};
+        if (Number(previewData.executableCount || 0) === 0) return true;
+      } catch (ignoreCheckError) {}
+    }
+    return false;
+  }
+
   async function runSchemaRepairV3_() {
     if (!elements.schemaRepairRunButton || elements.schemaRepairRunButton.disabled) return;
     setButtonLoading(elements.schemaRepairRunButton, true, '補齊中');
@@ -6047,7 +6100,20 @@
       showGlobalNotice('success', '資料結構補齊完成', data.message || '未刪除、清空或移動任何既有資料。', true);
     } catch (error) {
       elements.schemaRepairResult.hidden = false;
-      elements.schemaRepairResult.innerHTML = '<strong>安全補齊失敗</strong><p>' + escapeHtml(friendlyError(error)) + '</p>';
+      if (error && error.code === 'REQUEST_TIMEOUT') {
+        elements.schemaRepairResult.innerHTML = '<strong>安全補齊仍在後端執行</strong><p>瀏覽器等待時間已到，但 Apps Script 可能仍在處理。請勿再次按下執行，系統正在確認結果。</p>';
+        var recovered = await confirmSchemaRepairAfterTimeoutV3_();
+        if (recovered) {
+          elements.schemaRepairResult.innerHTML = '<strong>安全補齊完成</strong><p>後端已完成資料結構補齊，畫面已重新載入最新結果。</p>';
+          state.schemaRepairPreview = null;
+          await loadSchemaManagementCenterV3_({ quiet: true });
+          showGlobalNotice('success', '資料結構補齊完成', '後端已完成處理，未刪除、清空或移動既有資料。', true);
+        } else {
+          elements.schemaRepairResult.innerHTML = '<strong>後端仍在處理或等待確認</strong><p>請等待約 1 分鐘後按「重新檢查」。不要重複執行安全補齊，以免同一時間送出多次請求。</p>';
+        }
+      } else {
+        elements.schemaRepairResult.innerHTML = '<strong>安全補齊失敗</strong><p>' + escapeHtml(friendlyError(error)) + '</p>';
+      }
     } finally {
       setButtonLoading(elements.schemaRepairRunButton, false, '執行安全補齊');
       updateSchemaRepairActionStateV3_();
