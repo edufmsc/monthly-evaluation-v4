@@ -2,7 +2,7 @@
   'use strict';
 
   function getStorageKey() {
-    return window.V3_CONFIG.SESSION_STORAGE_KEY || 'monthlyEvaluationV3Session';
+    return window.V3_CONFIG.SESSION_STORAGE_KEY || 'monthlyEvaluationV4Session';
   }
 
   function readSession() {
