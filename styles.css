@@ -2822,3 +2822,218 @@ body.idle-warning-open {
   }
 }
 
+
+
+/* 1.0 UI consistency update｜管理介面版面統一 */
+.app-footer { justify-content: flex-start; }
+
+/* 指定統計框排列 */
+.background-job-metric-grid,
+.notification-delivery-metric-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.notification-summary-metric-grid,
+.dispatch-management-metric-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.background-job-metric-grid .management-metric-button,
+.notification-summary-metric-grid .management-metric-button,
+.notification-delivery-metric-grid .management-metric-button,
+.dispatch-management-metric-grid .management-metric-button {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 待辦通知設定：逾期說明獨立放在欄位下方 */
+.notification-overdue-note {
+  margin: -6px 2px 14px;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+/* 下月考核名單：縮短查詢區高度 */
+#monthlyPlanManagementCard .monthly-plan-filter {
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: end;
+}
+#monthlyPlanManagementCard .monthly-plan-filter .field-group {
+  margin-bottom: 0;
+}
+#monthlyPlanManagementCard .monthly-plan-filter input,
+#monthlyPlanManagementCard .monthly-plan-filter select {
+  min-height: 42px;
+  padding: 8px 11px;
+}
+#monthlyPlanManagementCard .monthly-plan-filter .test-dispatch-actions {
+  margin: 0;
+}
+#monthlyPlanManagementCard .monthly-plan-filter .secondary-button {
+  min-height: 42px;
+  padding: 8px 14px;
+}
+
+/* 派發排程：主派發與安全補跑各自分行 */
+.dispatch-schedule-meta-item strong {
+  display: grid !important;
+  gap: 3px;
+}
+.dispatch-schedule-meta-item strong em {
+  display: block;
+  color: inherit;
+  font-style: normal;
+  line-height: 1.45;
+}
+
+/* 人工派發：左側顯示逐人流程，右側固定操作區 */
+.batch-dispatch-repair-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.batch-dispatch-repair-content,
+.batch-dispatch-repair-sidebar {
+  min-width: 0;
+}
+.batch-dispatch-repair-sidebar {
+  position: sticky;
+  top: 76px;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.batch-dispatch-repair-sidebar .field-group,
+.batch-dispatch-repair-sidebar .confirm-row,
+.batch-dispatch-repair-sidebar .test-dispatch-actions {
+  margin: 0;
+}
+.batch-dispatch-repair-sidebar textarea {
+  min-height: 190px;
+}
+.batch-dispatch-repair-sidebar .test-dispatch-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.batch-dispatch-person-list {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0;
+}
+.batch-dispatch-person-card {
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #fff;
+}
+.batch-dispatch-person-card > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+.batch-dispatch-person-card > header > div {
+  display: grid;
+  gap: 5px;
+}
+.batch-dispatch-person-card > header strong,
+.batch-dispatch-person-card > header small {
+  overflow-wrap: anywhere;
+}
+.batch-dispatch-flow-block > span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 800;
+}
+.batch-dispatch-flow-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.batch-dispatch-flow-list li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 11px;
+  background: var(--surface-soft);
+}
+.batch-dispatch-flow-order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--brand);
+  font-size: .75rem;
+  font-weight: 900;
+}
+.batch-dispatch-flow-list strong,
+.batch-dispatch-flow-list small {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.batch-dispatch-flow-list small {
+  margin-top: 2px;
+  color: var(--muted);
+}
+.batch-dispatch-person-reason {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: #faf4ef;
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+@media (max-width: 900px) {
+  .background-job-metric-grid,
+  .notification-delivery-metric-grid,
+  .notification-summary-metric-grid,
+  .dispatch-management-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .batch-dispatch-repair-layout {
+    grid-template-columns: 1fr;
+  }
+  .batch-dispatch-repair-sidebar {
+    position: static;
+  }
+  .batch-dispatch-repair-sidebar textarea {
+    min-height: 120px;
+  }
+}
+
+@media (max-width: 460px) {
+  .background-job-metric-grid,
+  .notification-delivery-metric-grid,
+  .notification-summary-metric-grid,
+  .dispatch-management-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .management-metric-button {
+    padding: 10px;
+  }
+  .management-metric-button span {
+    font-size: .76rem;
+  }
+  .batch-dispatch-person-card > header {
+    flex-direction: column;
+  }
+}
