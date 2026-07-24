@@ -3201,3 +3201,124 @@ body.modal-open {
   .custom-workflow-dialog-actions { display: grid; grid-template-columns: 1fr; }
   .custom-workflow-dialog-actions button { width: 100%; }
 }
+
+/* V4｜資料結構管理中心手機版完整顯示修正 */
+@media (max-width: 760px) {
+  #schemaManagementCard,
+  #schemaManagementCard section,
+  #schemaManagementCard details,
+  #schemaManagementCard > div,
+  #schemaSheetList,
+  #schemaVersionList,
+  #schemaRepairPanel,
+  #schemaRepairPreviewContent,
+  #schemaRepairResult {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #schemaManagementCard .management-data-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  #schemaManagementCard .management-data-table,
+  #schemaManagementCard .management-data-table tbody,
+  #schemaManagementCard .management-data-table tr,
+  #schemaManagementCard .management-data-table td {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #schemaManagementCard .management-data-table {
+    display: block;
+    table-layout: auto;
+  }
+
+  #schemaManagementCard .management-data-table colgroup {
+    display: none;
+  }
+
+  #schemaManagementCard .management-data-table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  #schemaManagementCard .management-data-table tr {
+    display: block;
+    margin: 0;
+  }
+
+  #schemaManagementCard .management-data-table td {
+    display: grid !important;
+    grid-template-columns: minmax(96px, 30%) minmax(0, 1fr) !important;
+    align-items: start;
+    gap: 8px 12px;
+    padding: 11px 12px;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  #schemaManagementCard .management-data-table td::before {
+    grid-column: 1;
+    align-self: start;
+    min-width: 0;
+  }
+
+  #schemaManagementCard .management-data-table td > strong,
+  #schemaManagementCard .management-data-table td > span,
+  #schemaManagementCard .management-data-table td > small,
+  #schemaManagementCard .management-data-table td > button,
+  #schemaManagementCard .management-data-table td > a {
+    grid-column: 2 !important;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  #schemaManagementCard .schema-action-list article {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  #schemaManagementCard .schema-action-list article > .tag {
+    justify-self: start;
+  }
+
+  #schemaManagementCard .schema-action-list article > div,
+  #schemaManagementCard .schema-action-list article strong,
+  #schemaManagementCard .schema-action-list article p,
+  #schemaManagementCard .schema-action-list article small {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 460px) {
+  #schemaManagementCard .management-data-table td {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 4px;
+  }
+
+  #schemaManagementCard .management-data-table td::before,
+  #schemaManagementCard .management-data-table td > strong,
+  #schemaManagementCard .management-data-table td > span,
+  #schemaManagementCard .management-data-table td > small,
+  #schemaManagementCard .management-data-table td > button,
+  #schemaManagementCard .management-data-table td > a {
+    grid-column: 1 !important;
+  }
+
+  #schemaManagementCard .management-data-table td::before {
+    margin-bottom: 2px;
+  }
+}
