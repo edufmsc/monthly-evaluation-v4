@@ -2298,7 +2298,7 @@
 
   function isContinuousReviewEligibleUi() {
     var role = String(state.session && state.session.user && state.session.user.role || '').trim();
-    return ['教育中心主管', '區主管', '營業處副總', '營業處協理', '總經理'].indexOf(role) !== -1;
+    return ['教育中心成員', '教育中心主管', '區主管', '營業處副總', '營業處協理', '總經理'].indexOf(role) !== -1;
   }
 
   function resetContinuousReviewState(renderList) {
