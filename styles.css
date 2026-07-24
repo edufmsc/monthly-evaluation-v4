@@ -3037,3 +3037,167 @@ body.idle-warning-open {
     flex-direction: column;
   }
 }
+
+
+/* 1.0.4 UI｜登入、通知、派發排程與流程視窗微調 */
+.notification-overdue-note {
+  grid-column: 1 / -1;
+  margin: 0 2px 0;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.5;
+}
+.notification-settings-actions {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+.notification-settings-actions .primary-button {
+  width: 100%;
+}
+.notification-batch-actions {
+  display: grid;
+  grid-template-columns: minmax(190px, 1.35fr) minmax(170px, 1fr) minmax(150px, .9fr) minmax(205px, 1.2fr);
+  gap: 8px;
+  align-items: stretch;
+}
+.notification-batch-actions > button {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 11px;
+  white-space: nowrap;
+  font-size: .9rem;
+}
+.dispatch-schedule-meta-item strong em {
+  white-space: nowrap;
+}
+.batch-dispatch-flow-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: var(--surface-soft);
+}
+.batch-dispatch-flow-trigger > span {
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 800;
+}
+.batch-dispatch-route-dialog {
+  width: min(680px, calc(100vw - 30px));
+  max-height: 88vh;
+  overflow: auto;
+}
+.batch-dispatch-route-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.batch-dispatch-route-summary span {
+  color: var(--muted);
+}
+.batch-dispatch-flow-list--dialog {
+  gap: 10px;
+}
+.batch-dispatch-flow-list--dialog li {
+  padding: 12px;
+}
+body.modal-open {
+  overflow: hidden;
+}
+@media (max-width: 1040px) {
+  .notification-batch-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .notification-batch-actions {
+    grid-template-columns: 1fr;
+  }
+  .notification-batch-actions > button {
+    white-space: normal;
+  }
+  .batch-dispatch-flow-trigger {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .batch-dispatch-flow-trigger button {
+    width: 100%;
+  }
+  .batch-dispatch-route-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* V4 1.0.5｜單張人工派發自訂簽核流程 */
+.batch-dispatch-route-dialog {
+  width: min(860px, calc(100vw - 32px));
+  max-height: min(88vh, 920px);
+  overflow: auto;
+}
+.custom-workflow-toggle { margin: 12px 0 16px; }
+.custom-workflow-add-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+.custom-workflow-add-row .field-group { margin: 0; }
+.custom-workflow-sortable {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+  padding: 0;
+}
+.custom-workflow-step {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.custom-workflow-step.is-dragging { opacity: .55; }
+.custom-workflow-drag {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: grab;
+  font-size: 1.2rem;
+  padding: 6px;
+}
+.custom-workflow-step-main { min-width: 0; display: grid; gap: 3px; }
+.custom-workflow-step-main strong,
+.custom-workflow-step-main small { overflow-wrap: anywhere; }
+.custom-workflow-step-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.custom-workflow-step-actions .small-button { min-height: 34px; padding: 6px 10px; }
+.danger-button { color: #9d2d1c; }
+.custom-workflow-dialog-actions { justify-content: flex-end; margin-top: 16px; }
+
+@media (max-width: 720px) {
+  .batch-dispatch-route-dialog { width: calc(100vw - 18px); max-height: 92vh; padding: 16px; }
+  .custom-workflow-add-row { grid-template-columns: 1fr; }
+  .custom-workflow-add-row button { width: 100%; }
+  .custom-workflow-step {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: start;
+  }
+  .custom-workflow-step-actions {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+  }
+  .custom-workflow-step-actions .small-button { flex: 1 1 0; }
+  .custom-workflow-dialog-actions { display: grid; grid-template-columns: 1fr; }
+  .custom-workflow-dialog-actions button { width: 100%; }
+}
