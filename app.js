@@ -266,10 +266,12 @@
         '<div class="test-dispatch-actions"><button id="batchDispatchSelectVisibleButton" class="secondary-button secondary-button--small" type="button">勾選目前可派發人員</button><button id="batchDispatchClearButton" class="secondary-button secondary-button--small" type="button">清除勾選</button><button id="batchDispatchPreviewButton" class="primary-button" type="button" disabled><span class="button-label">預覽人工派發</span><span class="button-spinner" aria-hidden="true"></span></button></div></section>' +
       '<section id="dispatchManagementPersons" class="test-dispatch-preview"></section>' +
       '<details id="dispatchManagementAttemptsPanel" class="detail-section"><summary>查看本月份派發嘗試紀錄</summary><p class="section-help">每頁固定顯示10筆，可使用上一頁／下一頁切換。</p><div id="dispatchManagementAttempts"></div></details>' +
-      '<section id="batchDispatchRepairPanel" class="test-dispatch-preview" hidden><div id="batchDispatchRepairContent"></div>' +
-        '<label class="field-group"><span>人工派發／補派原因</span><textarea id="batchDispatchRepairReason" rows="3" maxlength="300"></textarea></label>' +
+      '<section id="batchDispatchRepairPanel" class="test-dispatch-preview batch-dispatch-repair-panel" hidden>' +
+        '<div class="batch-dispatch-repair-layout"><div id="batchDispatchRepairContent" class="batch-dispatch-repair-content"></div>' +
+        '<aside class="batch-dispatch-repair-sidebar"><label class="field-group"><span>人工派發／補派原因</span><textarea id="batchDispatchRepairReason" rows="8" maxlength="300" placeholder="請填寫本次人工派發或補派原因"></textarea></label>' +
         '<label class="confirm-row"><input id="batchDispatchRepairConfirm" type="checkbox"><span>我已確認系統會逐筆檢查資格、簽核流程與同月份R0。</span></label>' +
-        '<div class="test-dispatch-actions"><button id="batchDispatchRepairCancelButton" class="secondary-button" type="button">取消</button><button id="batchDispatchRepairRunButton" class="primary-button" type="button" disabled><span class="button-label">執行人工派發／補派</span><span class="button-spinner" aria-hidden="true"></span></button></div><article id="batchDispatchRepairResult" class="card admin-result-card" hidden></article></section>';
+        '<div class="test-dispatch-actions"><button id="batchDispatchRepairCancelButton" class="secondary-button" type="button">取消</button><button id="batchDispatchRepairRunButton" class="primary-button" type="button" disabled><span class="button-label">執行人工派發／補派</span><span class="button-spinner" aria-hidden="true"></span></button></div></aside></div>' +
+        '<article id="batchDispatchRepairResult" class="card admin-result-card" hidden></article></section>';
     systemPanel.appendChild(article);
   }
 
@@ -316,7 +318,7 @@
     var monthOptions = '<option value="">全部月份</option>' + Array.from({length:12}, function(_, i) { var m=i+1; return '<option value="' + m + '">' + m + '月</option>'; }).join('');
     var article = document.createElement('article');
     article.id = 'pdfManagementCard'; article.className = 'card test-dispatch-card pdf-management-card';
-    article.innerHTML = '<div class="test-dispatch-heading management-card-heading"><div><p class="step-label">PDF失敗重試與處理｜7.6.0B</p><h3>PDF處理中心</h3><p>依年度與月份查詢，避免一次顯示全部資料；異常數量可直接點擊篩選處理。</p></div><button id="pdfManagementRefreshButton" class="secondary-button secondary-button--small management-refresh-button" type="button">重新整理</button></div>' +
+    article.innerHTML = '<div class="test-dispatch-heading management-card-heading"><div><p class="step-label">PDF失敗重試與處理｜1.0</p><h3>PDF處理中心</h3><p>依年度與月份查詢，避免一次顯示全部資料；異常數量可直接點擊篩選處理。</p></div><button id="pdfManagementRefreshButton" class="secondary-button secondary-button--small management-refresh-button" type="button">重新整理</button></div>' +
       '<form id="pdfManagementFilterForm" class="filter-grid pdf-management-filter"><label class="field-group"><span>民國年度</span><input id="pdfManagementYear" inputmode="numeric" maxlength="3" placeholder="例如 115"></label><label class="field-group"><span>月份</span><select id="pdfManagementMonthNumber">' + monthOptions + '</select></label><label class="field-group"><span>考核單號／工號／姓名／店別</span><input id="pdfManagementKeyword" maxlength="80" placeholder="輸入任一資訊"></label><label class="field-group"><span>PDF狀態</span><select id="pdfManagementStatus"><option value="ALL">全部狀態</option><option value="ABNORMAL">全部異常</option><option value="GENERATION_FAILED">PDF產生失敗</option><option value="PUBLIC_FAILED">PDF公開失敗</option><option value="VIEW_FAILED">PDF檢視失敗</option><option value="PENDING">PDF待處理</option><option value="PROCESSING">PDF處理中</option><option value="COMPLETE">PDF完成</option><option value="VOID">已作廢</option></select></label><div class="test-dispatch-actions pdf-management-search-actions"><button id="pdfManagementSearchButton" class="secondary-button" type="submit"><span class="button-label">查詢PDF</span><span class="button-spinner"></span></button></div></form>' +
       '<div id="pdfManagementMessage" class="form-message" hidden></div><div id="pdfManagementSummary" class="admin-result-grid pdf-management-summary"></div>' +
       '<section class="detail-section pdf-management-tools"><div class="test-dispatch-heading"><div><h4>重新產生PDF</h4><p class="section-help">一次最多5張；新檔成功後才更新目前檢視資料，舊檔保留。</p></div><button id="pdfManagementAbnormalButton" class="secondary-button secondary-button--small pdf-abnormal-button" type="button">異常 0筆</button></div><div class="test-dispatch-actions"><button id="pdfManagementSelectVisibleButton" class="secondary-button secondary-button--small">勾選目前可重試PDF</button><button id="pdfManagementClearButton" class="secondary-button secondary-button--small">清除勾選</button><button id="pdfManagementRetrySelectedButton" class="primary-button primary-button--small" disabled><span class="button-label">重試選取PDF</span><span class="button-spinner"></span></button><strong id="pdfManagementSelectedCount">已選0張</strong></div></section>' +
@@ -332,7 +334,7 @@
     article.id = 'annualArchiveCard';
     article.className = 'card test-dispatch-card annual-archive-card';
     article.innerHTML = '<div class="test-dispatch-heading"><div>' +
-      '<p class="step-label">安全兩階段封存｜7.5.0A</p><h3>年度封存中心</h3>' +
+      '<p class="step-label">安全兩階段封存｜1.0</p><h3>年度封存中心</h3>' +
       '<p>先建立年度封存包並核對，不會刪除主系統資料；人工確認完成後仍保留30天，之後才可另行清理。</p></div>' +
       '<button id="annualArchiveRefreshButton" class="secondary-button secondary-button--small" type="button">重新整理</button></div>' +
       '<section class="detail-section"><div class="archive-year-row">' +
@@ -509,10 +511,11 @@
         '<label class="field-group"><span>每日通知</span><select id="notificationEnabled"><option value="是">啟用</option><option value="否">停用</option></select></label>' +
         '<label class="field-group notification-url-field"><span>月考核系統網址</span><input id="notificationSystemUrl" type="url" placeholder="https://您的GitHub-Pages網址" required></label>' +
         '<label class="field-group"><span>每日摘要時間</span><select id="notificationDailyHour">' + hourOptions.join('') + '</select></label>' +
-        '<label class="field-group"><span>逾期提醒</span><input id="notificationOverdueDays" type="number" min="1" max="30" value="3"><small>超過3天後在摘要中再次提醒承辦人</small></label>' +
+        '<label class="field-group"><span>逾期天數</span><input id="notificationOverdueDays" type="number" min="1" max="30" value="3"></label>' +
         '<label class="field-group"><span>每批寄送上限</span><input id="notificationBatchSize" type="number" min="1" max="40" value="20"></label>' +
         '<div class="test-dispatch-actions notification-settings-actions"><button id="notificationSaveButton" class="primary-button" type="submit"><span class="button-label">儲存設定</span><span class="button-spinner"></span></button></div>' +
       '</form>' +
+      '<p class="notification-overdue-note">逾期提醒：超過3天後在摘要中再次提醒承辦人</p>' +
       '<div id="notificationMessage" class="form-message" role="status" aria-live="polite" hidden></div>' +
       '<div id="notificationSummary"></div>' +
       '<section class="detail-section"><div class="test-dispatch-heading"><div><h4>一鍵通知</h4><p class="section-help">建立通知工作後立即回覆，實際Email由背景工作器分批寄送，不會讓畫面長時間等待。</p></div></div>' +
@@ -667,7 +670,7 @@
     pages.appendChild(healthPage);
 
     homePage.innerHTML = '<section class="system-management-home">' +
-      '<div class="system-page-heading"><div><p class="step-label">管理首頁</p><h3>請選擇要處理的功能</h3>' +
+      '<div class="system-page-heading"><div><p class="step-label">管理首頁｜1.0</p><h3>請選擇要處理的功能</h3>' +
       '<p>管理功能互相獨立，不會在進入系統管理時一次載入帳號、派發與PDF資料。</p></div></div>' +
       '<div class="system-home-grid">' +
         systemHomeCardV3_('jobs', '背景工作中心', '一頁查看通知、PDF、派發與封存工作狀態。', '異常工作可直接前往對應中心處理，不在此刪除資料') +
@@ -704,7 +707,7 @@
     var adminGrid = systemPanel.querySelector('.admin-tool-grid');
     var adminMessage = document.getElementById('adminSystemMessage');
     var adminResult = document.getElementById('adminSystemResult');
-    healthPage.innerHTML = '<div class="system-page-heading"><div><p class="step-label">系統健檢</p><h3>連線與維護工具</h3>' +
+    healthPage.innerHTML = '<div class="system-page-heading"><div><p class="step-label">系統健檢｜1.0</p><h3>連線與維護工具</h3>' +
       '<p>所有檢查都由管理者手動執行，不會在開啟頁面時自動增加後端負擔。</p></div></div>';
     if (adminGrid) healthPage.appendChild(adminGrid);
     if (adminMessage) healthPage.appendChild(adminMessage);
@@ -989,8 +992,8 @@
     clearLoginMessage();
     var employeeId = String(elements.employeeId.value || '').trim().toUpperCase();
     var password = String(elements.password.value || '');
-    if (!employeeId) return focusError(elements.employeeId, '請輸入員工工號。');
-    if (!/^\d{4}$/.test(password)) return focusError(elements.password, '登入密碼必須是 4 碼數字。');
+    if (!employeeId) return focusError(elements.employeeId, '請輸入帳號。');
+    if (!/^\d{4}$/.test(password)) return focusError(elements.password, '密碼必須是身份證後 4 碼數字。');
 
     setButtonLoading(elements.loginButton, true, '登入中');
     try {
@@ -3631,7 +3634,7 @@
     var summary = source.summary || {};
     var queue = source.queueSummary || {};
     if (elements.notificationSummary) {
-      elements.notificationSummary.innerHTML = '<div class="admin-result-grid management-metric-grid">' +
+      elements.notificationSummary.innerHTML = '<div class="admin-result-grid management-metric-grid notification-summary-metric-grid">' +
         managementMetricButtonV3_('有待辦人數', summary.recipientCount || 0, 'RECIPIENTS', 'notification') +
         managementMetricButtonV3_('待辦案件', summary.pendingCount || 0, 'RECIPIENTS', 'notification') +
         managementMetricButtonV3_('逾期人數', summary.overdueRecipientCount || 0, 'RECIPIENTS', 'notification') +
@@ -3668,7 +3671,7 @@
     var today = source.today || {};
     var week = source.last7Days || {};
     if (elements.notificationDeliveryStats) {
-      elements.notificationDeliveryStats.innerHTML = '<div class="admin-result-grid management-metric-grid">' +
+      elements.notificationDeliveryStats.innerHTML = '<div class="admin-result-grid management-metric-grid notification-delivery-metric-grid">' +
         managementMetricButtonV3_('今日寄送成功', Number(today.success || 0), 'LOGS', 'notification') +
         managementMetricButtonV3_('今日寄送失敗', Number(today.failed || 0), 'FAILURES', 'notification') +
         managementMetricButtonV3_('今日成功率', Number(today.successRate || 0).toFixed(1) + '%', 'LOGS', 'notification') +
@@ -5021,7 +5024,7 @@
     var summary = data.summary || {};
     var filtered = data.filteredSummary || summary;
     var schedule = data.schedule || {};
-    elements.dispatchManagementSummary.innerHTML = '<div class="admin-result-grid management-metric-grid">' +
+    elements.dispatchManagementSummary.innerHTML = '<div class="admin-result-grid management-metric-grid dispatch-management-metric-grid">' +
       managementMetricButtonV3_('應派發／有紀錄人數', summary.candidateCount, 'ALL', 'dispatch') +
       managementMetricButtonV3_('已建立R0', summary.createdCount, 'CREATED', 'dispatch') +
       managementMetricButtonV3_('重複跳過', summary.duplicateCount, 'DUPLICATE', 'dispatch') +
@@ -5260,17 +5263,24 @@
         metaItem('已有R0跳過', summary.duplicateCount || 0) +
         metaItem('路線／資格異常', summary.routeErrorCount || 0) +
         metaItem('提醒數', summary.warningCount || 0) +
-      '</div><div class="route-list">' + items.map(function (item) {
+      '</div><div class="batch-dispatch-person-list">' + items.map(function (item) {
         var employee = item.employee || {};
         var organization = item.organization || {};
         var label = item.repairIncomplete === true ? '安全補齊' : (item.action === 'CREATE' ? '預計建立' : (item.action === 'DUPLICATE' ? '重複跳過' : '不可建立'));
         var tone = item.action === 'CREATE' ? 'tag--success' : (item.action === 'DUPLICATE' ? 'tag--warning' : 'tag--danger');
         var reason = item.reason || (item.errors || []).join('；') || '簽核流程檢查通過';
-        return '<div class="route-row"><span><span class="tag ' + tone + '">' + escapeHtml(label) + '</span> ' +
-          escapeHtml(joinStore(organization.storeCode, organization.storeName)) + '</span><strong>' +
-          escapeHtml(joinText(employee.employeeId, employee.employeeName)) +
-          (item.plannedEvaluationNo || item.existingEvaluationNo ? '｜' + escapeHtml(item.plannedEvaluationNo || item.existingEvaluationNo) : '') +
-          '</strong><small>' + escapeHtml(reason) + '</small></div>';
+        var routeOrder = Array.isArray(item.routeOrder) ? item.routeOrder : [];
+        var routeHtml = routeOrder.length ? '<ol class="batch-dispatch-flow-list">' + routeOrder.map(function(stage) {
+          var assignee = stage.shared
+            ? ('共同待辦 ' + Number(stage.enabledCount || stage.memberCount || 0) + ' 人')
+            : joinText(stage.employeeId, stage.employeeName);
+          return '<li><span class="batch-dispatch-flow-order">' + Number(stage.order || 0) + '</span><div><strong>' + escapeHtml(stage.label || stage.role || '流程階段') + '</strong><small>' + escapeHtml(assignee) + '</small></div></li>';
+        }).join('') + '</ol>' : '<p class="section-help">目前沒有可顯示的派發流程。</p>';
+        return '<article class="batch-dispatch-person-card"><header><div><span class="tag ' + tone + '">' + escapeHtml(label) + '</span><strong>' +
+          escapeHtml(joinText(employee.employeeId, employee.employeeName)) + '</strong><small>' + escapeHtml(joinStore(organization.storeCode, organization.storeName)) + '</small></div>' +
+          '<small>' + escapeHtml(item.plannedEvaluationNo || item.existingEvaluationNo || '') + '</small></header>' +
+          '<div class="batch-dispatch-flow-block"><span>派發流程</span>' + routeHtml + '</div>' +
+          '<p class="batch-dispatch-person-reason">' + escapeHtml(reason) + '</p></article>';
       }).join('') + '</div><p class="section-help">' + escapeHtml(data.note || '') + '</p>';
     elements.batchDispatchRepairPanel.hidden = false;
     elements.batchDispatchRepairResult.hidden = true;
@@ -5492,11 +5502,15 @@
     var retries = source.retries || [];
     var attempt = source.lastAttempt || null;
     if (elements.dispatchScheduleSummary) {
+      var mainDateText = main.label || '每月1日主派發';
+      var mainTimeText = main.timeText || (String(Number(source.hour == null ? 3 : source.hour)).padStart(2, '0') + ':00前後約15分鐘');
+      var retryLines = retries.map(function(item) { return item.label; }).filter(Boolean);
+      if (!retryLines.length) retryLines = ['每月2日安全補跑', '每月3日安全補跑'];
       elements.dispatchScheduleSummary.innerHTML =
         metaItem('排程狀態', source.valid ? '已安裝且完整' : (source.triggerCount ? '排程不完整' : '未安裝')) +
-        metaItem('主派發', main.label ? main.label + '｜' + main.timeText : '每月1日') +
+        '<div class="dispatch-schedule-meta-item"><span>主派發</span><strong><em>' + escapeHtml(mainDateText) + '</em><em>' + escapeHtml(mainTimeText) + '</em></strong></div>' +
         metaItem('下次主派發', main.nextRun || '—') +
-        metaItem('安全補跑', retries.map(function(item) { return item.label; }).join('、') || '每月2、3日') +
+        '<div class="dispatch-schedule-meta-item"><span>安全補跑</span><strong>' + retryLines.map(function(text) { return '<em>' + escapeHtml(text) + '</em>'; }).join('') + '</strong></div>' +
         metaItem('觸發器', Number(source.triggerCount || 0) + '／3') +
         metaItem('時區', source.timezone || 'Asia/Taipei') +
         metaItem('最近結果', attempt ? (attempt.success ? '完成' : '失敗') : '尚無紀錄') +
@@ -5624,13 +5638,13 @@
     var source = data || {};
     var summary = source.summary || {};
     if (elements.backgroundJobSummary) {
-      elements.backgroundJobSummary.innerHTML = '<div class="admin-result-grid management-metric-grid">' +
+      elements.backgroundJobSummary.innerHTML = '<div class="admin-result-grid management-metric-grid background-job-metric-grid">' +
         backgroundMetricButtonV3_('全部工作', summary.total || 0, 'ALL') +
         backgroundMetricButtonV3_('等待中', summary.pending || 0, 'PENDING') +
         backgroundMetricButtonV3_('處理中', summary.running || 0, 'RUNNING') +
-        backgroundMetricButtonV3_('已完成', summary.success || 0, 'SUCCESS') +
         backgroundMetricButtonV3_('失敗', summary.failed || 0, 'FAILED') +
-        backgroundMetricButtonV3_('需注意', summary.warning || 0, 'WARNING') + '</div>';
+        backgroundMetricButtonV3_('需注意', summary.warning || 0, 'WARNING') +
+        backgroundMetricButtonV3_('已完成', summary.success || 0, 'SUCCESS') + '</div>';
     }
     renderBackgroundScheduleHealthV3_(source.scheduleHealth || {});
     renderBackgroundJobListV3_(source.items || [], source.pagination || {});
