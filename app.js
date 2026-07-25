@@ -32,6 +32,7 @@
     draftTimer: null,
     draftServerTimer: null,
     draftLoaded: false,
+    lastServerDraftFingerprint: '',
     isSubmitting: false,
     dispatchManagement: null,
     dispatchManagementLoading: false,
@@ -2505,6 +2506,7 @@
     state.signatureController = null;
     if (settings.readOnly) state.evaluationOpenContext = state.evaluationOpenContext || { source: settings.source || 'readonly', metricWasOpen: false, scrollY: window.scrollY || 0 };
     state.draftLoaded = false;
+    state.lastServerDraftFingerprint = '';
     elements.evaluationOverlay.hidden = false;
     document.body.classList.add('is-locked');
     if (settings.fromContinuous) renderContinuousReviewBar();
@@ -3058,8 +3060,10 @@
     if (validDraft) {
       window.V3EvaluationForm.applyDraft(elements.evaluationActionForm, draft);
       elements.draftStatus.textContent = '已載入目前流程版本的草稿';
+      try { state.lastServerDraftFingerprint = server ? JSON.stringify(draft) : ''; } catch (ignoredFingerprint) { state.lastServerDraftFingerprint = ''; }
     } else {
       elements.draftStatus.textContent = '尚未儲存草稿';
+      state.lastServerDraftFingerprint = '';
     }
     state.draftLoaded = true;
   }
@@ -3094,6 +3098,12 @@
       var content = window.V3EvaluationForm.formToDraft(elements.evaluationActionForm, state.currentAction);
       content.dataVersion = version;
       content.workflowStatus = String(state.currentDetail['流程狀態'] || '');
+      var fingerprint = '';
+      try { fingerprint = JSON.stringify(content); } catch (ignoredFingerprint) {}
+      if (!showMessage && fingerprint && fingerprint === state.lastServerDraftFingerprint) {
+        elements.draftStatus.textContent = '雲端草稿內容未變更';
+        return;
+      }
       var result = await window.V3WorkflowService.saveDraft(
         state.currentDetail['考核單號'],
         content,
@@ -3101,7 +3111,10 @@
         content.workflowStatus,
         state.currentAction
       );
-      elements.draftStatus.textContent = '雲端草稿已保存：' + (result.data && result.data.savedAt || '完成');
+      if (fingerprint) state.lastServerDraftFingerprint = fingerprint;
+      elements.draftStatus.textContent = result.data && result.data.unchanged
+        ? '雲端草稿內容未變更'
+        : '雲端草稿已保存：' + (result.data && result.data.savedAt || '完成');
       if (showMessage) showEvaluationMessage('success', '草稿已保存，不包含手寫簽名。');
     } catch (error) {
       elements.draftStatus.textContent = '雲端草稿保存失敗，本機草稿仍保留';
