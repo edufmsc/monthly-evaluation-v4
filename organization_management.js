@@ -1,4 +1,4 @@
-/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.0 */
+/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.2 */
 (function () {
   'use strict';
 
@@ -46,6 +46,15 @@
   function clearMessage() {
     var box = byId('organizationManagementMessage');
     if (box) { box.hidden = true; box.textContent = ''; }
+  }
+
+  function showActionMessage(type, message) {
+    showMessage(type, message);
+    var box = byId('organizationManagementMessage');
+    if (!box) return;
+    window.setTimeout(function () {
+      try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (ignore) {}
+    }, 30);
   }
 
   function injectWorkspace() {
@@ -139,6 +148,10 @@
     if (target === 'organization') return;
     var page = byId('organizationManagementPage');
     if (page) page.hidden = true;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-system-page="organization"]'), function (button) {
+      button.classList.remove('is-active');
+      button.setAttribute('aria-current', 'false');
+    });
   }
 
   function bindNavigation() {
@@ -193,9 +206,10 @@
     var settings = options || {};
     var searchButton = byId('organizationSearchButton');
     var refreshButton = byId('organizationRefreshButton');
+    var succeeded = false;
     if (settings.requireSearch && !state.filters.area && !state.filters.storeCode && !state.filters.keyword) {
       showMessage('info', '請至少選擇一個轄區、門市，或輸入工號／姓名／店號後再查詢。');
-      return;
+      return false;
     }
     clearMessage();
     setButtonBusy(searchButton, true, '查詢中…');
@@ -207,6 +221,7 @@
       state.filters.page = Number(state.data.pagination && state.data.pagination.page || 1);
       renderFilters();
       renderCenter();
+      succeeded = true;
       if (!settings.quiet && !state.data.searchRequired) showMessage('success', '資料已更新。');
       if (state.data.searchRequired) showMessage('info', '請設定查詢條件；系統不會自動載入全公司名單。');
     } catch (error) {
@@ -215,6 +230,7 @@
       setButtonBusy(searchButton, false);
       if (refreshButton) refreshButton.disabled = false;
     }
+    return succeeded;
   }
 
   function renderFilters() {
@@ -473,11 +489,13 @@
       var requestId = state.employeeRequestId || window.V3ApiClient.createRequestId();
       state.employeeRequestId = requestId;
       var result = await window.V3WorkflowService.organizationEmployeeUpdate(payload, requestId);
-      showMessage('success', result.data && result.data.message || '人員資料已更新。');
+      var message = result.data && result.data.message || '人員資料已更新。';
       byId('organizationEmployeeEditor').hidden = true;
-      await loadCenter({ requireSearch: false, quiet: true });
-    } catch (error) { showMessage('error', error && error.message || '人員資料更新失敗。'); }
-    finally { setButtonBusy(button, false); }
+      var refreshed = await loadCenter({ requireSearch: false, quiet: true });
+      showActionMessage(refreshed ? 'success' : 'warning', message + (refreshed ? '' : '；正式資料已寫入，但清單重新整理失敗，請按「重新整理」。'));
+    } catch (error) {
+      showActionMessage('error', error && error.message || '人員資料更新失敗。');
+    } finally { setButtonBusy(button, false); }
   }
 
   function openStoreEditor(storeCode) {
@@ -613,11 +631,13 @@
       var requestId = state.storeRequestId || window.V3ApiClient.createRequestId();
       state.storeRequestId = requestId;
       var result = await window.V3WorkflowService.organizationStoreUpdate(payload, requestId);
-      showMessage('success', result.data && result.data.message || '門市資料已更新。');
+      var message = result.data && result.data.message || '門市資料已更新。';
       byId('organizationStoreEditor').hidden = true;
-      await loadCenter({ requireSearch: false, quiet: true });
-    } catch (error) { showMessage('error', error && error.message || '門市資料更新失敗。'); }
-    finally { setButtonBusy(button, false); }
+      var refreshed = await loadCenter({ requireSearch: false, quiet: true });
+      showActionMessage(refreshed ? 'success' : 'warning', message + (refreshed ? '' : '；正式資料已寫入，但清單重新整理失敗，請按「重新整理」。'));
+    } catch (error) {
+      showActionMessage('error', error && error.message || '門市資料更新失敗。');
+    } finally { setButtonBusy(button, false); }
   }
 
   function previewHtml(preview) {
