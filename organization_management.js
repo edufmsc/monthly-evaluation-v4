@@ -1,4 +1,4 @@
-/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.2 */
+/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.3 */
 (function () {
   'use strict';
 
@@ -233,11 +233,51 @@
     return succeeded;
   }
 
+  function sortOrganizationStoresUi(stores) {
+    return (stores || []).sort(function (a, b) {
+      return String(a && a.storeCode || '').localeCompare(String(b && b.storeCode || ''), 'zh-Hant', { numeric: true, sensitivity: 'base' });
+    });
+  }
+
+  function sortOrganizationAreasUi(areas) {
+    return (areas || []).sort(function (a, b) {
+      var keyA = organizationAreaSortKeyUi(a);
+      var keyB = organizationAreaSortKeyUi(b);
+      if (keyA.group !== keyB.group) return keyA.group - keyB.group;
+      if (keyA.number !== keyB.number) return keyA.number - keyB.number;
+      return String(a || '').localeCompare(String(b || ''), 'zh-Hant', { numeric: true });
+    });
+  }
+
+  function organizationAreaSortKeyUi(value) {
+    var text = String(value || '').trim();
+    var prefixOrder = { '營': 10, '京': 20, '馥': 30 };
+    var match = text.match(/^(營|京|馥)([零〇一二三四五六七八九十百0-9]+)(區|處)?$/);
+    if (!match) return { group: 900, number: 9999 };
+    return { group: prefixOrder[match[1]] || 900, number: parseChineseNumberUi(match[2]) };
+  }
+
+  function parseChineseNumberUi(value) {
+    var text = String(value || '').trim();
+    if (/^\d+$/.test(text)) return Number(text);
+    var digits = { '零': 0, '〇': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9 };
+    if (text.indexOf('百') !== -1) {
+      var hundred = text.split('百');
+      return (digits[hundred[0]] || 1) * 100 + parseChineseNumberUi(hundred[1] || '零');
+    }
+    if (text.indexOf('十') !== -1) {
+      var ten = text.split('十');
+      return (ten[0] ? (digits[ten[0]] || 0) : 1) * 10 + (ten[1] ? (digits[ten[1]] || 0) : 0);
+    }
+    return Object.prototype.hasOwnProperty.call(digits, text) ? digits[text] : 9999;
+  }
+
   function renderFilters() {
     var data = state.data || {};
     var area = byId('organizationAreaFilter');
     var currentArea = state.filters.area;
-    area.innerHTML = option('', '全部轄區', !currentArea) + (data.options && data.options.areas || []).map(function (item) {
+    var sortedAreas = sortOrganizationAreasUi((data.options && data.options.areas || []).slice());
+    area.innerHTML = option('', '全部轄區', !currentArea) + sortedAreas.map(function (item) {
       return option(item, item, item === currentArea);
     }).join('');
     byId('organizationKeyword').value = state.filters.keyword || '';
@@ -249,7 +289,7 @@
     var area = byId('organizationAreaFilter') ? byId('organizationAreaFilter').value : state.filters.area;
     var select = byId('organizationStoreFilter');
     var current = state.filters.storeCode;
-    var stores = (data.options && data.options.stores || []).filter(function (store) { return !area || store.area === area; });
+    var stores = sortOrganizationStoresUi((data.options && data.options.stores || []).filter(function (store) { return !area || store.area === area; }));
     select.innerHTML = option('', '全部門市', !current) + stores.map(function (store) {
       return option(store.storeCode, store.storeCode + '｜' + store.storeName, store.storeCode === current);
     }).join('');
@@ -344,7 +384,7 @@
     state.employeeRequestId = '';
     var data = state.data || {};
     var roles = data.options && data.options.roles || [];
-    var stores = data.options && data.options.stores || [];
+    var stores = sortOrganizationStoresUi((data.options && data.options.stores || []).slice());
     var accountOptions = [option('啟用','啟用', employee.accountStatus === '啟用'), option('停用','停用', employee.accountStatus === '停用')];
     if (employee.accountStatus === '鎖定') accountOptions.push(option('鎖定','鎖定（請至帳號與登入頁解鎖）', true, true));
     var editor = byId('organizationEmployeeEditor');
@@ -505,7 +545,7 @@
     state.storePreview = null;
     state.storeRequestId = '';
     var data = state.data || {};
-    var areas = data.options && data.options.areas || [];
+    var areas = sortOrganizationAreasUi((data.options && data.options.areas || []).slice());
     var supervisors = (data.areaSupervisors || []).slice();
     if (store.areaSupervisorId && !supervisors.some(function (item) { return item.employeeId === store.areaSupervisorId; })) {
       supervisors.push({ employeeId: store.areaSupervisorId, employeeName: store.areaSupervisorName, area: store.area });
