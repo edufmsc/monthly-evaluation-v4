@@ -1126,10 +1126,7 @@
     if (elements.batchDispatchRepairCancelButton) elements.batchDispatchRepairCancelButton.addEventListener('click', closeBatchDispatchRepairPanel);
     if (elements.batchDispatchRepairRunButton) elements.batchDispatchRepairRunButton.addEventListener('click', runBatchDispatchRepair);
     if (elements.accountManagementFilterForm) elements.accountManagementFilterForm.addEventListener('submit', function (event) { event.preventDefault(); state.accountManagementPage = 1; loadAccountManagementCenter({ requireCriteria: true }); });
-    if (elements.accountManagementRefreshButton) elements.accountManagementRefreshButton.addEventListener('click', function () {
-      if (!state.accountManagementHasSearched) { showAccountManagementMessage('info', '請先設定查詢條件並按「查詢帳號」。'); return; }
-      loadAccountManagementCenter({ requireCriteria: true });
-    });
+    if (elements.accountManagementRefreshButton) elements.accountManagementRefreshButton.addEventListener('click', refreshAccountManagementPageV3_);
     if (elements.accountManagementClearButton) elements.accountManagementClearButton.addEventListener('click', resetAccountManagementSearchV3_);
     if (elements.accountUnlockQuickFilterButton) elements.accountUnlockQuickFilterButton.addEventListener('click', function () {
       if (elements.accountManagementKeyword) elements.accountManagementKeyword.value = '';
@@ -5229,7 +5226,8 @@
       var data = response.data || {}; var account = data.account || {};
       elements.accountCreateResult.hidden = false;
       elements.accountCreateResult.innerHTML = '<h4>帳號建立完成</h4><div class="admin-result-grid">' + metaItem('員工', joinText(account.employeeId, account.employeeName)) + metaItem('角色', account.role) + metaItem('通知Email', account.notificationEmailMasked || '未設定') + metaItem('是否需要考核', account.needsEvaluation || payload.needsEvaluation) + metaItem('預設考核表', String(account.defaultEvaluationVersion || payload.defaultEvaluationVersion || 'A') === 'B' ? '店副理進階月考核表' : '一般月考核表') + metaItem('帳號狀態', account.accountStatus) + '</div><p>' + escapeHtml(data.message || '') + '</p>';
-      showMessage(elements.accountCreateMessage, 'success', '帳號已建立。');
+      resetAccountCreateFieldsV3_();
+      showMessage(elements.accountCreateMessage, 'success', '帳號已建立，新增欄位已清空，可繼續建立下一位。');
       showGlobalNotice('success', '帳號建立完成', data.message || joinText(account.employeeId, account.employeeName) + ' 已建立。', true);
       state.accountAuditPage = 1;
       if (elements.accountAuditPanel && elements.accountAuditPanel.open) loadAccountAuditPageV3_();
@@ -5240,11 +5238,43 @@
     finally { setButtonLoading(elements.accountCreateSubmitButton, false, '建立帳號'); }
   }
 
-  function resetAccountCreateFormV3_() {
+  function resetAccountCreateFieldsV3_() {
     if (elements.accountCreateForm) elements.accountCreateForm.reset();
-    if (elements.accountCreateDefaultEvaluationVersion) { elements.accountCreateDefaultEvaluationVersion.disabled = false; elements.accountCreateDefaultEvaluationVersion.value = 'A'; }
+    if (elements.accountCreateDefaultEvaluationVersion) {
+      elements.accountCreateDefaultEvaluationVersion.disabled = false;
+      elements.accountCreateDefaultEvaluationVersion.value = 'A';
+    }
+  }
+
+  function resetAccountCreateFormV3_() {
+    resetAccountCreateFieldsV3_();
     if (elements.accountCreateResult) { elements.accountCreateResult.hidden = true; elements.accountCreateResult.innerHTML = ''; }
     clearMessage(elements.accountCreateMessage);
+  }
+
+  async function refreshAccountManagementPageV3_() {
+    if (!elements.accountManagementRefreshButton || state.accountManagementLoading) return;
+    var button = elements.accountManagementRefreshButton;
+    var originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = '重新整理中…';
+
+    // 「重新整理」同時清除上一筆新增帳號資料，避免舊工號、密碼與姓名殘留造成誤判。
+    resetAccountCreateFormV3_();
+    clearAccountCredentialLookupV3_();
+    closeAccountActionPanel();
+
+    try {
+      if (state.accountManagementHasSearched) {
+        await loadAccountManagementCenter({ requireCriteria: true, quiet: true });
+        showAccountManagementMessage('success', '頁面已重新整理；新增帳號欄位已清空，查詢結果已更新。');
+      } else {
+        showAccountManagementMessage('success', '頁面已重新整理；新增帳號欄位已清空。請設定條件後查詢帳號。');
+      }
+    } finally {
+      button.textContent = originalText || '重新整理';
+      button.disabled = false;
+    }
   }
 
   async function loadAccountAuditPageV3_() {
@@ -7251,10 +7281,11 @@
     var allowed = ['home', 'jobs', 'accounts', 'schema', 'monthlyPlan', 'dispatch', 'outcomes', 'notification', 'pdf', 'archive', 'health'];
     var target = allowed.indexOf(String(page || '')) !== -1 ? String(page) : 'home';
     state.activeSystemPage = target;
-    (elements.systemPagePanels || Array.prototype.slice.call(document.querySelectorAll('[data-system-page-panel]'))).forEach(function (panel) {
+    // 每次切頁都以即時 DOM 為準，確保後載入的「人員與組織」也會正確取消橘色作用中狀態。
+    Array.prototype.slice.call(document.querySelectorAll('[data-system-page-panel]')).forEach(function (panel) {
       panel.hidden = panel.getAttribute('data-system-page-panel') !== target;
     });
-    (elements.systemPageButtons || Array.prototype.slice.call(document.querySelectorAll('[data-system-page]'))).forEach(function (button) {
+    Array.prototype.slice.call(document.querySelectorAll('[data-system-page]')).forEach(function (button) {
       button.classList.toggle('is-active', button.getAttribute('data-system-page') === target);
       button.setAttribute('aria-current', button.getAttribute('data-system-page') === target ? 'page' : 'false');
     });
