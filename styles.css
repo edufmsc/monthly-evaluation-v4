@@ -3864,3 +3864,117 @@ body.modal-open {
     width: 100%;
   }
 }
+
+/* V4｜組織異動管理中心 */
+.organization-page-heading { align-items: flex-start; }
+.organization-search-card,
+.organization-result-section,
+.organization-editor { margin-top: 1rem; }
+.organization-search-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, .8fr) minmax(190px, 1fr) minmax(240px, 1.4fr) auto;
+  gap: .8rem;
+  align-items: end;
+}
+.organization-search-keyword { min-width: 0; }
+.organization-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .75rem;
+  margin-top: 1rem;
+}
+.organization-summary-card {
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 14px;
+  padding: 1rem;
+  background: var(--card-background, #fff);
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+.organization-summary-card strong { font-size: 1.45rem; }
+.organization-summary-card span { color: var(--muted-text, #667085); }
+.organization-section-heading,
+.organization-item-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.organization-section-heading h4,
+.organization-item-card h5,
+.organization-manager-config h5,
+.organization-preview h5 { margin: 0 0 .35rem; }
+.organization-section-heading p,
+.organization-item-card p { margin: .25rem 0; }
+.organization-card-list,
+.organization-anomaly-list { display: grid; gap: .75rem; }
+.organization-item-card,
+.organization-anomaly {
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: .9rem;
+  background: rgba(255,255,255,.7);
+}
+.organization-anomaly { display: flex; gap: .75rem; align-items: flex-start; }
+.organization-anomaly strong { min-width: 90px; }
+.organization-anomaly--warning { border-left: 4px solid #c2410c; }
+.organization-anomaly--review { border-left: 4px solid #ca8a04; }
+.organization-chip-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+.organization-chip {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: .2rem .55rem;
+  font-size: .78rem;
+  background: #f3f4f6;
+}
+.organization-chip--warning { background: #fff7ed; color: #9a3412; }
+.organization-editor { border: 2px solid rgba(166,70,31,.25); }
+.organization-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .8rem;
+  margin: 1rem 0;
+}
+.organization-editor input[readonly] { background: #f3f4f6; color: #475467; }
+.organization-editor-actions { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1rem; }
+.organization-preview { margin-top: 1rem; border-top: 1px solid var(--border-color, #e5e7eb); padding-top: 1rem; }
+.organization-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+.organization-preview-grid section,
+.organization-warning-box {
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: .9rem;
+}
+.organization-warning-box { margin-top: .75rem; background: #fffbeb; }
+.organization-preview ul { margin: .45rem 0 0; padding-left: 1.25rem; }
+.organization-manager-config { margin: 1rem 0; }
+.organization-manager-table { display: grid; gap: .55rem; }
+.organization-manager-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) minmax(130px, .7fr) minmax(145px, .7fr) minmax(145px, .7fr);
+  gap: .6rem;
+  align-items: center;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  padding: .65rem;
+}
+.organization-message--success { color: #166534; }
+.organization-message--error { color: #b42318; }
+.organization-message--info { color: #344054; }
+@media (max-width: 900px) {
+  .organization-search-grid { grid-template-columns: 1fr 1fr; }
+  .organization-summary-grid { grid-template-columns: 1fr 1fr; }
+  .organization-editor-grid { grid-template-columns: 1fr 1fr; }
+  .organization-manager-row { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 620px) {
+  .organization-search-grid,
+  .organization-summary-grid,
+  .organization-editor-grid,
+  .organization-preview-grid,
+  .organization-manager-row { grid-template-columns: 1fr; }
+  .organization-section-heading,
+  .organization-item-main { flex-direction: column; }
+  .organization-item-main button { width: 100%; }
+}
