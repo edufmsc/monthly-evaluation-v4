@@ -1,4 +1,4 @@
-/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.3 */
+/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.4 */
 (function () {
   'use strict';
 
@@ -72,7 +72,11 @@
     button.className = 'system-management-nav-button';
     button.setAttribute('data-system-page', 'organization');
     button.innerHTML = '<strong>人員與組織</strong><span>調店、換區、主管與店長配置</span>';
-    if (maintenanceGroup && maintenanceGroup.nextSibling) nav.insertBefore(button, maintenanceGroup.nextSibling);
+    // 系統維護固定以「帳號與登入」為第一項；「人員與組織」排列在其後。
+    var accountsButton = nav.querySelector('[data-system-page="accounts"]');
+    if (accountsButton && accountsButton.nextSibling) nav.insertBefore(button, accountsButton.nextSibling);
+    else if (accountsButton) nav.appendChild(button);
+    else if (maintenanceGroup && maintenanceGroup.nextSibling) nav.insertBefore(button, maintenanceGroup.nextSibling);
     else nav.appendChild(button);
 
     var maintenanceOptions = Array.prototype.slice.call(select.querySelectorAll('optgroup'))
@@ -80,8 +84,11 @@
     var selectOption = document.createElement('option');
     selectOption.value = 'organization';
     selectOption.textContent = '人員與組織';
-    if (maintenanceOptions) maintenanceOptions.insertBefore(selectOption, maintenanceOptions.firstChild);
-    else select.appendChild(selectOption);
+    if (maintenanceOptions) {
+      var accountsOption = maintenanceOptions.querySelector('option[value="accounts"]');
+      if (accountsOption && accountsOption.nextSibling) maintenanceOptions.insertBefore(selectOption, accountsOption.nextSibling);
+      else maintenanceOptions.appendChild(selectOption);
+    } else select.appendChild(selectOption);
 
     var page = document.createElement('section');
     page.id = 'organizationManagementPage';
@@ -98,7 +105,10 @@
       card.innerHTML = '<div><h4>人員與組織</h4><p>由前台完成人員調店、門市換轄區、區主管與多店長配置。</p>' +
         '<small>既有考核單與歷史資料不自動改寫；異動前先預覽影響</small></div>' +
         '<button class="secondary-button" type="button" data-system-page-target="organization">進入管理</button>';
-      homeGrid.insertBefore(card, homeGrid.children[1] || null);
+      var accountsCardButton = homeGrid.querySelector('[data-system-page-target="accounts"]');
+      var accountsCard = accountsCardButton && accountsCardButton.closest ? accountsCardButton.closest('.system-home-card') : null;
+      if (accountsCard && accountsCard.nextSibling) homeGrid.insertBefore(card, accountsCard.nextSibling);
+      else homeGrid.appendChild(card);
     }
     return true;
   }
