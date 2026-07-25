@@ -102,7 +102,12 @@
       forceCloseEvaluation: 90000,
       schemaManagementCenter: 90000,
       schemaRepairPreview: 90000,
-      schemaRepair: 240000
+      schemaRepair: 240000,
+      organizationManagementCenter: 90000,
+      organizationEmployeePreview: 90000,
+      organizationEmployeeUpdate: 180000,
+      organizationStorePreview: 90000,
+      organizationStoreUpdate: 240000
     };
     var timeoutMs = Number(actionTimeouts[String(action || '')] || defaultTimeout);
     var timeoutId = window.setTimeout(function () {
@@ -152,7 +157,13 @@
     } catch (error) {
       if (error && error.name === 'AbortError') {
         var abortedCode = activeRecord.cancelledByUser ? 'REQUEST_CANCELLED' : 'REQUEST_TIMEOUT';
-        var abortedMessage = activeRecord.cancelledByUser ? '已切換PDF檢視方式。' : '後端處理時間較長，請先查詢派發狀態；若尚未建立再重新執行。';
+        var actionName = String(action || '');
+        var organizationMutation = actionName === 'organizationEmployeeUpdate' || actionName === 'organizationStoreUpdate';
+        var abortedMessage = activeRecord.cancelledByUser
+          ? '已取消本次請求。'
+          : (organizationMutation
+            ? '組織異動處理時間較長。請先重新查詢人員／門市資料確認結果；不要立即使用新的異動內容重複執行。'
+            : '後端處理時間較長，請先查詢派發狀態；若尚未建立再重新執行。');
         var abortedError = new ApiError(abortedCode, abortedMessage);
         abortedError.clientPerformance = {
           action: String(action || ''),
@@ -194,6 +205,9 @@
     accountManagementCenter: true,
     accountAuditPage: true,
     accountCredentialLookup: true,
+    organizationManagementCenter: true,
+    organizationEmployeePreview: true,
+    organizationStorePreview: true,
     dispatchManagementCenter: true,
     dispatchMonthAnalysis: true,
     previewManualDispatch: true,
