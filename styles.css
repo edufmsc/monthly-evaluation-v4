@@ -3978,3 +3978,144 @@ body.modal-open {
   .organization-item-main { flex-direction: column; }
   .organization-item-main button { width: 100%; }
 }
+
+
+/* V4｜手機版系統管理完整寬度與資料表顯示修正｜2026-07-25 */
+@media (max-width: 760px) {
+  body.system-management-active *,
+  body.system-management-active *::before,
+  body.system-management-active *::after {
+    box-sizing: border-box;
+  }
+
+  body.system-management-active .app-shell,
+  body.system-management-active .app-main,
+  body.system-management-active #systemPanel,
+  body.system-management-active #systemManagementWorkspace,
+  body.system-management-active .system-management-layout,
+  body.system-management-active .system-management-pages,
+  body.system-management-active .system-management-page,
+  body.system-management-active .system-management-page > *,
+  body.system-management-active .card,
+  body.system-management-active .detail-section,
+  body.system-management-active details,
+  body.system-management-active form {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  body.system-management-active .system-management-page {
+    overflow-x: clip;
+  }
+
+  body.system-management-active input,
+  body.system-management-active select,
+  body.system-management-active textarea,
+  body.system-management-active button {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  body.system-management-active input,
+  body.system-management-active select,
+  body.system-management-active textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  body.system-management-active .filter-grid,
+  body.system-management-active .admin-result-grid,
+  body.system-management-active .system-home-grid,
+  body.system-management-active .organization-search-grid,
+  body.system-management-active .organization-editor-grid,
+  body.system-management-active .test-dispatch-actions,
+  body.system-management-active .account-management-search-actions,
+  body.system-management-active .pdf-management-search-actions {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.system-management-active .management-confirm-overlay {
+    padding: 12px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  body.system-management-active .management-confirm-dialog {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    max-height: none;
+    margin: 0;
+    overflow: visible;
+  }
+
+  body.system-management-active .management-data-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  body.system-management-active .management-data-table,
+  body.system-management-active .management-data-table tbody,
+  body.system-management-active .management-data-table tr,
+  body.system-management-active .management-data-table td {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /* 使用區塊卡片而不是 Grid，讓 td 內的純文字節點也能正常顯示。 */
+  body.system-management-active .management-data-table td {
+    display: block !important;
+    padding: 12px !important;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  body.system-management-active .management-data-table td::before {
+    display: block;
+    width: 100%;
+    margin: 0 0 5px;
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: .78rem;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  body.system-management-active .management-data-table td > strong,
+  body.system-management-active .management-data-table td > span,
+  body.system-management-active .management-data-table td > small,
+  body.system-management-active .management-data-table td > button,
+  body.system-management-active .management-data-table td > a {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  body.system-management-active .management-data-table td > button,
+  body.system-management-active .management-data-table td > a.secondary-button {
+    margin-top: 6px;
+  }
+
+  body.system-management-active .account-management-pagination,
+  body.system-management-active .test-dispatch-actions {
+    width: 100%;
+  }
+
+  body.system-management-active .account-management-pagination {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    text-align: center;
+  }
+
+  body.system-management-active .account-management-pagination[hidden] {
+    display: none !important;
+  }
+}
