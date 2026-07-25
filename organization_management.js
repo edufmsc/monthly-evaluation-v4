@@ -300,7 +300,7 @@
       var mismatch = (employee.mismatchMessages || []).map(function (item) { return '<span class="organization-chip organization-chip--warning">' + html(item) + '</span>'; }).join('');
       return '<article class="organization-item-card"><div class="organization-item-main"><div><p class="step-label">' + html(employee.employeeId) + '｜' + html(employee.role) + '</p><h5>' + html(employee.employeeName) + '</h5>' +
         '<p>' + html(employee.storeCode || '無店號') + ' ' + html(employee.storeName || '') + '　｜　' + html(employee.area || '未設定區域') + '　｜　' + html(employee.employmentStatus) + '</p>' +
-        '<p>考核：' + html(employee.needsEvaluation) + '　｜　預設版本：' + html(employee.defaultEvaluationVersion || '-') + '　｜　進行中相關案件：' + html(employee.activeEvaluationCount) + '</p>' +
+        '<p>考核：' + html(employee.needsEvaluation) + '　｜　預設考核表：' + html(evaluationVersionLabel(employee.defaultEvaluationVersion)) + '　｜　進行中相關案件：' + html(employee.activeEvaluationCount) + '</p>' +
         '<div class="organization-chip-row">' + mismatch + '</div></div>' +
         '<button class="secondary-button secondary-button--small" type="button" data-edit-employee="' + html(employee.employeeId) + '">維護人員</button></div></article>';
     }).join('') + '</div>';
@@ -337,7 +337,7 @@
         fieldInput('organizationEmployeeName','姓名',employee.employeeName,'text') +
         fieldSelect('organizationEmployeeRole','系統角色',roles.map(function (r) { return option(r,r,r===employee.role); }).join('')) +
         fieldSelect('organizationEmployeeStore','店號／店別',option('','不隸屬門市',!employee.storeCode)+stores.map(function (s) { return option(s.storeCode,s.storeCode+'｜'+s.storeName,s.storeCode===employee.storeCode); }).join('')) +
-        fieldInput('organizationEmployeeDepartment','部門',employee.department,'text') +
+        fieldInput('organizationEmployeeDepartment','部門',employee.department,'text',true) +
         fieldInput('organizationEmployeeArea','區域',employee.area,'text',true) +
         fieldInput('organizationEmployeeUnitCode','單位代碼',employee.unitCode,'text',true) +
         fieldInput('organizationEmployeeTransferDate','轉任生效日',employee.transferDate,'date') +
@@ -345,10 +345,10 @@
         fieldSelect('organizationEmployeeEmployment','在職狀態',(data.options.employmentStatuses||[]).map(function (v) { return option(v,v,v===employee.employmentStatus); }).join('')) +
         fieldSelect('organizationEmployeeAccountStatus','帳號狀態',accountOptions.join('')) +
         fieldInput('organizationEmployeeEmail','通知 Email',employee.notificationEmail,'email') +
-        fieldSelect('organizationEmployeeVersion','預設考核版本',option('A','A',employee.defaultEvaluationVersion==='A')+option('B','B',employee.defaultEvaluationVersion==='B')) +
+        fieldSelect('organizationEmployeeVersion','預設考核表',option('A','一般月考核表',employee.defaultEvaluationVersion==='A')+option('B','店副理進階月考核表',employee.defaultEvaluationVersion==='B')) +
       '</div>' +
       '<label class="field-group"><span>備註</span><textarea id="organizationEmployeeNote" rows="3" maxlength="500">' + html(employee.note) + '</textarea></label>' +
-      '<label class="field-group"><span>異動原因（必填，至少4個字）</span><textarea id="organizationEmployeeReason" rows="3" maxlength="300" placeholder="例如：115年8月1日起調任A01門市"></textarea></label>' +
+      '<label class="field-group"><span>異動原因（選填）</span><textarea id="organizationEmployeeReason" rows="3" maxlength="300" placeholder="未填時，系統會依異動前後差異自動產生稽核說明"></textarea></label>' +
       '<div class="organization-editor-actions"><button id="organizationEmployeePreviewButton" class="primary-button" type="button">預覽影響</button></div>' +
       '<div id="organizationEmployeePreview" class="organization-preview" hidden></div>';
     editor.hidden = false;
@@ -359,6 +359,7 @@
       byId('organizationEmployeeAccountStatus').title = '鎖定帳號請至「帳號與登入」頁使用解鎖功能。';
     }
     syncEmployeeDerivedFields();
+    syncEmployeeEvaluationVersion();
     editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -374,6 +375,7 @@
     var editor = byId('organizationEmployeeEditor');
     byId('organizationEmployeeClose').addEventListener('click', function () { editor.hidden = true; });
     byId('organizationEmployeeStore').addEventListener('change', syncEmployeeDerivedFields);
+    byId('organizationEmployeeRole').addEventListener('change', syncEmployeeEvaluationVersion);
     byId('organizationEmployeePreviewButton').addEventListener('click', previewEmployee);
     ['input', 'change'].forEach(function (eventName) {
       editor.addEventListener(eventName, function (event) {
@@ -391,14 +393,29 @@
     var store = (state.data && state.data.options && state.data.options.stores || []).filter(function (item) { return item.storeCode === code; })[0] || null;
     if (store) {
       byId('organizationEmployeeArea').value = store.area || '';
-      byId('organizationEmployeeDepartment').value = store.department || byId('organizationEmployeeDepartment').value;
+      if (store.department && store.department !== '營業處') byId('organizationEmployeeDepartment').value = store.department;
       byId('organizationEmployeeUnitCode').value = store.storeCode || '';
+      byId('organizationEmployeeDepartment').readOnly = true;
       byId('organizationEmployeeArea').readOnly = true;
       byId('organizationEmployeeUnitCode').readOnly = true;
     } else {
+      byId('organizationEmployeeDepartment').readOnly = false;
       byId('organizationEmployeeArea').readOnly = false;
       byId('organizationEmployeeUnitCode').value = '';
     }
+  }
+
+  function evaluationVersionLabel(value) {
+    return String(value || '').toUpperCase() === 'B' ? '店副理進階月考核表' : '一般月考核表';
+  }
+
+  function syncEmployeeEvaluationVersion() {
+    var role = byId('organizationEmployeeRole').value;
+    var select = byId('organizationEmployeeVersion');
+    var isManager = role === '門市店主管';
+    if (isManager) select.value = 'B';
+    select.disabled = isManager;
+    select.title = isManager ? '門市店主管作為受評人時固定使用店副理進階月考核表。' : '';
   }
 
   function employeePayload() {
@@ -491,7 +508,7 @@
       '</div>' +
       '<label class="field-group"><span>門市備註</span><textarea id="organizationStoreNote" rows="3" maxlength="500">' + html(store.note) + '</textarea></label>' +
       '<section class="organization-manager-config"><h5>店長配置（雙店長／掛名／代理皆可）</h5><div id="organizationManagerRows">' + managerRowsHtml(managers, data.options.managerTypes || []) + '</div></section>' +
-      '<label class="field-group"><span>異動原因（必填，至少4個字）</span><textarea id="organizationStoreReason" rows="3" maxlength="300" placeholder="例如：115年8月1日起改隸營二區，區主管改由02負責"></textarea></label>' +
+      '<label class="field-group"><span>異動原因（選填）</span><textarea id="organizationStoreReason" rows="3" maxlength="300" placeholder="未填時，系統會依異動前後差異自動產生稽核說明"></textarea></label>' +
       '<div class="organization-editor-actions"><button id="organizationStorePreviewButton" class="primary-button" type="button">預覽影響</button></div>' +
       '<div id="organizationStorePreview" class="organization-preview" hidden></div>';
     editor.hidden = false;
