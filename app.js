@@ -7291,7 +7291,7 @@
 
   function switchSystemManagementPageV3_(page, options) {
     var settings = options || {};
-    var allowed = ['home', 'jobs', 'accounts', 'schema', 'monthlyPlan', 'dispatch', 'outcomes', 'notification', 'pdf', 'archive', 'health'];
+    var allowed = ['home', 'jobs', 'accounts', 'organization', 'schema', 'monthlyPlan', 'dispatch', 'outcomes', 'notification', 'pdf', 'archive', 'health'];
     var target = allowed.indexOf(String(page || '')) !== -1 ? String(page) : 'home';
     state.activeSystemPage = target;
     // 每次切頁都以即時 DOM 為準，確保後載入的「人員與組織」也會正確取消橘色作用中狀態。
@@ -7305,6 +7305,9 @@
     if (elements.systemManagementPageSelect) elements.systemManagementPageSelect.value = target;
     if (!settings.skipHash && window.history && window.history.replaceState) {
       window.history.replaceState(null, '', window.location.pathname + window.location.search + '#system/' + target);
+    }
+    if (target === 'organization' && window.V4OrganizationManagement && typeof window.V4OrganizationManagement.show === 'function') {
+      window.V4OrganizationManagement.show(!settings.skipLoad);
     }
     if (!settings.skipLoad && target === 'jobs' && !state.backgroundJobs) loadBackgroundJobCenterV3_({ quiet: true });
     if (!settings.skipLoad && target === 'schema' && !state.schemaManagement) loadSchemaManagementCenterV3_({ quiet: true });
