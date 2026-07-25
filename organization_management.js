@@ -1,4 +1,4 @@
-/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.4 */
+/* 月考核系統 V4｜組織異動管理中心｜版本 1.0.5-mobile-nav */
 (function () {
   'use strict';
 
@@ -153,6 +153,11 @@
     }
     if (load && !state.initialized) loadCenter({ quiet: true, requireSearch: false });
   }
+
+  window.V4OrganizationManagement = window.V4OrganizationManagement || {};
+  window.V4OrganizationManagement.show = function (load) {
+    showOrganizationPage(load !== false);
+  };
 
   function hideOrganizationPageWhenOtherSelected(target) {
     if (target === 'organization') return;
