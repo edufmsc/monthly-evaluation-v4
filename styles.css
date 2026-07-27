@@ -4119,3 +4119,332 @@ body.modal-open {
     display: none !important;
   }
 }
+
+/* V4｜資訊密度與手機雙欄版面全面提升｜2026-07-26
+   僅調整顯示密度與響應式配置；不改資料、流程、權限或後端邏輯。 */
+
+/* 桌機與平板：減少不必要留白，但保留原本桌面表格結構。 */
+body.system-management-active .system-management-page .card,
+body.system-management-active .system-management-page .detail-section {
+  padding: clamp(14px, 1.6vw, 20px);
+}
+body.system-management-active .system-management-page .field-group {
+  margin-bottom: 12px;
+}
+body.system-management-active .system-management-page .filter-grid,
+body.system-management-active .system-management-page .account-create-grid,
+body.system-management-active .system-management-page .organization-search-grid,
+body.system-management-active .system-management-page .organization-editor-grid,
+body.system-management-active .system-management-page .organization-preview-grid {
+  gap: 10px 12px;
+}
+body.system-management-active .management-data-table tbody tr {
+  height: auto;
+}
+body.system-management-active .management-data-table td {
+  min-height: 0;
+  padding: 9px 10px;
+  line-height: 1.38;
+}
+body.system-management-active .management-data-table th {
+  height: 40px;
+  padding: 9px 10px;
+}
+body.system-management-active .account-management-pagination {
+  margin-top: 10px;
+}
+body.system-management-active .management-metric-grid {
+  gap: 8px;
+}
+body.system-management-active .management-metric-button {
+  padding: 10px 12px;
+  gap: 2px;
+}
+
+@media (max-width: 760px) {
+  /* 整體手機密度：縮短卡片、標題、欄位與區塊的垂直距離。 */
+  body.system-management-active .app-main,
+  body.system-management-active #systemPanel,
+  body.system-management-active #systemManagementWorkspace,
+  body.system-management-active .system-management-pages,
+  body.system-management-active .system-management-page {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  body.system-management-active .system-management-page .card,
+  body.system-management-active .system-management-page .detail-section,
+  body.system-management-active .system-management-page details,
+  body.system-management-active .management-confirm-dialog {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  body.system-management-active .management-card-heading,
+  body.system-management-active .test-dispatch-heading,
+  body.system-management-active .organization-section-heading {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  body.system-management-active .management-card-heading h2,
+  body.system-management-active .management-card-heading h3,
+  body.system-management-active .test-dispatch-heading h2,
+  body.system-management-active .test-dispatch-heading h3 {
+    margin: 0 0 3px;
+    line-height: 1.25;
+  }
+
+  body.system-management-active .management-card-heading p,
+  body.system-management-active .test-dispatch-heading p,
+  body.system-management-active .section-help,
+  body.system-management-active .field-hint {
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+
+  body.system-management-active details > summary {
+    padding: 7px 2px;
+    line-height: 1.35;
+  }
+
+  body.system-management-active .field-group {
+    margin-bottom: 8px;
+  }
+  body.system-management-active .field-group > span,
+  body.system-management-active .field-group > label {
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  body.system-management-active input,
+  body.system-management-active select,
+  body.system-management-active textarea {
+    min-height: 44px;
+    padding: 9px 10px;
+  }
+  body.system-management-active textarea {
+    min-height: 88px;
+  }
+
+  /* 短欄位採雙欄；長文字與操作區仍跨滿整列。 */
+  body.system-management-active .account-create-grid,
+  body.system-management-active .organization-search-grid,
+  body.system-management-active .organization-editor-grid,
+  body.system-management-active .organization-summary-grid,
+  body.system-management-active .organization-preview-grid,
+  body.system-management-active .filter-grid,
+  body.system-management-active .admin-result-grid,
+  body.system-management-active .management-metric-grid,
+  body.system-management-active .outcome-filter-grid,
+  body.system-management-active .background-job-filter,
+  body.system-management-active .notification-log-filter,
+  body.system-management-active .monthly-plan-filter {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  body.system-management-active .field-group:has(textarea),
+  body.system-management-active .field-group:has(input[type="email"]),
+  body.system-management-active .field-group:has(input[type="search"]),
+  body.system-management-active .field-group:has(input[maxlength="80"]),
+  body.system-management-active .test-dispatch-reason,
+  body.system-management-active .account-management-search-actions,
+  body.system-management-active .pdf-management-search-actions,
+  body.system-management-active .outcome-search-actions,
+  body.system-management-active .background-job-keyword,
+  body.system-management-active .organization-message,
+  body.system-management-active .form-message,
+  body.system-management-active .confirm-row {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* 指標與摘要卡片維持兩欄，避免一個數字佔滿一整行。 */
+  body.system-management-active .admin-result-grid > div,
+  body.system-management-active .management-metric-button,
+  body.system-management-active .organization-summary-grid > * {
+    padding: 9px 10px;
+    min-height: 0;
+  }
+  body.system-management-active .admin-result-grid span,
+  body.system-management-active .management-metric-button span {
+    font-size: .72rem;
+  }
+  body.system-management-active .admin-result-grid strong,
+  body.system-management-active .management-metric-button strong {
+    margin-top: 1px;
+    font-size: .98rem;
+    line-height: 1.3;
+  }
+
+  /* 管理清單：每筆資料改為兩欄資訊卡；長文字、錯誤與操作跨滿整列。 */
+  body.system-management-active .management-data-table tbody {
+    display: grid !important;
+    gap: 9px;
+  }
+  body.system-management-active .management-data-table tr {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    padding: 6px;
+    border-radius: 13px;
+  }
+  body.system-management-active .management-data-table td {
+    display: block !important;
+    width: auto !important;
+    padding: 8px 9px !important;
+    border: 0 !important;
+    border-bottom: 1px dashed rgba(126, 94, 75, .18) !important;
+    min-height: 54px;
+  }
+  body.system-management-active .management-data-table td:nth-last-child(-n+2) {
+    border-bottom: 0 !important;
+  }
+  body.system-management-active .management-data-table td::before {
+    margin-bottom: 2px;
+    font-size: .7rem;
+    line-height: 1.25;
+  }
+  body.system-management-active .management-data-table td > strong,
+  body.system-management-active .management-data-table td > span,
+  body.system-management-active .management-data-table td > small,
+  body.system-management-active .management-data-table td > a {
+    line-height: 1.35;
+  }
+
+  body.system-management-active .management-data-table td[data-label*="錯誤"],
+  body.system-management-active .management-data-table td[data-label*="訊息"],
+  body.system-management-active .management-data-table td[data-label*="原因"],
+  body.system-management-active .management-data-table td[data-label*="備註"],
+  body.system-management-active .management-data-table td[data-label*="Email"],
+  body.system-management-active .management-data-table td[data-label*="考核單號"],
+  body.system-management-active .management-data-table td[data-label*="工作批次"],
+  body.system-management-active .management-data-table td[data-label*="進度"],
+  body.system-management-active .management-data-table td[data-label*="操作"],
+  body.system-management-active .management-data-table td[data-label*="動作"],
+  body.system-management-active .management-data-table td[data-label*="選取"],
+  body.system-management-active .management-data-table td:has(textarea),
+  body.system-management-active .management-data-table td:has(button),
+  body.system-management-active .management-data-table td:has(.table-error-text) {
+    grid-column: 1 / -1;
+  }
+
+  body.system-management-active .management-data-table td:has(button) {
+    min-height: 0;
+    padding-top: 7px !important;
+  }
+  body.system-management-active .management-data-table td > button,
+  body.system-management-active .management-data-table td > a.secondary-button {
+    min-height: 40px;
+    margin-top: 2px;
+  }
+
+  /* 一般考核、歷史與待辦卡片也維持兩欄摘要。 */
+  body.system-management-active .evaluation-card {
+    padding: 12px;
+  }
+  body.system-management-active .evaluation-card__meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px 10px;
+    margin: 9px 0;
+  }
+  body.system-management-active .evaluation-card__meta span {
+    font-size: .7rem;
+  }
+  body.system-management-active .evaluation-card__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+  body.system-management-active .evaluation-card__actions button,
+  body.system-management-active .evaluation-card__actions .pdf-action-slot {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+  }
+  body.system-management-active .evaluation-card__actions > :only-child,
+  body.system-management-active .evaluation-card__actions .pdf-action-slot {
+    grid-column: 1 / -1;
+  }
+
+  /* 操作按鈕：兩個並排，單一主要動作才全寬。 */
+  body.system-management-active .test-dispatch-actions,
+  body.system-management-active .account-management-search-actions,
+  body.system-management-active .pdf-management-search-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  body.system-management-active .test-dispatch-actions > *,
+  body.system-management-active .account-management-search-actions > *,
+  body.system-management-active .pdf-management-search-actions > * {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 42px;
+  }
+  body.system-management-active .test-dispatch-actions > :only-child,
+  body.system-management-active .account-management-search-actions > :only-child,
+  body.system-management-active .pdf-management-search-actions > :only-child {
+    grid-column: 1 / -1;
+  }
+
+  /* 分頁回復緊湊橫排，不再三行佔滿畫面。 */
+  body.system-management-active .account-management-pagination,
+  body.system-management-active .history-pager {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    align-items: center;
+    gap: 7px;
+    margin-top: 10px;
+  }
+  body.system-management-active .account-management-pagination strong,
+  body.system-management-active .history-pager strong {
+    order: 0 !important;
+    min-width: 0;
+    white-space: nowrap;
+    font-size: .9rem;
+  }
+  body.system-management-active .account-management-pagination button,
+  body.system-management-active .history-pager button {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  /* 管理彈窗縮短無效留白並保留安全捲動。 */
+  body.system-management-active .management-confirm-overlay {
+    padding: 8px;
+  }
+  body.system-management-active .management-confirm-dialog {
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 390px) {
+  body.system-management-active .account-create-grid,
+  body.system-management-active .organization-search-grid,
+  body.system-management-active .organization-editor-grid,
+  body.system-management-active .organization-summary-grid,
+  body.system-management-active .organization-preview-grid,
+  body.system-management-active .filter-grid,
+  body.system-management-active .admin-result-grid,
+  body.system-management-active .management-metric-grid,
+  body.system-management-active .outcome-filter-grid,
+  body.system-management-active .background-job-filter,
+  body.system-management-active .notification-log-filter,
+  body.system-management-active .monthly-plan-filter {
+    gap: 6px !important;
+  }
+  body.system-management-active .management-data-table tr {
+    gap: 0;
+    padding: 4px;
+  }
+  body.system-management-active .management-data-table td {
+    padding: 7px !important;
+    font-size: .9rem;
+  }
+}
