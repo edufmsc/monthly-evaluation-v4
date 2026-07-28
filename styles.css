@@ -4540,3 +4540,249 @@ body.modal-open {
     gap: 8px;
   }
 }
+
+/* V4｜手機版狀態雙欄與明細可讀性修正｜2026-07-28
+ * 原則：只有短狀態卡採兩欄；資料量大的明細維持「一筆一張卡、欄位分區」閱讀。
+ * 僅限手機寬度，不影響桌面版。
+ */
+@media (max-width: 760px) {
+  /* 短狀態摘要：固定兩欄。 */
+  #outcomeSummary > .management-metric-grid,
+  #outcomeScoreDistribution > .management-metric-grid,
+  #dispatchManagementSummary > .management-metric-grid,
+  #monthlyPlanSummary > .management-metric-grid,
+  #backgroundJobSummary > .management-metric-grid,
+  #notificationSummary > .management-metric-grid,
+  #notificationDeliveryStats > .management-metric-grid,
+  #pdfManagementSummary.pdf-management-summary {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  #outcomeSummary .management-metric-button,
+  #outcomeScoreDistribution .management-metric-button,
+  #dispatchManagementSummary .management-metric-button,
+  #monthlyPlanSummary .management-metric-button,
+  #backgroundJobSummary .management-metric-button,
+  #notificationSummary .management-metric-button,
+  #notificationDeliveryStats .management-metric-button,
+  #pdfManagementSummary .pdf-summary-filter-button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 94px;
+    padding: 12px !important;
+    align-content: center;
+  }
+
+  #outcomeSummary .management-metric-button span,
+  #outcomeScoreDistribution .management-metric-button span,
+  #dispatchManagementSummary .management-metric-button span,
+  #monthlyPlanSummary .management-metric-button span,
+  #backgroundJobSummary .management-metric-button span,
+  #notificationSummary .management-metric-button span,
+  #notificationDeliveryStats .management-metric-button span,
+  #pdfManagementSummary .pdf-summary-filter-button span {
+    font-size: .78rem;
+    line-height: 1.35;
+  }
+
+  /* 卡片數量為奇數時，最後一張跨滿整列，避免右側留下不自然空洞。 */
+  #outcomeSummary .management-metric-button:last-child:nth-child(odd),
+  #monthlyPlanSummary .management-metric-button:last-child:nth-child(odd),
+  #pdfManagementSummary .pdf-summary-filter-button:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* 已結案考核明細：每筆一張卡；短資料首列雙欄，長資料改為整列分區。 */
+  #outcomeDetailList .outcome-detail-table colgroup,
+  #outcomeDetailList .outcome-detail-table thead {
+    display: none !important;
+  }
+
+  #outcomeDetailList .management-data-table-wrap {
+    overflow: visible !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  #outcomeDetailList .outcome-detail-table,
+  #outcomeDetailList .outcome-detail-table tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #outcomeDetailList .outcome-detail-table tbody {
+    display: grid !important;
+    gap: 12px;
+  }
+
+  #outcomeDetailList .outcome-detail-table tr {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: var(--surface);
+    box-shadow: 0 5px 14px rgba(72, 42, 26, .05);
+  }
+
+  #outcomeDetailList .outcome-detail-table td {
+    display: block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 10px 2px !important;
+    border: 0 !important;
+    border-bottom: 1px dashed rgba(157, 112, 84, .24) !important;
+    background: transparent !important;
+    overflow: visible !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  #outcomeDetailList .outcome-detail-table td::before {
+    display: block;
+    width: 100%;
+    margin: 0 0 5px;
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: .74rem;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  #outcomeDetailList .outcome-detail-table td[data-label="分數"],
+  #outcomeDetailList .outcome-detail-table td[data-label="結案時間／考核單號"] {
+    grid-column: 1 / -1;
+  }
+
+  #outcomeDetailList .outcome-detail-table td[data-label="結案時間／考核單號"] {
+    border-bottom: 0 !important;
+  }
+
+  #outcomeDetailList .outcome-detail-table td > strong,
+  #outcomeDetailList .outcome-detail-table td > span,
+  #outcomeDetailList .outcome-detail-table td > small,
+  #outcomeDetailList .outcome-detail-table td > button {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    line-height: 1.45;
+  }
+
+  #outcomeDetailList .outcome-detail-table .outcome-open-button {
+    margin-top: 9px;
+  }
+
+  /* 最近通知紀錄：首列只放「通知類型／結果」，其他資料整列分區，避免文字重疊。 */
+  body.system-management-active #notificationManagementCard .notification-log-table tr {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 12px 14px !important;
+    overflow: visible !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td {
+    position: static !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 10px 2px !important;
+    overflow: visible !important;
+    line-height: 1.45;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="收件人"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="時間"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="待辦／逾期"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
+    grid-column: 1 / -1;
+    display: grid !important;
+    grid-template-columns: minmax(88px, 26%) minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="通知類型"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="結果"] {
+    display: block !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td::before {
+    position: static !important;
+    width: auto !important;
+    margin: 0 !important;
+    line-height: 1.4;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="通知類型"]::before,
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="結果"]::before {
+    margin-bottom: 5px !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td > strong,
+  body.system-management-active #notificationManagementCard .notification-log-table td > span,
+  body.system-management-active #notificationManagementCard .notification-log-table td > small {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    line-height: 1.45;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="結果"] > .tag {
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 72px !important;
+    max-width: 100% !important;
+    justify-content: center;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td > small {
+    margin-top: 4px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  #outcomeSummary .management-metric-button,
+  #outcomeScoreDistribution .management-metric-button,
+  #dispatchManagementSummary .management-metric-button,
+  #monthlyPlanSummary .management-metric-button,
+  #backgroundJobSummary .management-metric-button,
+  #notificationSummary .management-metric-button,
+  #notificationDeliveryStats .management-metric-button,
+  #pdfManagementSummary .pdf-summary-filter-button {
+    min-height: 88px;
+    padding: 10px !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="收件人"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="時間"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="待辦／逾期"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
+    grid-template-columns: minmax(78px, 28%) minmax(0, 1fr);
+    gap: 8px;
+  }
+}
