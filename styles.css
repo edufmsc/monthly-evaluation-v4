@@ -4311,3 +4311,232 @@ body.modal-open {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* V4｜手機版背景工作閱讀性與待辦通知雙欄優化｜2026-07-28
+ * 只調整指定頁面，不套用全域密度規則，不影響桌面版。
+ */
+@media (max-width: 760px) {
+  /* 待辦通知中心：摘要資料量短，固定兩欄，減少垂直捲動。 */
+  body.system-management-active #notificationManagementCard .notification-summary-metric-grid,
+  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-summary-metric-grid .management-metric-button,
+  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid .management-metric-button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 104px;
+    padding: 12px 14px;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-summary-metric-grid .management-metric-button span,
+  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid .management-metric-button span {
+    font-size: .78rem;
+    line-height: 1.35;
+  }
+
+  /* 最近通知紀錄：每筆是一張完整卡片，避免只看到第一欄。 */
+  body.system-management-active #notificationManagementCard .notification-log-table colgroup,
+  body.system-management-active #notificationManagementCard .notification-log-table thead {
+    display: none !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table,
+  body.system-management-active #notificationManagementCard .notification-log-table tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table tbody {
+    display: grid !important;
+    gap: 12px;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table tr {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: var(--surface);
+    box-shadow: 0 5px 14px rgba(72, 42, 26, .05);
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td {
+    display: block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 9px 2px !important;
+    border: 0 !important;
+    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td::before {
+    display: block;
+    width: 100%;
+    margin: 0 0 4px;
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: .74rem;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="收件人"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="時間"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="待辦／逾期"],
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
+    grid-column: 1 / -1;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
+    border-bottom: 0 !important;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td > strong,
+  body.system-management-active #notificationManagementCard .notification-log-table td > span,
+  body.system-management-active #notificationManagementCard .notification-log-table td > small {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  body.system-management-active #notificationManagementCard .notification-log-table td > small {
+    margin-top: 3px;
+    color: var(--muted);
+  }
+
+  /* 背景工作中心：一筆工作維持一張卡，不再把每個欄位切成獨立方塊。 */
+  body.system-management-active #backgroundJobCard .background-job-table tr {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    padding: 12px 14px !important;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: var(--surface);
+    box-shadow: 0 5px 14px rgba(72, 42, 26, .05);
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td {
+    grid-column: 1 / -1;
+    display: grid !important;
+    grid-template-columns: minmax(88px, 27%) minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 9px 2px !important;
+    border: 0 !important;
+    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td::before {
+    display: block;
+    width: auto;
+    margin: 0;
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: .74rem;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  /* 卡片首列只保留「選取／狀態」兩欄，其餘內容依閱讀順序整列顯示。 */
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"] {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="狀態"] {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="建立／完成"] {
+    grid-row: 2;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="工作類型"] {
+    grid-row: 3;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="關聯對象"] {
+    grid-row: 4;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="進度／錯誤"] {
+    grid-row: 5;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="操作"] {
+    grid-row: 6;
+    border-bottom: 0 !important;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"]::before,
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="狀態"]::before {
+    width: auto;
+    margin: 0;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td > strong,
+  body.system-management-active #backgroundJobCard .background-job-table td > span,
+  body.system-management-active #backgroundJobCard .background-job-table td > small,
+  body.system-management-active #backgroundJobCard .background-job-table td > div {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  body.system-management-active #notificationManagementCard .notification-summary-metric-grid .management-metric-button,
+  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid .management-metric-button {
+    min-height: 98px;
+    padding: 10px;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td {
+    grid-template-columns: minmax(78px, 29%) minmax(0, 1fr);
+    gap: 8px;
+  }
+}
