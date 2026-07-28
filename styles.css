@@ -4119,3 +4119,195 @@ body.modal-open {
     display: none !important;
   }
 }
+
+/* V4｜手機版指定頁面雙欄與背景工作資料顯示修正｜2026-07-28
+ * 僅限手機寬度，不改動桌面版。
+ * 以恢復後的 V4_MOBILE_SYSTEM_MANAGEMENT_RESPONSIVE_FIX 為基線，
+ * 不包含已撤回的全面版面密度套用。
+ */
+@media (max-width: 760px) {
+  /* 流程追蹤：摘要卡與查詢條件改為兩欄，查詢按鈕維持全寬。 */
+  #progressPanel .progress-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #progressPanel .progress-summary-card {
+    min-width: 0;
+    min-height: 98px;
+    padding: 12px 14px;
+  }
+
+  #progressPanel .progress-summary-card--total {
+    grid-column: 1 / -1;
+  }
+
+  #progressFilterForm.filter-grid--wide {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px;
+  }
+
+  #progressFilterForm > label {
+    min-width: 0;
+  }
+
+  #progressFilterForm .primary-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  /* 流程追蹤案件卡的短資訊維持兩欄，減少向下捲動。 */
+  #progressList .evaluation-card__meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* 背景工作摘要：六張指標卡固定兩欄。 */
+  body.system-management-active #backgroundJobCard .background-job-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+
+  body.system-management-active #backgroundJobCard .management-metric-button {
+    min-width: 0;
+    min-height: 104px;
+    padding: 12px 14px;
+  }
+
+  /* 背景工作篩選：工作類型與狀態並排，關鍵字與操作維持全寬。 */
+  body.system-management-active #backgroundJobCard .background-job-filter {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-keyword,
+  body.system-management-active #backgroundJobCard .background-job-filter .test-dispatch-actions {
+    grid-column: 1 / -1;
+  }
+
+  /* 重新整理按鈕以單行文字顯示；只有極窄空間才由瀏覽器自然縮小。 */
+  #progressPanel #refreshProgressButton,
+  body.system-management-active .management-refresh-button {
+    width: auto !important;
+    min-width: 108px !important;
+    white-space: nowrap !important;
+    word-break: keep-all;
+  }
+
+  /* 背景工作表：改為每筆工作一張兩欄資料卡。
+     修正舊版全域 table/block 規則造成只看見「選取」、其他欄位被擠出畫面的問題。 */
+  body.system-management-active #backgroundJobCard .background-job-table colgroup,
+  body.system-management-active #backgroundJobCard .background-job-table thead {
+    display: none !important;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table,
+  body.system-management-active #backgroundJobCard .background-job-table tbody {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table tbody {
+    display: grid !important;
+    gap: 12px;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table tr {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    padding: 10px;
+    overflow: visible !important;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 6px 16px rgba(72, 42, 26, .06);
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td {
+    display: block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 10px;
+    background: var(--surface-soft);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td::before {
+    display: block;
+    width: 100%;
+    margin: 0 0 5px;
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: .76rem;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="進度／錯誤"],
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="操作"] {
+    grid-column: 1 / -1;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"] {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"]::before {
+    width: auto;
+    margin: 0;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-checkbox {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    margin: 0;
+    flex: 0 0 22px;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-actions button {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  #progressPanel .progress-summary-card,
+  body.system-management-active #backgroundJobCard .management-metric-button {
+    padding: 10px;
+  }
+
+  #progressPanel .progress-summary-card span,
+  body.system-management-active #backgroundJobCard .management-metric-button span {
+    font-size: .76rem;
+  }
+
+  body.system-management-active #backgroundJobCard .background-job-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
