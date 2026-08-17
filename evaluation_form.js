@@ -99,9 +99,9 @@
     area_return_supervisor: '退回教育中心主管',
     employee_confirm: '確認並送營業處主管',
     employee_return_manager: '提出疑慮並退回店主管',
-    department_executive_approve: '簽核通過並送總經理',
+    department_executive_approve: '核可並完成考核',
     department_executive_return_area: '退回區主管',
-    gm_approve: '核准並結案',
+    gm_approve: '確認完成並更新PDF',
     gm_return_department_executive: '退回營業處主管',
     gm_return_education: '退回教育中心例外處理',
     force_transition: '教育中心判斷後強制轉單'
@@ -387,7 +387,6 @@
           '<option value="區主管">區主管</option>' +
           '<option value="受評人員">受評人員</option>' +
           '<option value="營業處主管">營業處主管</option>' +
-          '<option value="總經理">總經理</option>' +
         '</select></label>' +
       '<label class="field-group"><span class="field-label">指定承辦人工號（必要時填寫）</span>' +
         '<input type="text" name="targetEmployeeId" autocomplete="off" placeholder="主管離職、停用或多人重複時，輸入指定工號"></label>' +
