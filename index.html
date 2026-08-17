@@ -102,8 +102,8 @@
           <form id="progressFilterForm" class="filter-grid filter-grid--wide">
             <label><span>月份／日期</span><input id="progressMonth" name="month" type="text" placeholder="例如 115/08"></label>
             <label id="progressEmployeeFilter"><span>受評人員工號</span><input id="progressEmployeeId" name="employeeId" type="text" placeholder="可留白"></label>
-            <label><span>營業處</span><input id="progressDepartment" name="department" type="text" placeholder="例如 營一處"></label>
-            <label><span>區域</span><input id="progressArea" name="area" type="text" placeholder="例如 營一區"></label>
+            <label><span>營業處</span><select id="progressDepartment" name="department"><option value="">全部營業處</option></select></label>
+            <label><span>區域</span><select id="progressArea" name="area"><option value="">全部區域</option></select></label>
             <label><span>目前狀態</span>
               <select id="progressStatus" name="status">
                 <option value="">全部進行中狀態</option>
@@ -141,8 +141,8 @@
           <form id="historyFilterForm" class="filter-grid history-filter-grid">
             <label><span>月份／日期</span><input id="historyMonth" name="month" type="text" placeholder="例如 115/08"></label>
             <label id="historyEmployeeFilter"><span>受評人員工號</span><input id="historyEmployeeId" name="employeeId" type="text" placeholder="可留白"></label>
-            <label><span>營業處</span><input id="historyDepartment" name="department" type="text" placeholder="例如 營一處"></label>
-            <label><span>區域</span><input id="historyArea" name="area" type="text" placeholder="例如 營一區"></label>
+            <label><span>營業處</span><select id="historyDepartment" name="department"><option value="">全部營業處</option></select></label>
+            <label><span>區域</span><select id="historyArea" name="area"><option value="">全部區域</option></select></label>
             <label><span>狀態</span>
               <select id="historyStatus" name="status">
                 <option value="">全部狀態</option>
@@ -315,6 +315,6 @@
   <script src="workflow_service.js?v=1.0.2-gm-exception" defer></script>
   <script src="signature_pad.js?v=1.0.1" defer></script>
   <script src="evaluation_form.js?v=1.0.6-gm-exception" defer></script>
-  <script src="app.js?v=1.0.10-gm-exception" defer></script>
+  <script src="app.js?v=1.0.11-org-filter-gm-display" defer></script>
 </body>
 </html>
