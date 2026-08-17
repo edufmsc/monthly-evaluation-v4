@@ -21,6 +21,8 @@
     progressTotal: 0,
     progressTotalPages: 1,
     progressSummary: null,
+    progressFilterOptions: { departments: [], areas: [] },
+    historyFilterOptions: { departments: [], areas: [] },
     history: [],
     historyPage: 1,
     historyPageSize: 15,
@@ -1329,6 +1331,8 @@
       var nextSignature = createListRenderSignature(nextItems, nextSummary);
       state.progress = nextItems;
       state.progressSummary = nextSummary;
+      state.progressFilterOptions = normalizeOrganizationFilterOptionsUi_(data.filterOptions);
+      renderOrganizationFilterSelectsUi_('progress', state.progressFilterOptions);
       state.progressTotal = Number(data.total || nextItems.length);
       state.progressPage = Number(data.page || state.progressPage || 1);
       state.progressTotalPages = Number(data.totalPages || 1);
@@ -1361,6 +1365,8 @@
       var nextItems = result.data && Array.isArray(result.data.items) ? result.data.items : [];
       var nextSignature = createListRenderSignature(nextItems, { total: result.data && result.data.total || nextItems.length });
       state.history = nextItems;
+      state.historyFilterOptions = normalizeOrganizationFilterOptionsUi_(result.data && result.data.filterOptions);
+      renderOrganizationFilterSelectsUi_('history', state.historyFilterOptions);
       state.historyTotal = Number(result.data && result.data.total || nextItems.length);
       state.historyPage = Number(result.data && result.data.page || state.historyPage || 1);
       state.historyPageSize = Number(result.data && result.data.pageSize || state.historyPageSize || 15);
@@ -1391,6 +1397,48 @@
   function normalizeManagementSelectV3_(value, fallback) {
     var normalized = normalizeManagementSearchTextV3_(value, 40);
     return normalized || String(fallback == null ? '' : fallback);
+  }
+
+  function normalizeOrganizationFilterOptionsUi_(options) {
+    var source = options || {};
+    function uniqueStrings(values) {
+      var seen = {};
+      return (Array.isArray(values) ? values : []).map(function(value) {
+        return String(value == null ? '' : value).trim();
+      }).filter(function(value) {
+        if (!value || seen[value]) return false;
+        seen[value] = true;
+        return true;
+      });
+    }
+    return {
+      departments: uniqueStrings(source.departments),
+      areas: uniqueStrings(source.areas)
+    };
+  }
+
+  function renderOrganizationFilterSelectsUi_(scope, options) {
+    var normalized = normalizeOrganizationFilterOptionsUi_(options);
+    if (scope === 'progress') {
+      renderOrganizationFilterSelectUi_(elements.progressDepartment, normalized.departments, '全部營業處');
+      renderOrganizationFilterSelectUi_(elements.progressArea, normalized.areas, '全部區域');
+      return;
+    }
+    if (scope === 'history') {
+      renderOrganizationFilterSelectUi_(elements.historyDepartment, normalized.departments, '全部營業處');
+      renderOrganizationFilterSelectUi_(elements.historyArea, normalized.areas, '全部區域');
+    }
+  }
+
+  function renderOrganizationFilterSelectUi_(select, values, emptyLabel) {
+    if (!select) return;
+    var selected = String(select.value || '').trim();
+    var items = Array.isArray(values) ? values.slice() : [];
+    if (selected && items.indexOf(selected) === -1) items.push(selected);
+    select.innerHTML = '<option value="">' + escapeHtml(emptyLabel || '全部') + '</option>' + items.map(function(value) {
+      return '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + '</option>';
+    }).join('');
+    if (selected) select.value = selected;
   }
 
   function normalizeManagementPageV3_(value) {
@@ -2711,7 +2759,7 @@
       });
     }
     var html = currentScoreCardHtml(record) + customVersionHtml + sections.map(renderDetailSectionHtmlV3_).join('');
-    html += signatureSummaryHtml(record.signatureSummary || {});
+    html += signatureSummaryHtml(record.signatureSummary || {}, record);
     return html || '<article class="detail-section"><p>目前尚無已填寫內容。</p></article>';
   }
 
@@ -2797,10 +2845,11 @@
     return 'score-tone--red';
   }
 
-  function signatureSummaryHtml(summary) {
+  function signatureSummaryHtml(summary, record) {
     var roles = ['門市店主管', '教育中心成員', '教育中心主管', '區主管', '受評人員', '營業處主管', '總經理'];
     var rows = [];
     roles.forEach(function (role) {
+      if (role === '總經理' && !shouldShowGeneralManagerSignatureUi_(summary, record)) return;
       var item = summary[role];
       if (!item) return;
       rows.push('<div class="signature-status-row"><span>' + escapeHtml(role) + '</span><strong>' +
@@ -2809,6 +2858,20 @@
     });
     if (!rows.length) return '';
     return '<article class="detail-section"><h3>簽核狀態</h3><p class="section-help">流程中不顯示任何人的實際簽名圖片。</p><div class="signature-summary-list">' + rows.join('') + '</div></article>';
+  }
+
+  function shouldShowGeneralManagerSignatureUi_(summary, record) {
+    var source = record || {};
+    var gm = summary && summary['總經理'];
+    if (!gm) return false;
+    var workflowStatus = String(source['流程狀態'] || '').trim();
+    var exceptionReason = String(source['例外流程原因'] || '').trim();
+    var signatureStatus = String(gm.status || source['總經理簽名狀態'] || '').trim();
+    var signedAt = String(gm.signedAt || source['總經理簽核時間'] || '').trim();
+    var approvalResult = String(source['總經理簽核結果'] || '').trim();
+    return workflowStatus === '待總經理簽核' ||
+      exceptionReason.indexOf('[總經理例外確認]') === 0 ||
+      signatureStatus === '本次已簽核' || Boolean(signedAt) || Boolean(approvalResult);
   }
 
   function renderClaimPanel(record) {
