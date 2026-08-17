@@ -38,6 +38,7 @@
     },
     submitAction: function (payload, requestId) { return call('submitAction', payload, requestId); },
     forceTransition: function (payload, requestId) { return call('forceTransition', payload, requestId); },
+    sendClosedToGmReview: function (payload, requestId) { return call('sendClosedToGmReview', payload || {}, requestId); },
     saveDraft: function (evaluationNo, content, expectedVersion, workflowStatus, action) {
       return call('saveDraft', {
         evaluationNo: evaluationNo,
@@ -65,11 +66,6 @@
     accountCredentialLookup: function (query, employeeId, requestId) {
       return call('accountCredentialLookup', { query: String(query || ''), employeeId: String(employeeId || '') }, requestId);
     },
-    organizationManagementCenter: function (filters) { return call('organizationManagementCenter', filters || {}); },
-    organizationEmployeePreview: function (payload) { return call('organizationEmployeePreview', payload || {}); },
-    organizationEmployeeUpdate: function (payload, requestId) { return call('organizationEmployeeUpdate', payload || {}, requestId); },
-    organizationStorePreview: function (payload) { return call('organizationStorePreview', payload || {}); },
-    organizationStoreUpdate: function (payload, requestId) { return call('organizationStoreUpdate', payload || {}, requestId); },
     dispatchManagementCenter: function (filters) {
       return call('dispatchManagementCenter', filters || {});
     },
