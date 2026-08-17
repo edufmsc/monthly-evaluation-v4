@@ -32,7 +32,6 @@
     draftTimer: null,
     draftServerTimer: null,
     draftLoaded: false,
-    lastServerDraftFingerprint: '',
     isSubmitting: false,
     dispatchManagement: null,
     dispatchManagementLoading: false,
@@ -146,7 +145,7 @@
   };
 
   var NORMAL_ACTIONS = Object.keys(window.V3EvaluationForm ? window.V3EvaluationForm.ACTION_LABELS : {});
-  var MANAGEMENT_ACTIONS = ['reassign', 'void', 'create_revision'];
+  var MANAGEMENT_ACTIONS = ['reassign', 'void', 'create_revision', 'send_gm_review'];
 
   function isManagementActionUi_(action) {
     return MANAGEMENT_ACTIONS.indexOf(String(action || '').trim()) !== -1;
@@ -1127,7 +1126,10 @@
     if (elements.batchDispatchRepairCancelButton) elements.batchDispatchRepairCancelButton.addEventListener('click', closeBatchDispatchRepairPanel);
     if (elements.batchDispatchRepairRunButton) elements.batchDispatchRepairRunButton.addEventListener('click', runBatchDispatchRepair);
     if (elements.accountManagementFilterForm) elements.accountManagementFilterForm.addEventListener('submit', function (event) { event.preventDefault(); state.accountManagementPage = 1; loadAccountManagementCenter({ requireCriteria: true }); });
-    if (elements.accountManagementRefreshButton) elements.accountManagementRefreshButton.addEventListener('click', refreshAccountManagementPageV3_);
+    if (elements.accountManagementRefreshButton) elements.accountManagementRefreshButton.addEventListener('click', function () {
+      if (!state.accountManagementHasSearched) { showAccountManagementMessage('info', '請先設定查詢條件並按「查詢帳號」。'); return; }
+      loadAccountManagementCenter({ requireCriteria: true });
+    });
     if (elements.accountManagementClearButton) elements.accountManagementClearButton.addEventListener('click', resetAccountManagementSearchV3_);
     if (elements.accountUnlockQuickFilterButton) elements.accountUnlockQuickFilterButton.addEventListener('click', function () {
       if (elements.accountManagementKeyword) elements.accountManagementKeyword.value = '';
@@ -2506,7 +2508,6 @@
     state.signatureController = null;
     if (settings.readOnly) state.evaluationOpenContext = state.evaluationOpenContext || { source: settings.source || 'readonly', metricWasOpen: false, scrollY: window.scrollY || 0 };
     state.draftLoaded = false;
-    state.lastServerDraftFingerprint = '';
     elements.evaluationOverlay.hidden = false;
     document.body.classList.add('is-locked');
     if (settings.fromContinuous) renderContinuousReviewBar();
@@ -2525,6 +2526,11 @@
           // 流程追蹤維持評核內容唯讀，但教育中心保留必要的案件轉派能力。
           state.currentDetail.allowedActions = originalAllowedActions.filter(function(action) {
             return action === 'force_transition' || action === 'reassign';
+          });
+        } else if (openSource === 'history' && isEducationPdfManagerUi()) {
+          // 歷史紀錄維持唯讀；只有教育中心可對「已結案且PDF完成」案件啟動總經理例外確認。
+          state.currentDetail.allowedActions = originalAllowedActions.filter(function(action) {
+            return action === 'send_gm_review';
           });
         } else {
           state.currentDetail.allowedActions = [];
@@ -2553,6 +2559,10 @@
 
   function isProgressManagementContextUi_() {
     return getEvaluationOpenSourceUi_() === 'progress' && isEducationPdfManagerUi();
+  }
+
+  function isHistoryGmReviewContextUi_() {
+    return getEvaluationOpenSourceUi_() === 'history' && isEducationPdfManagerUi();
   }
 
   function closeEvaluation(options) {
@@ -2814,12 +2824,16 @@
 
   function renderActionPanel(record) {
     var progressManagementOnly = isProgressManagementContextUi_();
-    if (isReadOnlyEvaluationContextUi_() && !progressManagementOnly) {
+    var historyGmReviewOnly = isHistoryGmReviewContextUi_();
+    if (isReadOnlyEvaluationContextUi_() && !progressManagementOnly && !historyGmReviewOnly) {
       elements.actionPanel.hidden = true;
       return;
     }
     var allowed = Array.isArray(record.allowedActions) ? record.allowedActions : [];
     var actions = allowed.filter(function (action) {
+      if (historyGmReviewOnly) {
+        return action === 'send_gm_review';
+      }
       if (progressManagementOnly) {
         return action === 'force_transition' || action === 'reassign';
       }
@@ -2853,6 +2867,7 @@
     if (action === 'reassign') return '案件管理：重新指派承辦人';
     if (action === 'void') return '案件管理：作廢案件';
     if (action === 'create_revision') return '案件管理：建立R修訂版';
+    if (action === 'send_gm_review') return '例外流程：送總經理確認';
     return window.V3EvaluationForm.getActionLabel(record || {}, action) || action || '送出';
   }
 
@@ -2932,6 +2947,22 @@
           '<div class="form-message form-message--error">' + escapeHtml(friendlyError(error)) + '</div></section>';
         elements.submitEvaluationButton.disabled = true;
       }
+      return;
+    }
+
+    if (action === 'send_gm_review') {
+      elements.evaluationActionForm.innerHTML = '<section class="detail-section"><h3>例外流程：送總經理確認</h3>' +
+        '<p class="section-help">此功能只適用於已結案且PDF已完成的考核表。送出後，案件會重新開啟給總經理確認；既有PDF不刪除。</p>' +
+        '<div class="admin-result-grid">' + metaItem('考核單號', record['考核單號']) +
+          metaItem('目前狀態', record['流程狀態']) + metaItem('目前PDF', record['PDF檔名'] || '已完成') + '</div>' +
+        '<div class="preview-alert-list"><strong>確認後的流程</strong><ul>' +
+          '<li>案件由「結案」改為「待總經理簽核」。</li>' +
+          '<li>總經理確認完成後，系統再次結案並自動產生最新PDF。</li>' +
+          '<li>原PDF檔案保留，不會刪除或覆蓋。</li></ul></div>' +
+        managementReasonFieldV3_('請說明為何此已結案考核表需要再送總經理確認。') +
+        managementConfirmFieldV3_('我已確認此案件會重新開啟給總經理，完成後將產生新版PDF。') +
+      '</section>';
+      elements.submitEvaluationButton.disabled = false;
       return;
     }
 
@@ -3060,10 +3091,8 @@
     if (validDraft) {
       window.V3EvaluationForm.applyDraft(elements.evaluationActionForm, draft);
       elements.draftStatus.textContent = '已載入目前流程版本的草稿';
-      try { state.lastServerDraftFingerprint = server ? JSON.stringify(draft) : ''; } catch (ignoredFingerprint) { state.lastServerDraftFingerprint = ''; }
     } else {
       elements.draftStatus.textContent = '尚未儲存草稿';
-      state.lastServerDraftFingerprint = '';
     }
     state.draftLoaded = true;
   }
@@ -3098,12 +3127,6 @@
       var content = window.V3EvaluationForm.formToDraft(elements.evaluationActionForm, state.currentAction);
       content.dataVersion = version;
       content.workflowStatus = String(state.currentDetail['流程狀態'] || '');
-      var fingerprint = '';
-      try { fingerprint = JSON.stringify(content); } catch (ignoredFingerprint) {}
-      if (!showMessage && fingerprint && fingerprint === state.lastServerDraftFingerprint) {
-        elements.draftStatus.textContent = '雲端草稿內容未變更';
-        return;
-      }
       var result = await window.V3WorkflowService.saveDraft(
         state.currentDetail['考核單號'],
         content,
@@ -3111,10 +3134,7 @@
         content.workflowStatus,
         state.currentAction
       );
-      if (fingerprint) state.lastServerDraftFingerprint = fingerprint;
-      elements.draftStatus.textContent = result.data && result.data.unchanged
-        ? '雲端草稿內容未變更'
-        : '雲端草稿已保存：' + (result.data && result.data.savedAt || '完成');
+      elements.draftStatus.textContent = '雲端草稿已保存：' + (result.data && result.data.savedAt || '完成');
       if (showMessage) showEvaluationMessage('success', '草稿已保存，不包含手寫簽名。');
     } catch (error) {
       elements.draftStatus.textContent = '雲端草稿保存失敗，本機草稿仍保留';
@@ -3191,7 +3211,9 @@
         ? '\n\n作廢後不可繼續送出，但原資料不會刪除。'
         : action === 'create_revision'
           ? '\n\n新R版本會從第一個評核階段重新開始。'
-          : '\n\n目前承辦人將立即變更。';
+          : action === 'send_gm_review'
+            ? '\n\n案件會從結案重新開啟給總經理確認；原PDF保留，總經理完成後會產生新版PDF。'
+            : '\n\n目前承辦人將立即變更。';
       if (!window.confirm('確定要「' + label + '」嗎？' + managementWarning)) return;
     } else {
       try {
@@ -3203,7 +3225,12 @@
       payload.evaluationNo = evaluationNo;
       payload.expectedVersion = version;
       var continuousNote = state.continuousReview && state.continuousReview.active ? '\n\n連續簽核：成功後會自動開啟下一張待辦。' : '';
-      if (!window.confirm('確定要「' + label + '」嗎？\n\n送出後將進入下一個流程階段。' + continuousNote)) return;
+      var actionEffect = action === 'department_executive_approve'
+        ? '\n\n核可後本案將直接結案，並排入PDF產製，不會自動送總經理。'
+        : action === 'gm_approve'
+          ? '\n\n確認後本案會再次結案，並排入最新PDF產製。'
+          : '\n\n送出後將進入下一個流程階段。';
+      if (!window.confirm('確定要「' + label + '」嗎？' + actionEffect + continuousNote)) return;
     }
 
     var requestId = window.V3ApiClient.createRequestId();
@@ -3217,6 +3244,8 @@
         mutationResult = await window.V3WorkflowService.forceCloseEvaluation(payload, requestId);
       } else if (action === 'force_transition') {
         mutationResult = await window.V3WorkflowService.forceTransition(payload, requestId);
+      } else if (action === 'send_gm_review') {
+        mutationResult = await window.V3WorkflowService.sendClosedToGmReview(payload, requestId);
       } else if (action === 'reassign') {
         mutationResult = await window.V3WorkflowService.reassignEvaluation(payload, requestId);
       } else if (action === 'void') {
@@ -3281,6 +3310,8 @@
       detail = '目前承辦人已更新，待辦與流程狀態已同步。';
     } else if (action === 'void') {
       detail = '原案件已保留於歷史紀錄，可再由該作廢案件建立R修訂版。';
+    } else if (action === 'send_gm_review') {
+      detail = '案件已重新開啟並送交總經理確認；原PDF保留，總經理完成後會自動建立最新PDF。';
     }
     setDashboardMessage('success', label + '完成。' + detail);
     showGlobalNotice('success', label + '完成', detail || '案件資料已更新。');
@@ -5239,8 +5270,7 @@
       var data = response.data || {}; var account = data.account || {};
       elements.accountCreateResult.hidden = false;
       elements.accountCreateResult.innerHTML = '<h4>帳號建立完成</h4><div class="admin-result-grid">' + metaItem('員工', joinText(account.employeeId, account.employeeName)) + metaItem('角色', account.role) + metaItem('通知Email', account.notificationEmailMasked || '未設定') + metaItem('是否需要考核', account.needsEvaluation || payload.needsEvaluation) + metaItem('預設考核表', String(account.defaultEvaluationVersion || payload.defaultEvaluationVersion || 'A') === 'B' ? '店副理進階月考核表' : '一般月考核表') + metaItem('帳號狀態', account.accountStatus) + '</div><p>' + escapeHtml(data.message || '') + '</p>';
-      resetAccountCreateFieldsV3_();
-      showMessage(elements.accountCreateMessage, 'success', '帳號已建立，新增欄位已清空，可繼續建立下一位。');
+      showMessage(elements.accountCreateMessage, 'success', '帳號已建立。');
       showGlobalNotice('success', '帳號建立完成', data.message || joinText(account.employeeId, account.employeeName) + ' 已建立。', true);
       state.accountAuditPage = 1;
       if (elements.accountAuditPanel && elements.accountAuditPanel.open) loadAccountAuditPageV3_();
@@ -5251,43 +5281,11 @@
     finally { setButtonLoading(elements.accountCreateSubmitButton, false, '建立帳號'); }
   }
 
-  function resetAccountCreateFieldsV3_() {
-    if (elements.accountCreateForm) elements.accountCreateForm.reset();
-    if (elements.accountCreateDefaultEvaluationVersion) {
-      elements.accountCreateDefaultEvaluationVersion.disabled = false;
-      elements.accountCreateDefaultEvaluationVersion.value = 'A';
-    }
-  }
-
   function resetAccountCreateFormV3_() {
-    resetAccountCreateFieldsV3_();
+    if (elements.accountCreateForm) elements.accountCreateForm.reset();
+    if (elements.accountCreateDefaultEvaluationVersion) { elements.accountCreateDefaultEvaluationVersion.disabled = false; elements.accountCreateDefaultEvaluationVersion.value = 'A'; }
     if (elements.accountCreateResult) { elements.accountCreateResult.hidden = true; elements.accountCreateResult.innerHTML = ''; }
     clearMessage(elements.accountCreateMessage);
-  }
-
-  async function refreshAccountManagementPageV3_() {
-    if (!elements.accountManagementRefreshButton || state.accountManagementLoading) return;
-    var button = elements.accountManagementRefreshButton;
-    var originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = '重新整理中…';
-
-    // 「重新整理」同時清除上一筆新增帳號資料，避免舊工號、密碼與姓名殘留造成誤判。
-    resetAccountCreateFormV3_();
-    clearAccountCredentialLookupV3_();
-    closeAccountActionPanel();
-
-    try {
-      if (state.accountManagementHasSearched) {
-        await loadAccountManagementCenter({ requireCriteria: true, quiet: true });
-        showAccountManagementMessage('success', '頁面已重新整理；新增帳號欄位已清空，查詢結果已更新。');
-      } else {
-        showAccountManagementMessage('success', '頁面已重新整理；新增帳號欄位已清空。請設定條件後查詢帳號。');
-      }
-    } finally {
-      button.textContent = originalText || '重新整理';
-      button.disabled = false;
-    }
   }
 
   async function loadAccountAuditPageV3_() {
@@ -7291,23 +7289,19 @@
 
   function switchSystemManagementPageV3_(page, options) {
     var settings = options || {};
-    var allowed = ['home', 'jobs', 'accounts', 'organization', 'schema', 'monthlyPlan', 'dispatch', 'outcomes', 'notification', 'pdf', 'archive', 'health'];
+    var allowed = ['home', 'jobs', 'accounts', 'schema', 'monthlyPlan', 'dispatch', 'outcomes', 'notification', 'pdf', 'archive', 'health'];
     var target = allowed.indexOf(String(page || '')) !== -1 ? String(page) : 'home';
     state.activeSystemPage = target;
-    // 每次切頁都以即時 DOM 為準，確保後載入的「人員與組織」也會正確取消橘色作用中狀態。
-    Array.prototype.slice.call(document.querySelectorAll('[data-system-page-panel]')).forEach(function (panel) {
+    (elements.systemPagePanels || Array.prototype.slice.call(document.querySelectorAll('[data-system-page-panel]'))).forEach(function (panel) {
       panel.hidden = panel.getAttribute('data-system-page-panel') !== target;
     });
-    Array.prototype.slice.call(document.querySelectorAll('[data-system-page]')).forEach(function (button) {
+    (elements.systemPageButtons || Array.prototype.slice.call(document.querySelectorAll('[data-system-page]'))).forEach(function (button) {
       button.classList.toggle('is-active', button.getAttribute('data-system-page') === target);
       button.setAttribute('aria-current', button.getAttribute('data-system-page') === target ? 'page' : 'false');
     });
     if (elements.systemManagementPageSelect) elements.systemManagementPageSelect.value = target;
     if (!settings.skipHash && window.history && window.history.replaceState) {
       window.history.replaceState(null, '', window.location.pathname + window.location.search + '#system/' + target);
-    }
-    if (target === 'organization' && window.V4OrganizationManagement && typeof window.V4OrganizationManagement.show === 'function') {
-      window.V4OrganizationManagement.show(!settings.skipLoad);
     }
     if (!settings.skipLoad && target === 'jobs' && !state.backgroundJobs) loadBackgroundJobCenterV3_({ quiet: true });
     if (!settings.skipLoad && target === 'schema' && !state.schemaManagement) loadSchemaManagementCenterV3_({ quiet: true });
