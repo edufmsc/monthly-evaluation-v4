@@ -247,7 +247,7 @@
       '<p class="step-label">正式營運工具｜1.0</p><h3>月考核派發管理中心</h3>' +
       '<p>教育中心共用人工派發入口；可派發與需處理人員優先排列，已存在R0不重複建立。</p></div>' +
       '<button id="dispatchManagementRefreshButton" class="secondary-button secondary-button--small management-refresh-button" type="button">重新整理</button></div>' +
-      '<section id="dispatchScheduleSection" class="detail-section dispatch-schedule-section"><div class="test-dispatch-heading"><div><h4>每月1～3日自動派發排程</h4><p class="section-help">顯示主派發、補跑、下次執行、最近結果與月份名單是否已鎖定。</p></div><button id="dispatchScheduleRefreshButton" class="secondary-button secondary-button--small" type="button">更新排程狀態</button></div>' +
+      '<section id="dispatchScheduleSection" class="detail-section dispatch-schedule-section"><div class="test-dispatch-heading"><div><h4>每月1～3日自動派發排程</h4><p class="section-help">顯示主派發、補跑、下次執行、最近結果與月份名單是否已完成確認。</p></div><button id="dispatchScheduleRefreshButton" class="secondary-button secondary-button--small" type="button">更新排程狀態</button></div>' +
         '<div id="dispatchScheduleSummary" class="admin-result-grid"><div class="empty-state compact-empty"><h3>尚未讀取排程狀態</h3></div></div>' +
         '<div id="dispatchSchedulePlanStatus" class="dispatch-schedule-plan-grid"></div>' +
         '<div class="dispatch-schedule-settings"><label class="field-group"><span>每月1～3日執行時段</span><select id="dispatchScheduleHour">' + Array.from({length:24}, function(_, hour) { return '<option value="' + hour + '">' + String(hour).padStart(2, '0') + ':00 前後約15分鐘</option>'; }).join('') + '</select></label><p class="section-help">日期固定為每月1日主派發、2日與3日安全補跑；可在此調整執行小時。</p></div>' +
@@ -316,7 +316,7 @@
       '<section class="detail-section account-credential-section"><div class="test-dispatch-heading"><div><h4>協助查詢登入帳密</h4><p class="section-help">輸入姓名或工號；查詢紀錄不保存密碼內容。</p></div></div><form id="accountCredentialLookupForm" class="account-credential-form"><label class="field-group"><span>員工完整姓名／完整工號</span><input id="accountCredentialLookupQuery" maxlength="80" autocomplete="off"></label><div class="test-dispatch-actions"><button id="accountCredentialLookupButton" class="primary-button primary-button--small" type="submit"><span class="button-label">查詢帳密</span><span class="button-spinner"></span></button><button id="accountCredentialClearButton" class="secondary-button secondary-button--small" type="button">清除結果</button></div></form><div id="accountCredentialLookupMessage" class="form-message" hidden></div><div id="accountCredentialLookupResult" hidden></div></section>' +
       '<form id="accountManagementFilterForm" class="filter-grid"><label class="field-group"><span>工號／姓名／店號或店別</span><input id="accountManagementKeyword" maxlength="80"></label><label class="field-group"><span>系統角色</span><select id="accountManagementRole"><option value="">全部角色</option></select></label><label class="field-group"><span>在職狀態</span><select id="accountManagementEmployment"><option value="">全部狀態</option></select></label><label class="field-group"><span>帳號狀態</span><select id="accountManagementStatus"><option value="">全部狀態</option><option value="啟用">啟用</option><option value="停用">停用</option><option value="鎖定">鎖定</option><option value="未設定">未設定</option></select></label><label class="field-group"><span>登入狀況</span><select id="accountManagementLoginIssue"><option value="">全部登入狀況</option><option value="unlockable">需解鎖／清除錯誤次數</option><option value="locked">目前鎖定</option><option value="password_invalid">密碼格式異常</option><option value="not_login_ready">目前不可登入</option></select></label><label class="field-group"><span>每頁顯示</span><select id="accountManagementPageSize"><option value="10">10人</option><option value="15">15人</option></select></label><div class="test-dispatch-actions account-management-search-actions"><button id="accountManagementSearchButton" class="secondary-button" type="submit"><span class="button-label">查詢帳號</span><span class="button-spinner"></span></button><button id="accountManagementClearButton" class="secondary-button" type="button">清除條件</button></div></form>' +
       '<div class="account-quick-filter-bar"><span>快速處理</span><button id="accountUnlockQuickFilterButton" class="secondary-button secondary-button--small" type="button">查看需解鎖／清除錯誤次數</button></div><div id="accountManagementMessage" class="form-message form-message--info">請設定查詢條件後查詢；系統不會自動載入全部人員。</div><div id="accountManagementSummary" hidden></div><section id="accountManagementList" class="test-dispatch-preview account-management-list"><div class="empty-state"><h3>尚未查詢帳號</h3></div></section><div id="accountManagementPagination" class="account-management-pagination" hidden><button id="accountManagementPreviousButton" class="secondary-button secondary-button--small">上一頁</button><strong id="accountManagementPageText">第1頁</strong><button id="accountManagementNextButton" class="secondary-button secondary-button--small">下一頁</button></div>' +
-      '<section id="accountActionPanel" class="test-dispatch-preview" hidden><div id="accountActionContent"></div><label id="accountActionEmailGroup" class="field-group" hidden><span>新的通知Email</span><input id="accountActionEmail" type="email" maxlength="120" autocomplete="off" placeholder="輸入完整Email；留白代表清除"></label><label id="accountActionDefaultVersionGroup" class="field-group" hidden><span>預設考核表</span><select id="accountActionDefaultVersion"><option value="A">一般月考核表</option><option value="B">店副理進階月考核表</option></select><small class="field-hint">只影響尚未鎖定的新月份計畫，不改動已建立考核表。</small></label><label class="field-group"><span>處理原因</span><textarea id="accountActionReason" rows="3" maxlength="300"></textarea></label><label class="confirm-row"><input id="accountActionConfirm" type="checkbox"><span id="accountActionConfirmLabel">我已確認此操作的影響。</span></label><div class="test-dispatch-actions"><button id="accountActionCancelButton" class="secondary-button">取消</button><button id="accountActionRunButton" class="primary-button" disabled><span class="button-label">執行</span><span class="button-spinner"></span></button></div><article id="accountActionResult" class="card admin-result-card" hidden></article></section>' +
+      '<section id="accountActionPanel" class="test-dispatch-preview" hidden><div id="accountActionContent"></div><label id="accountActionEmailGroup" class="field-group" hidden><span>新的通知Email</span><input id="accountActionEmail" type="email" maxlength="120" autocomplete="off" placeholder="輸入完整Email；留白代表清除"></label><label id="accountActionDefaultVersionGroup" class="field-group" hidden><span>預設考核表</span><select id="accountActionDefaultVersion"><option value="A">一般月考核表</option><option value="B">店副理進階月考核表</option></select><small class="field-hint">只影響尚未完成確認的新月份計畫，不改動已建立考核表。</small></label><label class="field-group"><span>處理原因</span><textarea id="accountActionReason" rows="3" maxlength="300"></textarea></label><label class="confirm-row"><input id="accountActionConfirm" type="checkbox"><span id="accountActionConfirmLabel">我已確認此操作的影響。</span></label><div class="test-dispatch-actions"><button id="accountActionCancelButton" class="secondary-button">取消</button><button id="accountActionRunButton" class="primary-button" disabled><span class="button-label">執行</span><span class="button-spinner"></span></button></div><article id="accountActionResult" class="card admin-result-card" hidden></article></section>' +
       '<details id="accountAuditPanel" class="detail-section"><summary>查看最近帳號操作紀錄</summary><div class="account-audit-toolbar"><label>每頁顯示 <select id="accountAuditPageSize"><option value="10">10筆</option><option value="15">15筆</option></select></label></div><div id="accountAuditList"><p class="section-help">展開後載入最新紀錄。</p></div><div id="accountAuditPagination" class="account-management-pagination" hidden><button id="accountAuditPreviousButton" class="secondary-button secondary-button--small">上一頁</button><strong id="accountAuditPageText">第1頁</strong><button id="accountAuditNextButton" class="secondary-button secondary-button--small">下一頁</button></div></details>';
     systemPanel.appendChild(article);
   }
@@ -385,7 +385,7 @@
     article.className = 'card test-dispatch-card';
     article.innerHTML = '<div class="test-dispatch-heading management-card-heading"><div>' +
       '<p class="step-label">每月作業｜1.0</p><h3>下月考核名單</h3>' +
-      '<p>教育中心可逐月確認誰需要考核，並指定一般月考核表或店副理進階月考核表；鎖定後正式派發會依此名單執行。</p></div>' +
+      '<p>請先檢查並調整下月受評人員，再儲存草稿；<strong>儲存草稿不會自動派發</strong>，最後完成「確認名單並啟用自動派發」後才會納入每月1～3日排程。</p></div>' +
       '<button id="monthlyPlanRefreshButton" class="secondary-button secondary-button--small management-refresh-button" type="button">重新整理</button></div>' +
       '<form id="monthlyPlanFilterForm" class="filter-grid monthly-plan-filter">' +
         '<label class="field-group"><span>考核月份</span><input id="monthlyPlanMonth" type="text" placeholder="115/08/01" required></label>' +
@@ -395,18 +395,25 @@
       '</form>' +
       '<div id="monthlyPlanMessage" class="form-message" role="status" aria-live="polite" hidden></div>' +
       '<div id="monthlyPlanSummary"></div>' +
-      '<section class="detail-section monthly-plan-actions"><div class="test-dispatch-heading monthly-plan-heading-line"><div><h4>月份計畫控制</h4><p class="section-help">可跨頁修改；未儲存變更會保留在本次瀏覽器操作中，最後一次儲存全部變更後再鎖定。</p></div><strong id="monthlyPlanLockStatus">尚未鎖定</strong></div>' +
-        '<div class="monthly-plan-control-line"><label class="field-group monthly-plan-reason-field"><span>處理原因</span><input id="monthlyPlanReason" type="text" maxlength="300" placeholder="例如：完成下月考核名單確認"></label>' +
-        '<label class="confirm-row monthly-plan-confirm-inline"><input id="monthlyPlanConfirm" type="checkbox"><span>我已確認此月份名單與考核表類型。</span></label>' +
-        '<div class="test-dispatch-actions monthly-plan-main-actions"><button id="monthlyPlanSaveButton" class="secondary-button" type="button"><span class="button-label">儲存全部變更</span><span class="button-spinner"></span></button>' +
-        '<button id="monthlyPlanLockButton" class="primary-button" type="button" disabled><span class="button-label">鎖定名單</span><span class="button-spinner"></span></button>' +
-        '<button id="monthlyPlanReopenButton" class="secondary-button" type="button" disabled><span class="button-label">解除鎖定</span><span class="button-spinner"></span></button></div></div></section>' +
-      '<section class="detail-section"><div class="test-dispatch-heading monthly-plan-list-heading"><div><h4>受評人員名單</h4><p class="section-help">店副理進階、一般月考核、本月不考核依序分組；跨頁修改會保留，完成後再一次儲存。</p></div>' +
+      '<section class="detail-section monthly-plan-roster-section"><div class="test-dispatch-heading monthly-plan-list-heading"><div><h4>1. 檢查與調整受評人員名單</h4><p class="section-help">依序確認需要考核的人員與考核表類型。門市店主管作為受評人時固定使用店副理進階月考核表；跨頁修改會保留在本次瀏覽器操作中。</p></div>' +
         '<div class="test-dispatch-actions monthly-plan-page-actions"><button id="monthlyPlanSelectPageButton" class="secondary-button secondary-button--small" type="button">本頁全選</button>' +
         '<button id="monthlyPlanClearPageButton" class="secondary-button secondary-button--small" type="button">本頁取消</button>' +
         '<button id="monthlyPlanRestorePageButton" class="secondary-button secondary-button--small" type="button">恢復預設</button></div></div>' +
         '<div id="monthlyPlanList"></div><div id="monthlyPlanPagination" class="account-management-pagination" hidden>' +
-        '<button id="monthlyPlanPreviousButton" class="secondary-button secondary-button--small" type="button">上一頁</button><strong id="monthlyPlanPageText">第1頁</strong><button id="monthlyPlanNextButton" class="secondary-button secondary-button--small" type="button">下一頁</button></div></section>';
+        '<button id="monthlyPlanPreviousButton" class="secondary-button secondary-button--small" type="button">上一頁</button><strong id="monthlyPlanPageText">第1頁</strong><button id="monthlyPlanNextButton" class="secondary-button secondary-button--small" type="button">下一頁</button></div></section>' +
+      '<section class="detail-section monthly-plan-draft-section"><div class="test-dispatch-heading monthly-plan-heading-line"><div><h4>2. 儲存草稿</h4><p class="section-help"><strong>只會儲存目前調整，不會啟用自動派發。</strong> 儲存後仍可繼續修改，直到最後確認為止。</p></div><strong id="monthlyPlanDraftStatus" class="tag tag--warning">尚無未儲存變更</strong></div>' +
+        '<div class="monthly-plan-draft-action-line"><p id="monthlyPlanDraftHint" class="section-help">有調整時請先儲存草稿，再進行最後確認。</p><div class="test-dispatch-actions"><button id="monthlyPlanSaveButton" class="secondary-button" type="button"><span class="button-label">儲存草稿</span><span class="button-spinner"></span></button></div></div></section>' +
+      '<section class="detail-section monthly-plan-confirm-section"><div class="test-dispatch-heading monthly-plan-heading-line"><div><h4>3. 確認下月自動派發</h4><p class="section-help">這是最後一步。確認後本月份名單會固定供自動派發使用；如尚有未儲存變更，請先完成上一步。</p></div><strong id="monthlyPlanLockStatus" class="tag tag--warning">草稿｜尚未啟用自動派發</strong></div>' +
+        '<div id="monthlyPlanFinalSummary" class="monthly-plan-final-summary"></div>' +
+        '<div id="monthlyPlanScheduleHint" class="monthly-plan-schedule-hint"></div>' +
+        '<div id="monthlyPlanReopenReasonPanel" class="monthly-plan-reopen-reason" hidden>' +
+          '<label class="field-group monthly-plan-reason-field"><span>重新修改原因</span><select id="monthlyPlanReason"><option value="">請選擇原因</option><option value="人員異動／離職">人員異動／離職</option><option value="職務異動">職務異動</option><option value="門市／區域調動">門市／區域調動</option><option value="考核表版本修正">考核表版本修正</option><option value="原考核設定錯誤">原考核設定錯誤</option><option value="臨時新增考核">臨時新增考核</option><option value="臨時取消考核">臨時取消考核</option><option value="資料修正">資料修正</option><option value="OTHER">其他</option></select></label>' +
+          '<label id="monthlyPlanReasonOtherGroup" class="field-group monthly-plan-reason-field" hidden><span>其他原因</span><input id="monthlyPlanReasonOther" type="text" maxlength="300" placeholder="請輸入實際原因"></label>' +
+        '</div>' +
+        '<label class="confirm-row monthly-plan-confirm-inline"><input id="monthlyPlanConfirm" type="checkbox"><span id="monthlyPlanConfirmLabel">我已確認本月份人員名單與考核表類型。</span></label>' +
+        '<p id="monthlyPlanActionHint" class="section-help monthly-plan-action-hint">確認後才會納入自動派發；儲存草稿本身不會派發。</p>' +
+        '<div class="test-dispatch-actions monthly-plan-main-actions"><button id="monthlyPlanLockButton" class="primary-button" type="button" disabled><span class="button-label">確認名單並啟用自動派發</span><span class="button-spinner"></span></button>' +
+        '<button id="monthlyPlanReopenButton" class="secondary-button" type="button" hidden disabled><span class="button-label">重新開放名單進行修改</span><span class="button-spinner"></span></button></div></section>';
     systemPanel.appendChild(article);
   }
 
@@ -941,7 +948,7 @@
       '<div class="system-home-grid">' +
         systemHomeCardV3_('jobs', '背景工作中心', '一頁查看通知、PDF、派發與封存工作狀態。', '異常工作可直接前往對應中心處理，不在此刪除資料') +
         systemHomeCardV3_('accounts', '帳號與登入', '查詢單一或特定範圍人員；每頁10人，可切換15人。', '帳密查詢、解除鎖定、啟停帳號、強制登出') +
-        systemHomeCardV3_('monthlyPlan', '下月考核名單', '逐月勾選需要考核的人員並指定考核表類型。', '鎖定後自動派發優先依此名單執行') +
+        systemHomeCardV3_('monthlyPlan', '下月考核名單', '逐月勾選需要考核的人員並指定考核表類型。', '確認後才會納入每月自動派發') +
         systemHomeCardV3_('dispatch', '月考核派發', '只在進入本頁時載入當月派發狀態。', '每月1～3日排程、人工派發、補派與派發分析') +
         systemHomeCardV3_('outcomes', '月考核成果分析', '依已結案資料查看分數趨勢與組織平均。', '一般與店副理進階月考核表分開分析') +
         systemHomeCardV3_('notification', '待辦通知中心', '每日摘要附系統網址，並提供教育中心一鍵通知。', '超過3天加強提醒，Email由背景工作器分批寄送') +
@@ -3758,11 +3765,26 @@
   function updateMonthlyPlanDraftHintV3_() {
     var month = String(elements.monthlyPlanMonth && elements.monthlyPlanMonth.value || state.monthlyPlan && state.monthlyPlan.evaluationMonth || '').trim();
     var count = getMonthlyPlanDraftItemsV3_(month).length;
+    var locked = Boolean(state.monthlyPlan && state.monthlyPlan.locked);
     if (elements.monthlyPlanSaveButton) {
       var label = elements.monthlyPlanSaveButton.querySelector('.button-label');
-      if (label) label.textContent = count ? '儲存全部變更（' + count + '人）' : '儲存全部變更';
-      elements.monthlyPlanSaveButton.disabled = Boolean(state.monthlyPlan && state.monthlyPlan.locked) || count === 0;
+      if (label) label.textContent = count ? '儲存草稿（' + count + '人）' : '儲存草稿';
+      elements.monthlyPlanSaveButton.disabled = locked || count === 0;
     }
+    if (elements.monthlyPlanDraftStatus) {
+      elements.monthlyPlanDraftStatus.textContent = locked
+        ? '已確認｜停止草稿編輯'
+        : (count ? '尚有 ' + count + ' 人未儲存' : '草稿已同步');
+      elements.monthlyPlanDraftStatus.className = locked || !count ? 'tag tag--success' : 'tag tag--warning';
+    }
+    if (elements.monthlyPlanDraftHint) {
+      elements.monthlyPlanDraftHint.textContent = locked
+        ? '本月份名單已完成確認；如尚未開始派發且確有異動，請使用第3步的「重新開放名單進行修改」。'
+        : (count
+          ? '目前有 ' + count + ' 位人員的變更尚未儲存。請先按「儲存草稿」，再進行最後確認。'
+          : '目前沒有未儲存變更。若名單內容已確認，可進行第3步。');
+    }
+    updateMonthlyPlanActionStateV3_();
   }
 
   async function loadMonthlyPlanCenterV3_(options) {
@@ -3800,6 +3822,7 @@
 
   function renderMonthlyPlanCenterV3_(data) {
     var summary = data.summary || {};
+    var overallSummary = data.overallSummary || summary;
     if (elements.monthlyPlanSummary) {
       elements.monthlyPlanSummary.innerHTML = '<div class="admin-result-grid management-metric-grid">' +
         managementMetricButtonV3_('名單人數', Number(summary.total || 0), 'ALL', 'monthly-plan') +
@@ -3809,11 +3832,24 @@
         managementMetricButtonV3_('本月不考核', Number(summary.notEvaluateCount || 0), 'NONE', 'monthly-plan') +
       '</div>';
     }
+    var presentation = getMonthlyPlanStatusPresentationV3_(data);
     if (elements.monthlyPlanLockStatus) {
-      elements.monthlyPlanLockStatus.textContent = data.locked
-        ? '已鎖定' + (data.lockedAt ? '｜' + data.lockedAt : '')
-        : '草稿／尚未鎖定';
-      elements.monthlyPlanLockStatus.className = data.locked ? 'tag tag--success' : 'tag tag--warning';
+      elements.monthlyPlanLockStatus.textContent = presentation.text;
+      elements.monthlyPlanLockStatus.className = presentation.className;
+    }
+    if (elements.monthlyPlanFinalSummary) {
+      elements.monthlyPlanFinalSummary.innerHTML = '<div class="monthly-plan-final-summary-grid">' +
+        '<div><span>考核月份</span><strong>' + escapeHtml(data.evaluationMonth || '') + '</strong></div>' +
+        '<div><span>名單總人數</span><strong>' + Number(overallSummary.total || 0) + '</strong></div>' +
+        '<div><span>預計考核</span><strong>' + Number(overallSummary.evaluateCount || 0) + '</strong></div>' +
+        '<div><span>一般月考核表</span><strong>' + Number(overallSummary.versionACount || 0) + '</strong></div>' +
+        '<div><span>店副理進階</span><strong>' + Number(overallSummary.versionBCount || 0) + '</strong></div>' +
+        '<div><span>本月不考核</span><strong>' + Number(overallSummary.notEvaluateCount || 0) + '</strong></div>' +
+      '</div>';
+    }
+    if (elements.monthlyPlanScheduleHint) {
+      elements.monthlyPlanScheduleHint.className = 'monthly-plan-schedule-hint ' + (presentation.warning ? 'is-warning' : 'is-success');
+      elements.monthlyPlanScheduleHint.textContent = presentation.hint;
     }
     var rows = Array.isArray(data.items) ? data.items : [];
     if (!rows.length) {
@@ -3848,12 +3884,92 @@
     }
     updateSimplePaginationV3_(elements.monthlyPlanPagination, elements.monthlyPlanPageText,
       elements.monthlyPlanPreviousButton, elements.monthlyPlanNextButton, data.pagination || {});
-    updateMonthlyPlanDraftHintV3_();
     [elements.monthlyPlanSelectPageButton, elements.monthlyPlanClearPageButton, elements.monthlyPlanRestorePageButton].forEach(function(button) { if (button) button.disabled = Boolean(data.locked); });
+    var dispatchStarted = Boolean(data.dispatchState && data.dispatchState.started);
     if (elements.monthlyPlanLockButton) elements.monthlyPlanLockButton.hidden = Boolean(data.locked);
-    if (elements.monthlyPlanReopenButton) elements.monthlyPlanReopenButton.hidden = !data.locked;
-    if (elements.monthlyPlanConfirm) elements.monthlyPlanConfirm.checked = false;
-    updateMonthlyPlanActionStateV3_();
+    if (elements.monthlyPlanReopenButton) elements.monthlyPlanReopenButton.hidden = !data.locked || dispatchStarted;
+    if (elements.monthlyPlanReopenReasonPanel) elements.monthlyPlanReopenReasonPanel.hidden = !data.locked || dispatchStarted;
+    if (elements.monthlyPlanConfirm) {
+      elements.monthlyPlanConfirm.checked = false;
+      var confirmRow = elements.monthlyPlanConfirm.closest ? elements.monthlyPlanConfirm.closest('.confirm-row') : null;
+      if (confirmRow) confirmRow.hidden = Boolean(data.locked && dispatchStarted);
+    }
+    if (elements.monthlyPlanConfirmLabel) {
+      elements.monthlyPlanConfirmLabel.textContent = data.locked
+        ? '我確認需要重新開放此月份名單，修改完成後必須再次確認才會納入自動派發。'
+        : '我已確認本月份人員名單與考核表類型。';
+    }
+    if (!data.locked) {
+      if (elements.monthlyPlanReason) elements.monthlyPlanReason.value = '';
+      if (elements.monthlyPlanReasonOther) elements.monthlyPlanReasonOther.value = '';
+    }
+    updateMonthlyPlanReasonOtherVisibilityV3_();
+    updateMonthlyPlanDraftHintV3_();
+  }
+
+  function getMonthlyPlanStatusPresentationV3_(data) {
+    var dispatch = data && data.dispatchState || {};
+    var scheduleEnabled = Boolean(data && data.automaticScheduleEnabled);
+    if (!data || !data.locked) {
+      return {
+        text: '草稿｜尚未啟用自動派發',
+        className: 'tag tag--warning',
+        warning: true,
+        hint: '目前仍是草稿。按「儲存草稿」只會保存設定，不會建立考核表；完成第3步確認後才會納入自動派發。'
+      };
+    }
+    if (dispatch.started && dispatch.phase === 'DISPATCHED') {
+      return {
+        text: '已派發｜本月考核已建立',
+        className: 'tag tag--success',
+        warning: false,
+        hint: '正式派發已完成' + (dispatch.completedAt ? '（' + dispatch.completedAt + '）' : '') + '。名單不再開放修改；後續補派或例外處理請使用「月考核派發」。'
+      };
+    }
+    if (dispatch.started) {
+      return {
+        text: '已開始派發｜請檢查補派',
+        className: 'tag tag--warning',
+        warning: true,
+        hint: '本月份已開始建立考核表，目前完成 ' + Number(dispatch.resolvedCount || 0) + '／' + Number(dispatch.expectedCount || 0) + ' 人。為避免既有R0與名單不一致，名單不再開放修改；請至「月考核派發」處理未完成案件。'
+      };
+    }
+    if (dispatch.phase === 'NO_DISPATCH') {
+      return {
+        text: '已確認｜本月無需派發',
+        className: 'tag tag--success',
+        warning: false,
+        hint: '本月份名單已確認，但預計考核人數為0，因此不會建立月考核表。'
+      };
+    }
+    if (!scheduleEnabled) {
+      return {
+        text: '已確認｜自動排程尚未啟用',
+        className: 'tag tag--warning',
+        warning: true,
+        hint: '名單已確認，但系統目前偵測不到完整的每月自動派發排程。請至「月考核派發」確認每月1～3日排程狀態。'
+      };
+    }
+    return {
+      text: '已確認｜等待下月自動派發',
+      className: 'tag tag--success',
+      warning: false,
+      hint: '本月份名單已確認，系統會依每月1～3日既有排程自動建立考核表。'
+    };
+  }
+
+  function updateMonthlyPlanReasonOtherVisibilityV3_() {
+    var isOther = Boolean(elements.monthlyPlanReason && elements.monthlyPlanReason.value === 'OTHER');
+    if (elements.monthlyPlanReasonOtherGroup) elements.monthlyPlanReasonOtherGroup.hidden = !isOther;
+    if (!isOther && elements.monthlyPlanReasonOther) elements.monthlyPlanReasonOther.value = '';
+  }
+
+  function resolveMonthlyPlanReopenReasonV3_() {
+    var selected = String(elements.monthlyPlanReason && elements.monthlyPlanReason.value || '').trim();
+    if (!selected) return '';
+    if (selected !== 'OTHER') return selected;
+    var other = String(elements.monthlyPlanReasonOther && elements.monthlyPlanReasonOther.value || '').trim();
+    return other ? '其他：' + other : '';
   }
 
   function setMonthlyPlanVisibleSelectionV3_(mode) {
@@ -3903,20 +4019,20 @@
         var response = await window.V3WorkflowService.monthlyPlanSave({
           evaluationMonth: month,
           items: batch,
-          reason: String(elements.monthlyPlanReason && elements.monthlyPlanReason.value || '').trim() || '教育中心更新月份考核名單'
+          reason: '教育中心儲存下月考核名單草稿'
         }, window.V3ApiClient.createRequestId());
         totalSaved += Number(response.data && response.data.savedCount || batch.length);
       }
       clearMonthlyPlanDraftsV3_(month);
-      var message = '已儲存跨頁累積的 ' + totalSaved + ' 位人員設定。';
+      var message = '已儲存跨頁累積的 ' + totalSaved + ' 位人員草稿設定；目前尚未啟用自動派發。';
       setMonthlyPlanMessageV3_('success', message);
-      showGlobalNotice('success', '月份名單儲存成功', message, true);
+      showGlobalNotice('success', '名單草稿已儲存', message, true);
       await loadMonthlyPlanCenterV3_({ quiet: true, skipCapture: true });
     } catch (error) {
       setMonthlyPlanMessageV3_('error', friendlyError(error));
-      showGlobalNotice('error', '月份名單儲存失敗', friendlyError(error), true);
+      showGlobalNotice('error', '名單草稿儲存失敗', friendlyError(error), true);
     } finally {
-      setButtonLoading(elements.monthlyPlanSaveButton, false, '儲存全部變更');
+      setButtonLoading(elements.monthlyPlanSaveButton, false, '儲存草稿');
       updateMonthlyPlanDraftHintV3_();
     }
   }
@@ -3924,61 +4040,97 @@
   function updateMonthlyPlanActionStateV3_() {
     var data = state.monthlyPlan || {};
     var confirmed = Boolean(elements.monthlyPlanConfirm && elements.monthlyPlanConfirm.checked);
-    var reasonOk = String(elements.monthlyPlanReason && elements.monthlyPlanReason.value || '').trim().length >= 4;
-    if (elements.monthlyPlanLockButton) elements.monthlyPlanLockButton.disabled = data.locked || !confirmed || !reasonOk;
-    if (elements.monthlyPlanReopenButton) elements.monthlyPlanReopenButton.disabled = !data.locked || !confirmed || !reasonOk;
+    var month = String(elements.monthlyPlanMonth && elements.monthlyPlanMonth.value || data.evaluationMonth || '').trim();
+    var draftCount = getMonthlyPlanDraftItemsV3_(month).length;
+    var dispatchStarted = Boolean(data.dispatchState && data.dispatchState.started);
+    var reopenReason = resolveMonthlyPlanReopenReasonV3_();
+    if (elements.monthlyPlanLockButton) {
+      elements.monthlyPlanLockButton.disabled = Boolean(data.locked) || !confirmed || draftCount > 0 || Boolean(state.monthlyPlanLoading);
+    }
+    if (elements.monthlyPlanReopenButton) {
+      elements.monthlyPlanReopenButton.disabled = !data.locked || dispatchStarted || !confirmed || !reopenReason || Boolean(state.monthlyPlanLoading);
+    }
+    if (elements.monthlyPlanActionHint) {
+      if (!data.locked && draftCount > 0) {
+        elements.monthlyPlanActionHint.textContent = '尚有 ' + draftCount + ' 位人員的變更未儲存，請先按「儲存草稿」。';
+      } else if (!data.locked) {
+        elements.monthlyPlanActionHint.textContent = '名單內容確認無誤後，勾選確認並執行「確認名單並啟用自動派發」。儲存草稿本身不會派發。';
+      } else if (dispatchStarted) {
+        elements.monthlyPlanActionHint.textContent = '本月份已開始正式派發，名單不再開放修改；如需補派請使用「月考核派發」。';
+      } else if (!reopenReason) {
+        elements.monthlyPlanActionHint.textContent = '如確實需要重新修改已確認名單，請先選擇異動原因；選擇「其他」時再輸入實際原因。';
+      } else {
+        elements.monthlyPlanActionHint.textContent = '重新開放後會回到草稿狀態，必須再次完成第3步確認，才會重新納入自動派發。';
+      }
+    }
   }
 
   async function lockMonthlyPlanV3_() {
     if (!elements.monthlyPlanConfirm.checked || state.monthlyPlanLoading) return;
+    captureMonthlyPlanVisibleDraftsV3_();
+    var draftItems = getMonthlyPlanDraftItemsV3_(elements.monthlyPlanMonth.value);
+    if (draftItems.length) {
+      var draftMessage = '尚有 ' + draftItems.length + ' 位人員的變更未儲存，請先按「儲存草稿」再確認自動派發。';
+      setMonthlyPlanMessageV3_('info', draftMessage);
+      showGlobalNotice('info', '請先儲存草稿', draftMessage, true);
+      updateMonthlyPlanDraftHintV3_();
+      return;
+    }
     state.monthlyPlanLoading = true;
-    setButtonLoading(elements.monthlyPlanLockButton, true, '鎖定中');
+    setButtonLoading(elements.monthlyPlanLockButton, true, '確認中');
     try {
-      captureMonthlyPlanVisibleDraftsV3_();
-      var draftItems = getMonthlyPlanDraftItemsV3_(elements.monthlyPlanMonth.value);
-      for (var draftOffset = 0; draftOffset < draftItems.length; draftOffset += 50) {
-        await window.V3WorkflowService.monthlyPlanSave({
-          evaluationMonth: elements.monthlyPlanMonth.value,
-          items: draftItems.slice(draftOffset, draftOffset + 50),
-          reason: String(elements.monthlyPlanReason.value || '').trim()
-        }, window.V3ApiClient.createRequestId());
-      }
-      clearMonthlyPlanDraftsV3_(elements.monthlyPlanMonth.value);
       var response = await window.V3WorkflowService.monthlyPlanLock({
         evaluationMonth: elements.monthlyPlanMonth.value,
-        reason: String(elements.monthlyPlanReason.value || '').trim(),
         confirmed: true
       }, window.V3ApiClient.createRequestId());
-      showGlobalNotice('success', '月份考核名單已鎖定', response.data && response.data.message || '正式派發將依此名單執行。', true);
+      var message = response.data && response.data.message || '月份考核名單已確認並納入自動派發。';
+      showGlobalNotice('success', '下月考核名單已確認', message, true);
+      setMonthlyPlanMessageV3_('success', message);
       elements.monthlyPlanConfirm.checked = false;
+      state.monthlyPlanLoading = false;
       await loadMonthlyPlanCenterV3_({ quiet: true, skipCapture: true });
     } catch (error) {
-      showGlobalNotice('error', '鎖定月份考核名單失敗', friendlyError(error), true);
+      showGlobalNotice('error', '確認下月考核名單失敗', friendlyError(error), true);
+      setMonthlyPlanMessageV3_('error', friendlyError(error));
     } finally {
       state.monthlyPlanLoading = false;
-      setButtonLoading(elements.monthlyPlanLockButton, false, '鎖定月份名單');
+      setButtonLoading(elements.monthlyPlanLockButton, false, '確認名單並啟用自動派發');
       updateMonthlyPlanActionStateV3_();
     }
   }
 
   async function reopenMonthlyPlanV3_() {
-    if (!elements.monthlyPlanConfirm.checked) return;
+    if (!elements.monthlyPlanConfirm.checked || state.monthlyPlanLoading) return;
+    var reason = resolveMonthlyPlanReopenReasonV3_();
+    if (!reason) {
+      setMonthlyPlanMessageV3_('info', '請先選擇重新修改原因；選擇「其他」時請輸入實際原因。');
+      updateMonthlyPlanActionStateV3_();
+      return;
+    }
+    state.monthlyPlanLoading = true;
     setButtonLoading(elements.monthlyPlanReopenButton, true, '處理中');
     try {
       var response = await window.V3WorkflowService.monthlyPlanReopen({
         evaluationMonth: String(elements.monthlyPlanMonth.value || '').trim(),
-        reason: String(elements.monthlyPlanReason.value || '').trim(),
+        reason: reason,
         confirmed: true
       }, window.V3ApiClient.createRequestId());
-      var message = response.data && response.data.message || '月份名單已解除鎖定。';
-      showGlobalNotice('success', '已解除鎖定', message, true);
+      var message = response.data && response.data.message || '月份名單已重新開放。';
+      showGlobalNotice('success', '月份名單已重新開放', message, true);
       setMonthlyPlanMessageV3_('success', message);
+      if (elements.monthlyPlanReason) elements.monthlyPlanReason.value = '';
+      if (elements.monthlyPlanReasonOther) elements.monthlyPlanReasonOther.value = '';
+      if (elements.monthlyPlanConfirm) elements.monthlyPlanConfirm.checked = false;
+      state.monthlyPlanLoading = false;
       await loadMonthlyPlanCenterV3_({ quiet: true, skipCapture: true });
     } catch (error) {
-      showGlobalNotice('error', '解除鎖定失敗', friendlyError(error), true);
+      showGlobalNotice('error', '重新開放月份名單失敗', friendlyError(error), true);
       setMonthlyPlanMessageV3_('error', friendlyError(error));
     } finally {
-      setButtonLoading(elements.monthlyPlanReopenButton, false, '解除鎖定');
+      state.monthlyPlanLoading = false;
+      setButtonLoading(elements.monthlyPlanReopenButton, false, '重新開放名單進行修改');
+      updateMonthlyPlanReasonOtherVisibilityV3_();
+      updateMonthlyPlanActionStateV3_();
     }
   }
 
@@ -4984,7 +5136,7 @@
       forceLogout: { label: '強制登出', description: '不改變帳號狀態，只撤銷此人員目前所有裝置登入。' },
       enableEvaluation: { label: '啟用考核', description: '將「是否需要考核」設為是，之後月份可列入派發判斷。' },
       disableEvaluation: { label: '停止考核', description: '將「是否需要考核」設為否，之後月份不再自動列入派發。已建立考核表不受影響。' },
-      setDefaultEvaluationVersion: { label: '設定預設考核表', description: '設定此人員新月份計畫的預設A／B版。已鎖定月份與已建立考核表不會被改動。' },
+      setDefaultEvaluationVersion: { label: '設定預設考核表', description: '設定此人員新月份計畫的預設A／B版。已確認月份與已建立考核表不會被改動。' },
       updateEmail: { label: '更新通知Email', description: '由教育中心維護通知Email；使用者本人只能看到遮蔽後內容，不能自行修改。留白可清除既有Email。' }
     };
     var config = map[action];
@@ -5150,7 +5302,7 @@
   }
 
   function cacheModificationElementsV3_() {
-    ['dispatchManagementPageSize','dispatchAttemptPageSize','accountCreatePanel','accountCreateForm','accountCreateEmployeeId','accountCreatePassword','accountCreateEmployeeName','accountCreateRole','accountCreateStoreCode','accountCreateDepartment','accountCreateArea','accountCreateTransferDate','accountCreateNeedsEvaluation','accountCreateDefaultEvaluationVersion','accountCreateEmploymentStatus','accountCreateAccountStatus','accountCreateNotificationEmail','accountCreateNote','accountCreateReason','accountCreateConfirm','accountCreateResetButton','accountCreateSubmitButton','accountCreateMessage','accountCreateResult','accountAuditPageSize','accountAuditPagination','accountAuditPreviousButton','accountAuditNextButton','accountAuditPageText','accountActionEmailGroup','accountActionEmail','accountActionDefaultVersionGroup','accountActionDefaultVersion','pdfManagementYear','pdfManagementMonthNumber','pdfManagementAbnormalButton','notificationManagementCard','notificationSettingsForm','notificationEnabled','notificationSystemUrl','notificationDailyHour','notificationOverdueDays','notificationBatchSize','notificationSaveButton','notificationMessage','notificationSummary','notificationScheduleStatus','notificationRefreshButton','notificationForceResend','notificationSendSelectedButton','notificationSendAllButton','notificationSendOverdueButton','notificationSelectVisibleButton','notificationClearSelectedButton','notificationSelectedCount','notificationRunWorkerButton','notificationScheduleConfirm','notificationInstallScheduleButton','notificationDisableScheduleButton','notificationRecipientList','notificationRecipientPagination','notificationRecipientPreviousButton','notificationRecipientNextButton','notificationRecipientPageText','notificationLogPanel','notificationLogList','notificationLogPagination','notificationLogPreviousButton','notificationLogNextButton','notificationLogPageText','notificationPreviewOverlay','notificationPreviewSummary','notificationPreviewList','notificationPreviewConfirm','notificationPreviewCancelButton','notificationPreviewRunButton','monthlyPlanManagementCard','monthlyPlanRefreshButton','monthlyPlanFilterForm','monthlyPlanMonth','monthlyPlanKeyword','monthlyPlanViewMode','monthlyPlanSearchButton','monthlyPlanMessage','monthlyPlanSummary','monthlyPlanLockStatus','monthlyPlanReason','monthlyPlanConfirm','monthlyPlanSaveButton','monthlyPlanLockButton','monthlyPlanReopenButton','monthlyPlanSelectPageButton','monthlyPlanClearPageButton','monthlyPlanRestorePageButton','monthlyPlanList','monthlyPlanPagination','monthlyPlanPreviousButton','monthlyPlanNextButton','monthlyPlanPageText','dispatchScheduleSection','dispatchScheduleRefreshButton','dispatchScheduleSummary','dispatchSchedulePlanStatus','dispatchScheduleHour','dispatchScheduleConfirm','dispatchScheduleInstallButton','dispatchScheduleDisableButton','outcomeAnalysisCard','outcomeRefreshButton','outcomeFilterForm','outcomeStartMonth','outcomeEndMonth','outcomeVersion','outcomeKeyword','outcomeStoreCode','outcomeArea','outcomeSearchButton','outcomeMessage','outcomeSummary','outcomeMonthlyTrend','outcomeVersionSummary','outcomeStoreRanking','outcomeAreaRanking','outcomeItemGroups','outcomeDetailList','outcomePagination','outcomePreviousButton','outcomeNextButton','outcomePageText','outcomeMetricOverlay','outcomeMetricTitle','outcomeMetricList','outcomeMetricPagination','outcomeMetricPreviousButton','outcomeMetricNextButton','outcomeMetricPageText','outcomeMetricCloseButton','outcomeScoreDistribution','outcomeCompareForm','outcomeCompareMode','outcomeCompareLeftLabel','outcomeCompareRightLabel','outcomeCompareLeft','outcomeCompareRight','outcomeCompareButton','outcomeCompareMessage','outcomeCompareResult','notificationDeliveryStats','notificationFailureReasons','notificationFailedSelectedCount','notificationFailedSelectPageButton','notificationFailedClearButton','notificationFailedList','notificationFailedPagination','notificationFailedPreviousButton','notificationFailedNextButton','notificationFailedPageText','notificationFailedConfirm','notificationRetrySelectedButton','notificationRetryAllButton'].forEach(function(id) {
+    ['dispatchManagementPageSize','dispatchAttemptPageSize','accountCreatePanel','accountCreateForm','accountCreateEmployeeId','accountCreatePassword','accountCreateEmployeeName','accountCreateRole','accountCreateStoreCode','accountCreateDepartment','accountCreateArea','accountCreateTransferDate','accountCreateNeedsEvaluation','accountCreateDefaultEvaluationVersion','accountCreateEmploymentStatus','accountCreateAccountStatus','accountCreateNotificationEmail','accountCreateNote','accountCreateReason','accountCreateConfirm','accountCreateResetButton','accountCreateSubmitButton','accountCreateMessage','accountCreateResult','accountAuditPageSize','accountAuditPagination','accountAuditPreviousButton','accountAuditNextButton','accountAuditPageText','accountActionEmailGroup','accountActionEmail','accountActionDefaultVersionGroup','accountActionDefaultVersion','pdfManagementYear','pdfManagementMonthNumber','pdfManagementAbnormalButton','notificationManagementCard','notificationSettingsForm','notificationEnabled','notificationSystemUrl','notificationDailyHour','notificationOverdueDays','notificationBatchSize','notificationSaveButton','notificationMessage','notificationSummary','notificationScheduleStatus','notificationRefreshButton','notificationForceResend','notificationSendSelectedButton','notificationSendAllButton','notificationSendOverdueButton','notificationSelectVisibleButton','notificationClearSelectedButton','notificationSelectedCount','notificationRunWorkerButton','notificationScheduleConfirm','notificationInstallScheduleButton','notificationDisableScheduleButton','notificationRecipientList','notificationRecipientPagination','notificationRecipientPreviousButton','notificationRecipientNextButton','notificationRecipientPageText','notificationLogPanel','notificationLogList','notificationLogPagination','notificationLogPreviousButton','notificationLogNextButton','notificationLogPageText','notificationPreviewOverlay','notificationPreviewSummary','notificationPreviewList','notificationPreviewConfirm','notificationPreviewCancelButton','notificationPreviewRunButton','monthlyPlanManagementCard','monthlyPlanRefreshButton','monthlyPlanFilterForm','monthlyPlanMonth','monthlyPlanKeyword','monthlyPlanViewMode','monthlyPlanSearchButton','monthlyPlanMessage','monthlyPlanSummary','monthlyPlanDraftStatus','monthlyPlanDraftHint','monthlyPlanLockStatus','monthlyPlanFinalSummary','monthlyPlanScheduleHint','monthlyPlanReopenReasonPanel','monthlyPlanReason','monthlyPlanReasonOtherGroup','monthlyPlanReasonOther','monthlyPlanConfirm','monthlyPlanConfirmLabel','monthlyPlanActionHint','monthlyPlanSaveButton','monthlyPlanLockButton','monthlyPlanReopenButton','monthlyPlanSelectPageButton','monthlyPlanClearPageButton','monthlyPlanRestorePageButton','monthlyPlanList','monthlyPlanPagination','monthlyPlanPreviousButton','monthlyPlanNextButton','monthlyPlanPageText','dispatchScheduleSection','dispatchScheduleRefreshButton','dispatchScheduleSummary','dispatchSchedulePlanStatus','dispatchScheduleHour','dispatchScheduleConfirm','dispatchScheduleInstallButton','dispatchScheduleDisableButton','outcomeAnalysisCard','outcomeRefreshButton','outcomeFilterForm','outcomeStartMonth','outcomeEndMonth','outcomeVersion','outcomeKeyword','outcomeStoreCode','outcomeArea','outcomeSearchButton','outcomeMessage','outcomeSummary','outcomeMonthlyTrend','outcomeVersionSummary','outcomeStoreRanking','outcomeAreaRanking','outcomeItemGroups','outcomeDetailList','outcomePagination','outcomePreviousButton','outcomeNextButton','outcomePageText','outcomeMetricOverlay','outcomeMetricTitle','outcomeMetricList','outcomeMetricPagination','outcomeMetricPreviousButton','outcomeMetricNextButton','outcomeMetricPageText','outcomeMetricCloseButton','outcomeScoreDistribution','outcomeCompareForm','outcomeCompareMode','outcomeCompareLeftLabel','outcomeCompareRightLabel','outcomeCompareLeft','outcomeCompareRight','outcomeCompareButton','outcomeCompareMessage','outcomeCompareResult','notificationDeliveryStats','notificationFailureReasons','notificationFailedSelectedCount','notificationFailedSelectPageButton','notificationFailedClearButton','notificationFailedList','notificationFailedPagination','notificationFailedPreviousButton','notificationFailedNextButton','notificationFailedPageText','notificationFailedConfirm','notificationRetrySelectedButton','notificationRetryAllButton'].forEach(function(id) {
       elements[id] = document.getElementById(id);
     });
     ['notificationLogFilterForm','notificationLogResult','notificationLogKeyword','notificationLogSearchButton','notificationLogResetButton','backgroundJobCard','backgroundJobFilterForm','backgroundJobType','backgroundJobStatus','backgroundJobKeyword','backgroundJobSearchButton','backgroundJobResetButton','backgroundJobRefreshButton','backgroundJobMessage','backgroundJobSummary','backgroundScheduleHealth','backgroundJobList','backgroundJobPagination','backgroundJobPreviousButton','backgroundJobNextButton','backgroundJobPageText','backgroundJobSelectedCount','backgroundJobSelectPageButton','backgroundJobClearButton','backgroundJobRetrySelectedButton','backgroundJobDetailOverlay','backgroundJobDetailTitle','backgroundJobDetailContent','backgroundJobDetailCloseButton','backgroundJobActionReason','backgroundJobActionConfirm','backgroundJobActionMessage','backgroundJobRetryButton','backgroundJobCancelButton','backgroundJobGoButton','notificationEmailFixOverlay','notificationEmailFixTitle','notificationEmailFixSummary','notificationEmailFixInput','notificationEmailFixReason','notificationEmailFixConfirm','notificationEmailFixMessage','notificationEmailFixSubmitButton','notificationEmailFixCloseButton','schemaManagementCard','schemaManagementRefreshButton','schemaManagementMessage','schemaManagementSummary','schemaSafetyRules','schemaSheetList','schemaRepairPreviewButton','schemaRepairPanel','schemaRepairPreviewContent','schemaRepairReason','schemaRepairConfirm','schemaRepairCancelButton','schemaRepairRunButton','schemaRepairResult','schemaVersionList'].forEach(function(id) {
@@ -5211,7 +5363,8 @@
     if (elements.monthlyPlanRefreshButton) elements.monthlyPlanRefreshButton.addEventListener('click', function() { loadMonthlyPlanCenterV3_(); });
     if (elements.monthlyPlanSaveButton) elements.monthlyPlanSaveButton.addEventListener('click', saveMonthlyPlanPageV3_);
     if (elements.monthlyPlanConfirm) elements.monthlyPlanConfirm.addEventListener('change', updateMonthlyPlanActionStateV3_);
-    if (elements.monthlyPlanReason) elements.monthlyPlanReason.addEventListener('input', updateMonthlyPlanActionStateV3_);
+    if (elements.monthlyPlanReason) elements.monthlyPlanReason.addEventListener('change', function() { updateMonthlyPlanReasonOtherVisibilityV3_(); updateMonthlyPlanActionStateV3_(); });
+    if (elements.monthlyPlanReasonOther) elements.monthlyPlanReasonOther.addEventListener('input', updateMonthlyPlanActionStateV3_);
     if (elements.monthlyPlanLockButton) elements.monthlyPlanLockButton.addEventListener('click', lockMonthlyPlanV3_);
     if (elements.monthlyPlanReopenButton) elements.monthlyPlanReopenButton.addEventListener('click', reopenMonthlyPlanV3_);
     if (elements.monthlyPlanSelectPageButton) elements.monthlyPlanSelectPageButton.addEventListener('click', function() { setMonthlyPlanVisibleSelectionV3_('select'); });
@@ -6074,7 +6227,7 @@
     if (elements.dispatchSchedulePlanStatus) {
       var plans = [source.currentPlan, source.nextPlan].filter(Boolean);
       elements.dispatchSchedulePlanStatus.innerHTML = plans.map(function(plan) {
-        return '<article class="dispatch-schedule-plan-card"><span>' + escapeHtml(plan.evaluationMonth || '') + '</span><strong>' + escapeHtml(plan.locked ? '名單已鎖定' : '名單未鎖定') + '</strong><small>考核' + Number(plan.enabledCount || 0) + '人｜' + escapeHtml(plan.message || '') + '</small></article>';
+        return '<article class="dispatch-schedule-plan-card"><span>' + escapeHtml(plan.evaluationMonth || '') + '</span><strong>' + escapeHtml(plan.locked ? '名單已確認' : '名單尚未確認') + '</strong><small>考核' + Number(plan.enabledCount || 0) + '人｜' + escapeHtml(plan.message || '') + '</small></article>';
       }).join('') + (attempt && (attempt.errorMessage || attempt.message) ? '<p class="section-help">最近執行訊息：' + escapeHtml(attempt.errorMessage || attempt.message) + '</p>' : '');
     }
     updateDispatchScheduleButtonsV3_();
@@ -7527,7 +7680,9 @@
       CREDENTIAL_EMPLOYEE_NOT_FOUND: '查無符合姓名或工號的人員。',
       ACCOUNT_REASON_REQUIRED: '請填寫至少4個字的帳號處理原因。',
       CONFIRM_TEXT_MISMATCH: '請先勾選確認本次操作內容。',
-      MONTHLY_PLAN_LOCKED: '此月份考核名單已鎖定；如需修改，請先解除鎖定。',
+      MONTHLY_PLAN_LOCKED: '此月份考核名單已確認並納入自動派發；如需修改，請使用重新開放名單功能。',
+      MONTHLY_PLAN_DISPATCH_STARTED: '此月份已開始正式派發，名單不再開放修改；如需補派請使用「月考核派發」。',
+      MONTHLY_PLAN_REASON_REQUIRED: '請選擇重新修改原因；選擇「其他」時請輸入實際原因。',
       MONTHLY_PLAN_NOT_FOUND: '此月份尚未建立考核名單。',
       MONTHLY_PLAN_ITEMS_REQUIRED: '目前頁面沒有可儲存的考核名單資料。',
       NOTIFICATION_SELECTION_REQUIRED: '請先勾選至少一位需要通知的人員。',
