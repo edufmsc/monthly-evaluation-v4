@@ -3865,924 +3865,105 @@ body.modal-open {
   }
 }
 
-/* V4｜組織異動管理中心 */
-.organization-page-heading { align-items: flex-start; }
-.organization-search-card,
-.organization-result-section,
-.organization-editor { margin-top: 1rem; }
-.organization-search-grid {
-  display: grid;
-  grid-template-columns: minmax(150px, .8fr) minmax(190px, 1fr) minmax(240px, 1.4fr) auto;
-  gap: .8rem;
-  align-items: end;
+/* 1.0.12｜下月考核名單操作順序：名單 → 草稿 → 確認自動派發 */
+.monthly-plan-roster-section {
+  margin-top: 14px;
 }
-.organization-search-keyword { min-width: 0; }
-.organization-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: .75rem;
-  margin-top: 1rem;
+.monthly-plan-draft-section,
+.monthly-plan-confirm-section {
+  margin-top: 14px;
 }
-.organization-summary-card {
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 14px;
-  padding: 1rem;
-  background: var(--card-background, #fff);
+.monthly-plan-draft-section {
+  background: var(--surface-soft);
+}
+.monthly-plan-draft-action-line {
   display: flex;
-  flex-direction: column;
-  gap: .25rem;
-}
-.organization-summary-card strong { font-size: 1.45rem; }
-.organization-summary-card span { color: var(--muted-text, #667085); }
-.organization-section-heading,
-.organization-item-main {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-start;
-}
-.organization-section-heading h4,
-.organization-item-card h5,
-.organization-manager-config h5,
-.organization-preview h5 { margin: 0 0 .35rem; }
-.organization-section-heading p,
-.organization-item-card p { margin: .25rem 0; }
-.organization-card-list,
-.organization-anomaly-list { display: grid; gap: .75rem; }
-.organization-item-card,
-.organization-anomaly {
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 12px;
-  padding: .9rem;
-  background: rgba(255,255,255,.7);
-}
-.organization-anomaly { display: flex; gap: .75rem; align-items: flex-start; }
-.organization-anomaly strong { min-width: 90px; }
-.organization-anomaly--warning { border-left: 4px solid #c2410c; }
-.organization-anomaly--review { border-left: 4px solid #ca8a04; }
-.organization-chip-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
-.organization-chip {
-  display: inline-flex;
-  border-radius: 999px;
-  padding: .2rem .55rem;
-  font-size: .78rem;
-  background: #f3f4f6;
-}
-.organization-chip--warning { background: #fff7ed; color: #9a3412; }
-.organization-editor { border: 2px solid rgba(166,70,31,.25); }
-.organization-editor-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: .8rem;
-  margin: 1rem 0;
-}
-.organization-editor input[readonly] { background: #f3f4f6; color: #475467; }
-.organization-editor-actions { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1rem; }
-.organization-preview { margin-top: 1rem; border-top: 1px solid var(--border-color, #e5e7eb); padding-top: 1rem; }
-.organization-preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
-.organization-preview-grid section,
-.organization-warning-box {
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 12px;
-  padding: .9rem;
-}
-.organization-warning-box { margin-top: .75rem; background: #fffbeb; }
-.organization-preview ul { margin: .45rem 0 0; padding-left: 1.25rem; }
-.organization-manager-config { margin: 1rem 0; }
-.organization-manager-table { display: grid; gap: .55rem; }
-.organization-manager-row {
-  display: grid;
-  grid-template-columns: minmax(180px, 1.2fr) minmax(130px, .7fr) minmax(145px, .7fr) minmax(145px, .7fr);
-  gap: .6rem;
   align-items: center;
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 10px;
-  padding: .65rem;
+  justify-content: space-between;
+  gap: 16px;
 }
-.organization-message--success { color: #166534; }
-.organization-message--error { color: #b42318; }
-.organization-message--info { color: #344054; }
-@media (max-width: 900px) {
-  .organization-search-grid { grid-template-columns: 1fr 1fr; }
-  .organization-summary-grid { grid-template-columns: 1fr 1fr; }
-  .organization-editor-grid { grid-template-columns: 1fr 1fr; }
-  .organization-manager-row { grid-template-columns: 1fr 1fr; }
+.monthly-plan-draft-action-line .section-help {
+  margin: 0;
 }
-@media (max-width: 620px) {
-  .organization-search-grid,
-  .organization-summary-grid,
-  .organization-editor-grid,
-  .organization-preview-grid,
-  .organization-manager-row { grid-template-columns: 1fr; }
-  .organization-section-heading,
-  .organization-item-main { flex-direction: column; }
-  .organization-item-main button { width: 100%; }
+.monthly-plan-final-summary {
+  margin-top: 12px;
 }
-
-
-/* V4｜手機版系統管理完整寬度與資料表顯示修正｜2026-07-25 */
-@media (max-width: 760px) {
-  body.system-management-active *,
-  body.system-management-active *::before,
-  body.system-management-active *::after {
-    box-sizing: border-box;
+.monthly-plan-final-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+.monthly-plan-final-summary-grid > div {
+  display: grid;
+  gap: 5px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.monthly-plan-final-summary-grid span {
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 700;
+}
+.monthly-plan-final-summary-grid strong {
+  font-size: .96rem;
+}
+.monthly-plan-schedule-hint {
+  margin-top: 12px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  line-height: 1.65;
+  font-weight: 700;
+}
+.monthly-plan-schedule-hint.is-success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.monthly-plan-schedule-hint.is-warning {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.monthly-plan-reopen-reason {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.monthly-plan-reopen-reason[hidden] {
+  display: none !important;
+}
+.monthly-plan-reopen-reason .field-group {
+  margin: 0;
+}
+.monthly-plan-confirm-section .monthly-plan-confirm-inline {
+  margin-top: 14px;
+  white-space: normal;
+}
+.monthly-plan-action-hint {
+  margin: 10px 0 0;
+}
+.monthly-plan-confirm-section .monthly-plan-main-actions {
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+@media (max-width: 1080px) {
+  .monthly-plan-final-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
-  body.system-management-active .app-shell,
-  body.system-management-active .app-main,
-  body.system-management-active #systemPanel,
-  body.system-management-active #systemManagementWorkspace,
-  body.system-management-active .system-management-layout,
-  body.system-management-active .system-management-pages,
-  body.system-management-active .system-management-page,
-  body.system-management-active .system-management-page > *,
-  body.system-management-active .card,
-  body.system-management-active .detail-section,
-  body.system-management-active details,
-  body.system-management-active form {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
+}
+@media (max-width: 720px) {
+  .monthly-plan-draft-action-line {
+    align-items: stretch;
+    flex-direction: column;
   }
-
-  body.system-management-active .system-management-page {
-    overflow-x: clip;
-  }
-
-  body.system-management-active input,
-  body.system-management-active select,
-  body.system-management-active textarea,
-  body.system-management-active button {
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  body.system-management-active input,
-  body.system-management-active select,
-  body.system-management-active textarea {
-    width: 100%;
-    font-size: 16px;
-  }
-
-  body.system-management-active .filter-grid,
-  body.system-management-active .admin-result-grid,
-  body.system-management-active .system-home-grid,
-  body.system-management-active .organization-search-grid,
-  body.system-management-active .organization-editor-grid,
-  body.system-management-active .test-dispatch-actions,
-  body.system-management-active .account-management-search-actions,
-  body.system-management-active .pdf-management-search-actions {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  body.system-management-active .management-confirm-overlay {
-    padding: 12px;
-    align-items: flex-start;
-    overflow-y: auto;
-  }
-
-  body.system-management-active .management-confirm-dialog {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    max-height: none;
-    margin: 0;
-    overflow: visible;
-  }
-
-  body.system-management-active .management-data-table-wrap {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    overflow: visible;
-  }
-
-  body.system-management-active .management-data-table,
-  body.system-management-active .management-data-table tbody,
-  body.system-management-active .management-data-table tr,
-  body.system-management-active .management-data-table td {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  /* 使用區塊卡片而不是 Grid，讓 td 內的純文字節點也能正常顯示。 */
-  body.system-management-active .management-data-table td {
-    display: block !important;
-    padding: 12px !important;
-    overflow: visible;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
-  body.system-management-active .management-data-table td::before {
-    display: block;
-    width: 100%;
-    margin: 0 0 5px;
-    content: attr(data-label);
-    color: var(--muted);
-    font-size: .78rem;
-    font-weight: 800;
-    line-height: 1.4;
-  }
-
-  body.system-management-active .management-data-table td > strong,
-  body.system-management-active .management-data-table td > span,
-  body.system-management-active .management-data-table td > small,
-  body.system-management-active .management-data-table td > button,
-  body.system-management-active .management-data-table td > a {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  body.system-management-active .management-data-table td > button,
-  body.system-management-active .management-data-table td > a.secondary-button {
-    margin-top: 6px;
-  }
-
-  body.system-management-active .account-management-pagination,
-  body.system-management-active .test-dispatch-actions {
+  .monthly-plan-draft-action-line .test-dispatch-actions,
+  .monthly-plan-draft-action-line button {
     width: 100%;
   }
-
-  body.system-management-active .account-management-pagination {
-    display: grid;
+  .monthly-plan-final-summary-grid,
+  .monthly-plan-reopen-reason {
     grid-template-columns: 1fr;
-    gap: 10px;
-    text-align: center;
-  }
-
-  body.system-management-active .account-management-pagination[hidden] {
-    display: none !important;
-  }
-}
-
-/* V4｜手機版指定頁面雙欄與背景工作資料顯示修正｜2026-07-28
- * 僅限手機寬度，不改動桌面版。
- * 以恢復後的 V4_MOBILE_SYSTEM_MANAGEMENT_RESPONSIVE_FIX 為基線，
- * 不包含已撤回的全面版面密度套用。
- */
-@media (max-width: 760px) {
-  /* 流程追蹤：摘要卡與查詢條件改為兩欄，查詢按鈕維持全寬。 */
-  #progressPanel .progress-summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  #progressPanel .progress-summary-card {
-    min-width: 0;
-    min-height: 98px;
-    padding: 12px 14px;
-  }
-
-  #progressPanel .progress-summary-card--total {
-    grid-column: 1 / -1;
-  }
-
-  #progressFilterForm.filter-grid--wide {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px;
-  }
-
-  #progressFilterForm > label {
-    min-width: 0;
-  }
-
-  #progressFilterForm .primary-button {
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-
-  /* 流程追蹤案件卡的短資訊維持兩欄，減少向下捲動。 */
-  #progressList .evaluation-card__meta {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  /* 背景工作摘要：六張指標卡固定兩欄。 */
-  body.system-management-active #backgroundJobCard .background-job-metric-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px;
-  }
-
-  body.system-management-active #backgroundJobCard .management-metric-button {
-    min-width: 0;
-    min-height: 104px;
-    padding: 12px 14px;
-  }
-
-  /* 背景工作篩選：工作類型與狀態並排，關鍵字與操作維持全寬。 */
-  body.system-management-active #backgroundJobCard .background-job-filter {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-keyword,
-  body.system-management-active #backgroundJobCard .background-job-filter .test-dispatch-actions {
-    grid-column: 1 / -1;
-  }
-
-  /* 重新整理按鈕以單行文字顯示；只有極窄空間才由瀏覽器自然縮小。 */
-  #progressPanel #refreshProgressButton,
-  body.system-management-active .management-refresh-button {
-    width: auto !important;
-    min-width: 108px !important;
-    white-space: nowrap !important;
-    word-break: keep-all;
-  }
-
-  /* 背景工作表：改為每筆工作一張兩欄資料卡。
-     修正舊版全域 table/block 規則造成只看見「選取」、其他欄位被擠出畫面的問題。 */
-  body.system-management-active #backgroundJobCard .background-job-table colgroup,
-  body.system-management-active #backgroundJobCard .background-job-table thead {
-    display: none !important;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table,
-  body.system-management-active #backgroundJobCard .background-job-table tbody {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table tbody {
-    display: grid !important;
-    gap: 12px;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table tr {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: auto !important;
-    padding: 10px;
-    overflow: visible !important;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--surface);
-    box-shadow: 0 6px 16px rgba(72, 42, 26, .06);
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td {
-    display: block !important;
-    width: auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 10px !important;
-    overflow: visible !important;
-    border: 0 !important;
-    border-radius: 10px;
-    background: var(--surface-soft);
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td::before {
-    display: block;
-    width: 100%;
-    margin: 0 0 5px;
-    content: attr(data-label);
-    color: var(--muted);
-    font-size: .76rem;
-    font-weight: 800;
-    line-height: 1.35;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="進度／錯誤"],
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="操作"] {
-    grid-column: 1 / -1;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"] {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"]::before {
-    width: auto;
-    margin: 0;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-checkbox {
-    width: 22px !important;
-    height: 22px !important;
-    min-width: 22px !important;
-    max-width: 22px !important;
-    margin: 0;
-    flex: 0 0 22px;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-actions button {
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-  }
-}
-
-@media (max-width: 390px) {
-  #progressPanel .progress-summary-card,
-  body.system-management-active #backgroundJobCard .management-metric-button {
-    padding: 10px;
-  }
-
-  #progressPanel .progress-summary-card span,
-  body.system-management-active #backgroundJobCard .management-metric-button span {
-    font-size: .76rem;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-actions {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* V4｜手機版背景工作閱讀性與待辦通知雙欄優化｜2026-07-28
- * 只調整指定頁面，不套用全域密度規則，不影響桌面版。
- */
-@media (max-width: 760px) {
-  /* 待辦通知中心：摘要資料量短，固定兩欄，減少垂直捲動。 */
-  body.system-management-active #notificationManagementCard .notification-summary-metric-grid,
-  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-summary-metric-grid .management-metric-button,
-  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid .management-metric-button {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 104px;
-    padding: 12px 14px;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-summary-metric-grid .management-metric-button span,
-  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid .management-metric-button span {
-    font-size: .78rem;
-    line-height: 1.35;
-  }
-
-  /* 最近通知紀錄：每筆是一張完整卡片，避免只看到第一欄。 */
-  body.system-management-active #notificationManagementCard .notification-log-table colgroup,
-  body.system-management-active #notificationManagementCard .notification-log-table thead {
-    display: none !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table,
-  body.system-management-active #notificationManagementCard .notification-log-table tbody {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table tbody {
-    display: grid !important;
-    gap: 12px;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table tr {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 12px;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    padding: 12px 14px;
-    border: 1px solid var(--line);
-    border-radius: 15px;
-    background: var(--surface);
-    box-shadow: 0 5px 14px rgba(72, 42, 26, .05);
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td {
-    display: block !important;
-    width: auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 9px 2px !important;
-    border: 0 !important;
-    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    overflow: visible !important;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td::before {
-    display: block;
-    width: 100%;
-    margin: 0 0 4px;
-    content: attr(data-label);
-    color: var(--muted);
-    font-size: .74rem;
-    font-weight: 800;
-    line-height: 1.35;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="收件人"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="時間"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="待辦／逾期"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
-    grid-column: 1 / -1;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
-    border-bottom: 0 !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td > strong,
-  body.system-management-active #notificationManagementCard .notification-log-table td > span,
-  body.system-management-active #notificationManagementCard .notification-log-table td > small {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td > small {
-    margin-top: 3px;
-    color: var(--muted);
-  }
-
-  /* 背景工作中心：一筆工作維持一張卡，不再把每個欄位切成獨立方塊。 */
-  body.system-management-active #backgroundJobCard .background-job-table tr {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 12px;
-    padding: 12px 14px !important;
-    border: 1px solid var(--line);
-    border-radius: 15px;
-    background: var(--surface);
-    box-shadow: 0 5px 14px rgba(72, 42, 26, .05);
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td {
-    grid-column: 1 / -1;
-    display: grid !important;
-    grid-template-columns: minmax(88px, 27%) minmax(0, 1fr);
-    align-items: start;
-    gap: 10px;
-    width: auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 9px 2px !important;
-    border: 0 !important;
-    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td::before {
-    display: block;
-    width: auto;
-    margin: 0;
-    content: attr(data-label);
-    color: var(--muted);
-    font-size: .74rem;
-    font-weight: 800;
-    line-height: 1.4;
-  }
-
-  /* 卡片首列只保留「選取／狀態」兩欄，其餘內容依閱讀順序整列顯示。 */
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"] {
-    grid-column: 1;
-    grid-row: 1;
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="狀態"] {
-    grid-column: 2;
-    grid-row: 1;
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    border-bottom: 1px dashed rgba(157, 112, 84, .22) !important;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="建立／完成"] {
-    grid-row: 2;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="工作類型"] {
-    grid-row: 3;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="關聯對象"] {
-    grid-row: 4;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="進度／錯誤"] {
-    grid-row: 5;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="操作"] {
-    grid-row: 6;
-    border-bottom: 0 !important;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="選取"]::before,
-  body.system-management-active #backgroundJobCard .background-job-table td[data-label="狀態"]::before {
-    width: auto;
-    margin: 0;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td > strong,
-  body.system-management-active #backgroundJobCard .background-job-table td > span,
-  body.system-management-active #backgroundJobCard .background-job-table td > small,
-  body.system-management-active #backgroundJobCard .background-job-table td > div {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    width: 100%;
-  }
-}
-
-@media (max-width: 390px) {
-  body.system-management-active #notificationManagementCard .notification-summary-metric-grid .management-metric-button,
-  body.system-management-active #notificationManagementCard .notification-delivery-metric-grid .management-metric-button {
-    min-height: 98px;
-    padding: 10px;
-  }
-
-  body.system-management-active #backgroundJobCard .background-job-table td {
-    grid-template-columns: minmax(78px, 29%) minmax(0, 1fr);
-    gap: 8px;
-  }
-}
-
-/* V4｜手機版狀態雙欄與明細可讀性修正｜2026-07-28
- * 原則：只有短狀態卡採兩欄；資料量大的明細維持「一筆一張卡、欄位分區」閱讀。
- * 僅限手機寬度，不影響桌面版。
- */
-@media (max-width: 760px) {
-  /* 短狀態摘要：固定兩欄。 */
-  #outcomeSummary > .management-metric-grid,
-  #outcomeScoreDistribution > .management-metric-grid,
-  #dispatchManagementSummary > .management-metric-grid,
-  #monthlyPlanSummary > .management-metric-grid,
-  #backgroundJobSummary > .management-metric-grid,
-  #notificationSummary > .management-metric-grid,
-  #notificationDeliveryStats > .management-metric-grid,
-  #pdfManagementSummary.pdf-management-summary {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
-  }
-
-  #outcomeSummary .management-metric-button,
-  #outcomeScoreDistribution .management-metric-button,
-  #dispatchManagementSummary .management-metric-button,
-  #monthlyPlanSummary .management-metric-button,
-  #backgroundJobSummary .management-metric-button,
-  #notificationSummary .management-metric-button,
-  #notificationDeliveryStats .management-metric-button,
-  #pdfManagementSummary .pdf-summary-filter-button {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 94px;
-    padding: 12px !important;
-    align-content: center;
-  }
-
-  #outcomeSummary .management-metric-button span,
-  #outcomeScoreDistribution .management-metric-button span,
-  #dispatchManagementSummary .management-metric-button span,
-  #monthlyPlanSummary .management-metric-button span,
-  #backgroundJobSummary .management-metric-button span,
-  #notificationSummary .management-metric-button span,
-  #notificationDeliveryStats .management-metric-button span,
-  #pdfManagementSummary .pdf-summary-filter-button span {
-    font-size: .78rem;
-    line-height: 1.35;
-  }
-
-  /* 卡片數量為奇數時，最後一張跨滿整列，避免右側留下不自然空洞。 */
-  #outcomeSummary .management-metric-button:last-child:nth-child(odd),
-  #monthlyPlanSummary .management-metric-button:last-child:nth-child(odd),
-  #pdfManagementSummary .pdf-summary-filter-button:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-  }
-
-  /* 已結案考核明細：每筆一張卡；短資料首列雙欄，長資料改為整列分區。 */
-  #outcomeDetailList .outcome-detail-table colgroup,
-  #outcomeDetailList .outcome-detail-table thead {
-    display: none !important;
-  }
-
-  #outcomeDetailList .management-data-table-wrap {
-    overflow: visible !important;
-    border: 0 !important;
-    background: transparent !important;
-  }
-
-  #outcomeDetailList .outcome-detail-table,
-  #outcomeDetailList .outcome-detail-table tbody {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  #outcomeDetailList .outcome-detail-table tbody {
-    display: grid !important;
-    gap: 12px;
-  }
-
-  #outcomeDetailList .outcome-detail-table tr {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 12px;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 12px 14px;
-    border: 1px solid var(--line);
-    border-radius: 15px;
-    background: var(--surface);
-    box-shadow: 0 5px 14px rgba(72, 42, 26, .05);
-  }
-
-  #outcomeDetailList .outcome-detail-table td {
-    display: block !important;
-    width: auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 10px 2px !important;
-    border: 0 !important;
-    border-bottom: 1px dashed rgba(157, 112, 84, .24) !important;
-    background: transparent !important;
-    overflow: visible !important;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
-  #outcomeDetailList .outcome-detail-table td::before {
-    display: block;
-    width: 100%;
-    margin: 0 0 5px;
-    content: attr(data-label);
-    color: var(--muted);
-    font-size: .74rem;
-    font-weight: 800;
-    line-height: 1.35;
-  }
-
-  #outcomeDetailList .outcome-detail-table td[data-label="分數"],
-  #outcomeDetailList .outcome-detail-table td[data-label="結案時間／考核單號"] {
-    grid-column: 1 / -1;
-  }
-
-  #outcomeDetailList .outcome-detail-table td[data-label="結案時間／考核單號"] {
-    border-bottom: 0 !important;
-  }
-
-  #outcomeDetailList .outcome-detail-table td > strong,
-  #outcomeDetailList .outcome-detail-table td > span,
-  #outcomeDetailList .outcome-detail-table td > small,
-  #outcomeDetailList .outcome-detail-table td > button {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    line-height: 1.45;
-  }
-
-  #outcomeDetailList .outcome-detail-table .outcome-open-button {
-    margin-top: 9px;
-  }
-
-  /* 最近通知紀錄：首列只放「通知類型／結果」，其他資料整列分區，避免文字重疊。 */
-  body.system-management-active #notificationManagementCard .notification-log-table tr {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 12px !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 12px 14px !important;
-    overflow: visible !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td {
-    position: static !important;
-    width: auto !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 10px 2px !important;
-    overflow: visible !important;
-    line-height: 1.45;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="收件人"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="時間"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="待辦／逾期"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
-    grid-column: 1 / -1;
-    display: grid !important;
-    grid-template-columns: minmax(88px, 26%) minmax(0, 1fr);
-    align-items: start;
-    gap: 10px;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="通知類型"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="結果"] {
-    display: block !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td::before {
-    position: static !important;
-    width: auto !important;
-    margin: 0 !important;
-    line-height: 1.4;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="通知類型"]::before,
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="結果"]::before {
-    margin-bottom: 5px !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td > strong,
-  body.system-management-active #notificationManagementCard .notification-log-table td > span,
-  body.system-management-active #notificationManagementCard .notification-log-table td > small {
-    position: static !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    line-height: 1.45;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="結果"] > .tag {
-    display: inline-flex !important;
-    width: auto !important;
-    min-width: 72px !important;
-    max-width: 100% !important;
-    justify-content: center;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td > small {
-    margin-top: 4px !important;
-  }
-}
-
-@media (max-width: 390px) {
-  #outcomeSummary .management-metric-button,
-  #outcomeScoreDistribution .management-metric-button,
-  #dispatchManagementSummary .management-metric-button,
-  #monthlyPlanSummary .management-metric-button,
-  #backgroundJobSummary .management-metric-button,
-  #notificationSummary .management-metric-button,
-  #notificationDeliveryStats .management-metric-button,
-  #pdfManagementSummary .pdf-summary-filter-button {
-    min-height: 88px;
-    padding: 10px !important;
-  }
-
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="收件人"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="時間"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="待辦／逾期"],
-  body.system-management-active #notificationManagementCard .notification-log-table td[data-label="錯誤／批次"] {
-    grid-template-columns: minmax(78px, 28%) minmax(0, 1fr);
-    gap: 8px;
   }
 }
