@@ -1,4 +1,4 @@
-/* 數位月考核系統｜正式版本：1.0.1*/
+/* 數位月考核系統｜正式版本：1.1.1｜門市主管同步＋效能優化 */
 (function () {
   'use strict';
 
@@ -54,7 +54,11 @@
     },
     deleteDraft: function (evaluationNo) { return call('deleteDraft', { evaluationNo: evaluationNo }); },
     systemHealth: function () { return call('systemHealth', {}); },
+    performanceFoundationRepair: function (payload) { return call('performanceFoundationRepair', payload || {}); },
     accountManagementCenter: function (filters) { return call('accountManagementCenter', filters || {}); },
+    organizationReferenceOptions: function () { return call('organizationReferenceOptions', {}); },
+    organizationManagementCenter: function (filters) { return call('organizationManagementCenter', filters || {}); },
+    organizationSaveStore: function (payload, requestId) { return call('organizationSaveStore', payload || {}, requestId); },
     accountCreate: function (payload, requestId) { return call('accountCreate', payload || {}, requestId); },
     accountAuditPage: function (filters) { return call('accountAuditPage', filters || {}); },
     accountUnlock: function (payload, requestId) { return call('accountUnlock', payload || {}, requestId); },
