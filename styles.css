@@ -4346,3 +4346,48 @@ body.modal-open {
   background: var(--warning-soft, #fff7df);
   font-weight: 700;
 }
+
+/* V4 1.2.1｜組織管理：摘要卡快速篩選 */
+.organization-summary-action-grid {
+  align-items: stretch;
+}
+.organization-summary-action {
+  width: 100%;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+.organization-summary-action span {
+  display: block;
+  color: var(--muted);
+  font-size: .76rem;
+}
+.organization-summary-action strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 1rem;
+}
+.organization-summary-action:hover,
+.organization-summary-action:focus-visible {
+  border-color: var(--line-strong, var(--line));
+  background: var(--surface);
+  outline: none;
+}
+.organization-summary-action:active { transform: translateY(1px); }
+.organization-summary-action.is-active {
+  border-color: var(--accent, #9b4b1d);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--accent, #9b4b1d);
+}
+.organization-change-failure {
+  margin: 0;
+  color: var(--danger);
+  font-weight: 700;
+}
