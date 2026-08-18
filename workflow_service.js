@@ -1,4 +1,4 @@
-/* 數位月考核系統｜正式版本：1.1.1｜門市主管同步＋效能優化 */
+/* 數位月考核系統｜正式版本：1.2.0｜人員與組織異動＋未來生效 */
 (function () {
   'use strict';
 
@@ -59,6 +59,12 @@
     organizationReferenceOptions: function () { return call('organizationReferenceOptions', {}); },
     organizationManagementCenter: function (filters) { return call('organizationManagementCenter', filters || {}); },
     organizationSaveStore: function (payload, requestId) { return call('organizationSaveStore', payload || {}, requestId); },
+    organizationChangeCenter: function (filters) { return call('organizationChangeCenter', filters || {}); },
+    organizationSearch: function (payload) { return call('organizationSearch', payload || {}); },
+    organizationPersonSnapshot: function (employeeId) { return call('organizationPersonSnapshot', { employeeId: String(employeeId || '') }); },
+    organizationChangePreview: function (payload) { return call('organizationChangePreview', payload || {}); },
+    organizationChangeSave: function (payload, requestId) { return call('organizationChangeSave', payload || {}, requestId); },
+    organizationChangeCancel: function (payload, requestId) { return call('organizationChangeCancel', payload || {}, requestId); },
     accountCreate: function (payload, requestId) { return call('accountCreate', payload || {}, requestId); },
     accountAuditPage: function (filters) { return call('accountAuditPage', filters || {}); },
     accountUnlock: function (payload, requestId) { return call('accountUnlock', payload || {}, requestId); },
