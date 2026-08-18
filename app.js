@@ -112,6 +112,7 @@
     monthlyPlanPage: 1,
     monthlyPlanDrafts: {},
     monthlyPlanDraftMonth: '',
+    monthlyPlanPreflightFilter: 'ALL',
     outcomeMetric: null,
     outcomeMetricPage: 1,
     outcomeMetricContext: null,
@@ -916,14 +917,14 @@
         '<div class="organization-change-search-box"><label class="field-group"><span>加入人員</span><div class="organization-change-search-line"><input id="organizationChangePersonSearch" maxlength="80" placeholder="工號、姓名、店號或店名"><button id="organizationChangeSearchButton" class="secondary-button secondary-button--small" type="button">搜尋</button></div></label><div id="organizationChangeSearchResults" class="organization-change-search-results"></div></div>' +
         '<div id="organizationChangeItems" class="organization-change-items"><div class="empty-state"><h3>先加入要異動的人員</h3></div></div>' +
         '<div id="organizationChangePreviewBox" class="organization-change-preview" hidden></div>' +
-        '<div class="test-dispatch-actions organization-change-actions"><button id="organizationChangeEditorCancelButton" class="secondary-button" type="button">取消</button><button id="organizationChangeReviewButton" class="primary-button" type="button" disabled><span class="button-label">確認異動</span><span class="button-spinner"></span></button></div>' +
+        '<div class="test-dispatch-actions organization-change-actions"><button id="organizationChangeEditorCancelButton" class="secondary-button" type="button">取消</button><button id="organizationChangeReviewButton" class="primary-button" type="button" disabled><span class="button-label">預覽異動</span><span class="button-spinner"></span></button></div>' +
       '</section>' +
-      '<section id="organizationChangeConfirmPanel" class="detail-section organization-change-confirm" hidden><div id="organizationChangeConfirmContent"></div><label class="confirm-row"><input id="organizationChangeConfirm" type="checkbox"><span>我已確認本次異動內容。</span></label><div class="test-dispatch-actions"><button id="organizationChangeConfirmBackButton" class="secondary-button" type="button">返回修改</button><button id="organizationChangeSaveButton" class="primary-button" type="button" disabled><span class="button-label">建立異動</span><span class="button-spinner"></span></button></div></section>' +
+      '<section id="organizationChangeConfirmPanel" class="detail-section organization-change-confirm" hidden><div id="organizationChangeConfirmContent"></div><label class="confirm-row"><input id="organizationChangeConfirm" type="checkbox"><span>我已確認本次異動內容。</span></label><div class="test-dispatch-actions"><button id="organizationChangeConfirmBackButton" class="secondary-button" type="button">返回修改</button><button id="organizationChangeSaveButton" class="primary-button" type="button" disabled><span class="button-label">確認並建立異動</span><span class="button-spinner"></span></button></div></section>' +
       '<details id="organizationStoreMaintenance" class="detail-section organization-store-maintenance"><summary>門市資料</summary>' +
-        '<form id="organizationManagementFilterForm" class="filter-grid organization-filter-grid"><label class="field-group"><span>店號／店名</span><input id="organizationManagementKeyword" maxlength="80"></label><label class="field-group"><span>營業處／部門</span><select id="organizationManagementDepartment"><option value="">全部</option></select></label><label class="field-group"><span>區域</span><select id="organizationManagementArea"><option value="">全部</option></select></label><label class="field-group"><span>門市狀態</span><select id="organizationManagementEnabled"><option value="ALL">全部</option><option value="YES">啟用</option><option value="NO">停用</option></select></label><div class="test-dispatch-actions"><button id="organizationManagementSearchButton" class="secondary-button" type="submit"><span class="button-label">查詢</span><span class="button-spinner"></span></button><button id="organizationManagementNewButton" class="secondary-button" type="button">新增門市</button></div></form>' +
+        '<form id="organizationManagementFilterForm" class="filter-grid organization-filter-grid"><label class="field-group"><span>店號／店名</span><input id="organizationManagementKeyword" maxlength="80"></label><label class="field-group"><span>營業處</span><select id="organizationManagementDepartment"><option value="">全部</option></select></label><label class="field-group"><span>區域</span><select id="organizationManagementArea"><option value="">全部</option></select></label><label class="field-group"><span>門市狀態</span><select id="organizationManagementEnabled"><option value="ALL">全部</option><option value="YES">啟用</option><option value="NO">停用</option></select></label><div class="test-dispatch-actions"><button id="organizationManagementSearchButton" class="secondary-button" type="submit"><span class="button-label">查詢</span><span class="button-spinner"></span></button><button id="organizationManagementNewButton" class="secondary-button" type="button">新增門市</button></div></form>' +
         '<div id="organizationManagementMessage" class="form-message" hidden></div><div id="organizationManagementSummary"></div><section id="organizationManagementList" class="organization-store-grid"></section><div id="organizationManagementPagination" class="account-management-pagination" hidden><button id="organizationManagementPreviousButton" class="secondary-button secondary-button--small" type="button">上一頁</button><strong id="organizationManagementPageText">第1頁</strong><button id="organizationManagementNextButton" class="secondary-button secondary-button--small" type="button">下一頁</button></div>' +
         '<section id="organizationEditor" class="detail-section organization-editor" hidden><div class="test-dispatch-heading"><div><h4 id="organizationEditorTitle">門市資料</h4></div><button id="organizationEditorCloseButton" class="secondary-button secondary-button--small" type="button">關閉</button></div>' +
-          '<div class="organization-editor-grid"><label class="field-group"><span>店號</span><input id="organizationEditStoreCode" maxlength="20" required></label><label class="field-group"><span>店名</span><input id="organizationEditStoreName" maxlength="80" required></label><label class="field-group"><span>營業處／部門</span><input id="organizationEditDepartment" list="organizationDepartmentOptions" maxlength="40" required><datalist id="organizationDepartmentOptions"></datalist></label><label class="field-group"><span>區域</span><input id="organizationEditArea" list="organizationAreaOptions" maxlength="40" required><datalist id="organizationAreaOptions"></datalist></label><input id="organizationEditManager" type="hidden"><input id="organizationEditAreaSupervisor" type="hidden"><label class="field-group"><span>門市狀態</span><select id="organizationEditEnabled"><option value="YES">啟用</option><option value="NO">停用</option></select></label><input id="organizationPreviousManagerHandling" type="hidden" value="KEEP"><input id="organizationPreviousAreaSupervisorHandling" type="hidden" value="KEEP"><input id="organizationSyncAreaSupervisor" type="checkbox" checked hidden><label class="field-group organization-editor-wide"><span>備註</span><input id="organizationEditNote" maxlength="300"></label><label class="field-group"><span>異動原因</span><select id="organizationEditReason"><option value="門市組織調整">門市組織調整</option><option value="新門市建立">新門市建立</option><option value="資料修正">資料修正</option><option value="OTHER">其他</option></select></label><label id="organizationEditReasonOtherGroup" class="field-group" hidden><span>其他原因</span><input id="organizationEditReasonOther" maxlength="300"></label><label class="confirm-row organization-editor-wide"><input id="organizationEditConfirm" type="checkbox"><span>我已確認本次門市資料。</span></label></div>' +
+          '<div class="organization-editor-grid"><label class="field-group"><span>店號</span><input id="organizationEditStoreCode" maxlength="20" required></label><label class="field-group"><span>店名</span><input id="organizationEditStoreName" maxlength="80" required></label><label class="field-group"><span>營業處</span><select id="organizationEditDepartment" required><option value="">請選擇</option></select></label><label class="field-group"><span>區域</span><select id="organizationEditArea" required><option value="">請選擇</option></select></label><input id="organizationEditManager" type="hidden"><input id="organizationEditAreaSupervisor" type="hidden"><label class="field-group"><span>門市狀態</span><select id="organizationEditEnabled"><option value="YES">啟用</option><option value="NO">停用</option></select></label><input id="organizationPreviousManagerHandling" type="hidden" value="KEEP"><input id="organizationPreviousAreaSupervisorHandling" type="hidden" value="KEEP"><input id="organizationSyncAreaSupervisor" type="checkbox" checked hidden><label class="field-group organization-editor-wide"><span>備註</span><input id="organizationEditNote" maxlength="300"></label><label class="field-group"><span>異動原因</span><select id="organizationEditReason"><option value="門市組織調整">門市組織調整</option><option value="新門市建立">新門市建立</option><option value="資料修正">資料修正</option><option value="OTHER">其他</option></select></label><label id="organizationEditReasonOtherGroup" class="field-group" hidden><span>其他原因</span><input id="organizationEditReasonOther" maxlength="300"></label><label class="confirm-row organization-editor-wide"><input id="organizationEditConfirm" type="checkbox"><span>我已確認本次門市資料。</span></label></div>' +
           '<div class="test-dispatch-actions organization-editor-actions"><button id="organizationEditorCancelButton" class="secondary-button" type="button">取消</button><button id="organizationEditorSaveButton" class="primary-button" type="button" disabled><span class="button-label">儲存門市資料</span><span class="button-spinner"></span></button></div><article id="organizationEditorResult" class="card admin-result-card" hidden></article></section>' +
       '</details>';
     systemPanel.appendChild(article);
@@ -964,8 +965,8 @@
           systemManagementNavButtonV3_('dispatch', '月考核派發', '人工派發、排程與補派') +
           systemManagementNavButtonV3_('outcomes', '月考核成果分析', '分數趨勢與店區比較') +
           systemManagementNavGroupV3_('系統維護') +
-          systemManagementNavButtonV3_('accounts', '帳號與登入', '帳密、員工資料與啟停') +
-          systemManagementNavButtonV3_('organization', '人員與組織異動', '調店、升降任與主管配置') +
+          systemManagementNavButtonV3_('accounts', '帳號與登入', '帳密、解鎖與啟停') +
+          systemManagementNavButtonV3_('organization', '人員與組織異動', '調店、升降任與預排生效') +
           systemManagementNavButtonV3_('schema', '資料結構管理', '工作表健檢與安全補齊') +
           systemManagementNavButtonV3_('archive', '年度封存中心', '年度打包與安全清理') +
           systemManagementNavButtonV3_('health', '系統健檢', '連線、Session與異常檢查') +
@@ -1005,8 +1006,8 @@
       '<p>管理功能互相獨立，不會在進入系統管理時一次載入帳號、派發與PDF資料。</p></div></div>' +
       '<div class="system-home-grid">' +
         systemHomeCardV3_('jobs', '背景工作中心', '一頁查看通知、PDF、派發與封存工作狀態。', '異常工作可直接前往對應中心處理，不在此刪除資料') +
-        systemHomeCardV3_('accounts', '帳號與登入', '查詢、新增與編輯人員；每頁10人，可切換15人。', '員工資料、帳密查詢、解除鎖定、啟停帳號、強制登出') +
-        systemHomeCardV3_('organization', '人員與組織異動', '人員調店、升降任與主管配置。', '可預排生效日期') +
+        systemHomeCardV3_('accounts', '帳號與登入', '查詢、新增與帳號管理；每頁10人，可切換15人。', '帳密查詢、解除鎖定、啟停帳號、強制登出') +
+        systemHomeCardV3_('organization', '人員與組織異動', '人員調店、升降任與組織異動。', '可預排生效日期') +
         systemHomeCardV3_('monthlyPlan', '下月考核名單', '逐月勾選需要考核的人員並指定考核表類型。', '確認後才會納入每月自動派發') +
         systemHomeCardV3_('dispatch', '月考核派發', '只在進入本頁時載入當月派發狀態。', '每月1～3日排程、人工派發、補派與派發分析') +
         systemHomeCardV3_('outcomes', '月考核成果分析', '依已結案資料查看分數趨勢與組織平均。', '一般與店副理進階月考核表分開分析') +
@@ -4007,20 +4008,35 @@
     var warning = Number(preflight.warningCount || 0);
     var blocked = Number(preflight.blockedCount || 0);
     var anomalies = Array.isArray(preflight.anomalies) ? preflight.anomalies : [];
-    elements.monthlyPlanPreflight.hidden = false;
-    var anomalyHtml = anomalies.length ? '<div class="monthly-plan-preflight-issues">' + anomalies.map(function(item) {
-      var level = item.level === 'error' ? 'is-error' : 'is-warning';
+    var filter = String(state.monthlyPlanPreflightFilter || 'ALL');
+    if (filter === 'WARNING' && !warning) filter = 'ALL';
+    if (filter === 'BLOCKED' && !blocked) filter = 'ALL';
+    state.monthlyPlanPreflightFilter = filter;
+    var visible = anomalies.filter(function(item) {
+      if (filter === 'WARNING') return String(item.level || '').toUpperCase() !== 'BLOCKED';
+      if (filter === 'BLOCKED') return String(item.level || '').toUpperCase() === 'BLOCKED';
+      return true;
+    });
+    var anomalyHtml = visible.length ? '<div class="monthly-plan-preflight-issues">' + visible.map(function(item) {
+      var level = String(item.level || '').toUpperCase() === 'BLOCKED' ? 'is-error' : 'is-warning';
       return '<div class="monthly-plan-preflight-row ' + level + '"><div><strong>' + escapeHtml(joinText(item.employeeId, item.employeeName)) + '</strong><small>' + escapeHtml(joinStore(item.storeCode, item.storeName)) + '</small></div><span>' + escapeHtml(item.message || '') + '</span></div>';
     }).join('') + '</div>' : '';
+    elements.monthlyPlanPreflight.hidden = false;
     elements.monthlyPlanPreflight.innerHTML =
       (requiresReconfirmation ? '<div class="monthly-plan-preflight-reconfirm">組織異動後需重新確認名單</div>' : '') +
       '<div class="monthly-plan-preflight-counts">' +
         '<div><span>可正常派發</span><strong>' + ready + '</strong></div>' +
-        '<div class="' + (warning ? 'is-warning' : '') + '"><span>需確認</span><strong>' + warning + '</strong></div>' +
-        '<div class="' + (blocked ? 'is-error' : '') + '"><span>無法派發</span><strong>' + blocked + '</strong></div>' +
+        '<button type="button" data-monthly-preflight-filter="WARNING" class="monthly-plan-preflight-action' + (filter === 'WARNING' ? ' is-active' : '') + (warning ? ' is-warning' : '') + '"' + (warning ? '' : ' disabled') + '><span>需確認</span><strong>' + warning + '</strong></button>' +
+        '<button type="button" data-monthly-preflight-filter="BLOCKED" class="monthly-plan-preflight-action' + (filter === 'BLOCKED' ? ' is-active' : '') + (blocked ? ' is-error' : '') + '"' + (blocked ? '' : ' disabled') + '><span>無法派發</span><strong>' + blocked + '</strong></button>' +
       '</div>' + anomalyHtml;
+    Array.prototype.slice.call(elements.monthlyPlanPreflight.querySelectorAll('[data-monthly-preflight-filter]')).forEach(function(button) {
+      button.addEventListener('click', function() {
+        var next = String(button.getAttribute('data-monthly-preflight-filter') || 'ALL');
+        state.monthlyPlanPreflightFilter = state.monthlyPlanPreflightFilter === next ? 'ALL' : next;
+        renderMonthlyPlanPreflightV4_(preflight, requiresReconfirmation);
+      });
+    });
   }
-
   function getMonthlyPlanStatusPresentationV3_(data) {
     var dispatch = data && data.dispatchState || {};
     var scheduleEnabled = Boolean(data && data.automaticScheduleEnabled);
@@ -5126,7 +5142,7 @@
     var settings = options || {};
     if (!elements.organizationManagementCard || state.organizationManagementLoading) return;
     state.organizationManagementLoading = true;
-    setManagementCardLoadingV3_(elements.organizationManagementCard, true, state.organizationManagement ? '正在更新門市與主管配置…' : '正在載入門市與主管配置…');
+    setManagementCardLoadingV3_(elements.organizationManagementCard, true, state.organizationManagement ? '正在更新門市資料…' : '正在載入門市資料…');
     setButtonLoading(elements.organizationManagementSearchButton, true, '查詢中');
     if (elements.organizationManagementRefreshButton) elements.organizationManagementRefreshButton.disabled = true;
     if (elements.organizationManagementNewButton) elements.organizationManagementNewButton.disabled = true;
@@ -5143,10 +5159,10 @@
       state.organizationManagement = response.data || {};
       state.organizationManagementPage = Number(state.organizationManagement.pagination && state.organizationManagement.pagination.page || 1);
       renderOrganizationManagementCenterV3_(state.organizationManagement);
-      if (!settings.quiet) showOrganizationMessageV3_('success', '門市與主管配置已更新。');
+      showOrganizationMessageV3_('', '');
     } catch (error) {
       showOrganizationMessageV3_('error', friendlyError(error));
-      if (!state.organizationManagement && elements.organizationManagementList) elements.organizationManagementList.innerHTML = emptyStateHtml('門市配置讀取失敗', friendlyError(error));
+      if (!state.organizationManagement && elements.organizationManagementList) elements.organizationManagementList.innerHTML = emptyStateHtml('門市資料讀取失敗', friendlyError(error));
     } finally {
       state.organizationManagementLoading = false;
       setManagementCardLoadingV3_(elements.organizationManagementCard, false);
@@ -5163,12 +5179,10 @@
     if (elements.organizationManagementSummary) {
       var activeQuickFilter = String(data.activeQuickFilter || state.organizationManagementQuickFilter || '');
       state.organizationManagementQuickFilter = activeQuickFilter;
-      elements.organizationManagementSummary.innerHTML = '<div class="admin-result-grid organization-summary-action-grid">' +
-        organizationSummaryActionCardV3_('', '門市總數', summary.total || 0, activeQuickFilter) +
-        organizationSummaryActionCardV3_('ENABLED', '啟用門市', summary.enabled || 0, activeQuickFilter) +
-        organizationSummaryActionCardV3_('MANAGER_CONFIGURED', '店主管已配置', summary.managerConfigured || 0, activeQuickFilter) +
-        organizationSummaryActionCardV3_('MANAGER_MISSING', '店主管待配置', summary.managerMissing || 0, activeQuickFilter) +
-        organizationSummaryActionCardV3_('AREA_CONFIGURED', '區主管已配置', summary.areaSupervisorConfigured || 0, activeQuickFilter) +
+      elements.organizationManagementSummary.innerHTML = '<div class="admin-result-grid organization-summary-action-grid organization-store-summary-grid">' +
+        organizationSummaryActionCardV3_('', '全部門市', summary.total || 0, activeQuickFilter) +
+        organizationSummaryActionCardV3_('MANAGER_MISSING', '考核主責待設定', summary.managerMissing || 0, activeQuickFilter) +
+        organizationSummaryActionCardV3_('AREA_MISSING', '區主管待設定', summary.areaSupervisorMissing || 0, activeQuickFilter) +
         organizationSummaryActionCardV3_('ISSUES', '需檢查門市', summary.issueStores || 0, activeQuickFilter) + '</div>';
       Array.prototype.slice.call(elements.organizationManagementSummary.querySelectorAll('[data-organization-quick-filter]')).forEach(function(button) {
         button.addEventListener('click', function() {
@@ -5180,10 +5194,10 @@
         });
       });
     }
-    setSelectOptionsPreserveValue(elements.organizationManagementDepartment, [{ value: '', label: '全部營業處／部門' }].concat((options.departments || []).map(function(value) { return { value: value, label: value }; })));
+    setSelectOptionsPreserveValue(elements.organizationManagementDepartment, [{ value: '', label: '全部營業處' }].concat((options.departments || []).map(function(value) { return { value: value, label: value }; })));
     setSelectOptionsPreserveValue(elements.organizationManagementArea, [{ value: '', label: '全部區域' }].concat((options.areas || []).map(function(value) { return { value: value, label: value }; })));
-    if (elements.organizationDepartmentOptions) elements.organizationDepartmentOptions.innerHTML = (options.departments || []).map(function(value) { return '<option value="' + escapeHtml(value) + '"></option>'; }).join('');
-    if (elements.organizationAreaOptions) elements.organizationAreaOptions.innerHTML = (options.areas || []).map(function(value) { return '<option value="' + escapeHtml(value) + '"></option>'; }).join('');
+    setSelectOptionsPreserveValue(elements.organizationEditDepartment, [{ value: '', label: '請選擇' }].concat((options.departments || []).map(function(value) { return { value: value, label: value }; })));
+    setSelectOptionsPreserveValue(elements.organizationEditArea, [{ value: '', label: '請選擇' }].concat((options.areas || []).map(function(value) { return { value: value, label: value }; })));
 
     var stores = Array.isArray(data.stores) ? data.stores : [];
     if (!stores.length) {
@@ -5191,10 +5205,12 @@
     } else {
       elements.organizationManagementList.innerHTML = stores.map(function(store) {
         var issues = Array.isArray(store.issues) ? store.issues : [];
+        var managerExtra = Number(store.otherManagerCount || 0) > 0 ? '<small class="organization-manager-extra">另有 ' + Number(store.otherManagerCount || 0) + ' 位店長</small>' : '';
+        var statusTag = store.enabled ? '' : '<span class="tag tag--warning">停用</span>';
         return '<article class="organization-store-card' + (issues.length ? ' has-issues' : '') + '">' +
-          '<div class="organization-store-heading"><div><span class="tag' + (store.enabled ? ' tag--success' : ' tag--warning') + '">' + (store.enabled ? '啟用' : '停用') + '</span><strong>' + escapeHtml(joinText(store.storeCode, store.storeName)) + '</strong><small>' + escapeHtml(joinText(store.department, store.area)) + '</small></div><button class="secondary-button secondary-button--small" type="button" data-organization-edit="' + escapeHtml(store.storeCode || '') + '">編輯配置</button></div>' +
-          '<div class="organization-leadership-grid"><div><span>門市店主管</span><strong>' + escapeHtml(joinText(store.managerEmployeeId, store.managerEmployeeName) || '未配置') + '</strong></div><div><span>區主管</span><strong>' + escapeHtml(joinText(store.areaSupervisorEmployeeId, store.areaSupervisorEmployeeName) || '未配置') + '</strong></div></div>' +
-          (issues.length ? '<div class="organization-issues"><strong>需要確認</strong><ul>' + issues.map(function(issue) { return '<li>' + escapeHtml(issue) + '</li>'; }).join('') + '</ul></div>' : '<p class="organization-store-ok">配置一致</p>') +
+          '<div class="organization-store-heading"><div>' + statusTag + '<strong>' + escapeHtml(joinText(store.storeCode, store.storeName)) + '</strong><small>' + escapeHtml(joinText(store.department, store.area)) + '</small></div><button class="secondary-button secondary-button--small" type="button" data-organization-edit="' + escapeHtml(store.storeCode || '') + '">編輯門市</button></div>' +
+          '<div class="organization-leadership-grid"><div><span>考核主責店長</span><strong>' + escapeHtml(joinText(store.managerEmployeeId, store.managerEmployeeName) || '未設定') + '</strong>' + managerExtra + '</div><div><span>區主管</span><strong>' + escapeHtml(joinText(store.areaSupervisorEmployeeId, store.areaSupervisorEmployeeName) || '未設定') + '</strong></div></div>' +
+          (issues.length ? '<div class="organization-issues"><ul>' + issues.map(function(issue) { return '<li>' + escapeHtml(issue) + '</li>'; }).join('') + '</ul></div>' : '') +
           (store.note ? '<p class="section-help">備註：' + escapeHtml(store.note) + '</p>' : '') + '</article>';
       }).join('');
       Array.prototype.slice.call(elements.organizationManagementList.querySelectorAll('[data-organization-edit]')).forEach(function(button) {
@@ -5207,7 +5223,6 @@
     if (elements.organizationManagementPreviousButton) elements.organizationManagementPreviousButton.disabled = Number(pagination.page || 1) <= 1;
     if (elements.organizationManagementNextButton) elements.organizationManagementNextButton.disabled = Number(pagination.page || 1) >= Number(pagination.totalPages || 1);
   }
-
   function organizationSummaryActionCardV3_(filter, label, value, activeFilter) {
     var active = String(filter || '') === String(activeFilter || '');
     return '<button type="button" class="organization-summary-action' + (active ? ' is-active' : '') + '" data-organization-quick-filter="' + escapeHtml(filter || '') + '" aria-pressed="' + (active ? 'true' : 'false') + '"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(String(Number(value || 0))) + '</strong></button>';
@@ -5238,15 +5253,12 @@
     var isNew = !store;
     state.organizationEditingStoreCode = store ? String(store.storeCode || '').trim() : '';
     elements.organizationEditor.hidden = false;
-    elements.organizationEditorTitle.textContent = isNew ? '新增門市與主管配置' : '編輯 ' + joinText(store.storeCode, store.storeName);
+    elements.organizationEditorTitle.textContent = isNew ? '新增門市' : '編輯門市｜' + joinText(store.storeCode, store.storeName);
     elements.organizationEditStoreCode.readOnly = !isNew;
     elements.organizationEditStoreCode.value = store ? String(store.storeCode || '') : '';
     elements.organizationEditStoreName.value = store ? String(store.storeName || '') : '';
     elements.organizationEditDepartment.value = store ? String(store.department || '') : '';
     elements.organizationEditArea.value = store ? String(store.area || '') : '';
-    var options = state.organizationManagement.options || {};
-    elements.organizationEditManager.innerHTML = buildOrganizationCandidateOptionsUiV3_(options.managerCandidates, store && store.managerEmployeeId, store && store.managerEmployeeName);
-    elements.organizationEditAreaSupervisor.innerHTML = buildOrganizationCandidateOptionsUiV3_(options.areaSupervisorCandidates, store && store.areaSupervisorEmployeeId, store && store.areaSupervisorEmployeeName);
     elements.organizationEditManager.value = store ? String(store.managerEmployeeId || '') : '';
     elements.organizationEditAreaSupervisor.value = store ? String(store.areaSupervisorEmployeeId || '') : '';
     elements.organizationEditEnabled.value = !store || store.enabled ? 'YES' : 'NO';
@@ -5323,12 +5335,15 @@
       var data = response.data || {};
       var warnings = Array.isArray(data.warnings) ? data.warnings : [];
       var impactRows = Array.isArray(data.activeEvaluationImpacts) ? data.activeEvaluationImpacts : [];
-      elements.organizationEditorResult.hidden = false;
-      elements.organizationEditorResult.innerHTML = '<h4>同步完成</h4><p>' + escapeHtml(data.message || '門市與主管配置已更新。') + '</p>' +
-        '<div class="admin-result-grid">' + metaItem('同步員工', data.employeeSync && data.employeeSync.changedCount || 0) + metaItem('同步草稿', data.draftPlanSync && data.draftPlanSync.updatedCount || 0) + metaItem('進行中影響提醒', impactRows.reduce(function(total, item) { return total + Number(item.count || 0); }, 0)) + '</div>' +
-        (warnings.length ? '<div class="management-warning-list"><strong>需要後續確認</strong><ul>' + warnings.map(function(warning) { return '<li>' + escapeHtml(warning) + '</li>'; }).join('') + '</ul></div>' : '<p class="organization-store-ok">沒有需要人工補處理的項目。</p>');
-      showOrganizationMessageV3_(warnings.length ? 'warning' : 'success', warnings.length ? '同步已完成，但有需要教育中心確認的提醒。' : '門市、人員與尚未確認的下月草稿已完成同步。');
-      showGlobalNotice(warnings.length ? 'warning' : 'success', '門市主管配置同步完成', warnings.length ? warnings.join('\n') : (data.message || '同步完成。'), true);
+      if (warnings.length) {
+        elements.organizationEditorResult.hidden = false;
+        elements.organizationEditorResult.innerHTML = '<div class="management-warning-list"><strong>需要確認</strong><ul>' + warnings.map(function(warning) { return '<li>' + escapeHtml(warning) + '</li>'; }).join('') + '</ul></div>';
+      } else {
+        elements.organizationEditorResult.hidden = true;
+        elements.organizationEditorResult.innerHTML = '';
+      }
+      showOrganizationMessageV3_(warnings.length ? 'warning' : 'success', warnings.length ? '門市資料已更新，請確認下方提醒。' : '門市資料已更新。');
+      showGlobalNotice(warnings.length ? 'warning' : 'success', '門市資料已更新', warnings.length ? warnings.join('\n') : (data.message || '完成。'), true);
       state.organizationManagementPage = 1;
       state.organizationManagementLoading = false;
       await loadOrganizationManagementCenterV3_({ quiet: true });
@@ -5356,7 +5371,7 @@
       var response = await window.V3WorkflowService.organizationChangeCenter({});
       state.organizationChangeCenter = response.data || {};
       renderOrganizationChangeCenterV4_(state.organizationChangeCenter);
-      if (!settings.quiet) showOrganizationChangeMessageV4_('success', '資料已更新。');
+      showOrganizationChangeMessageV4_('', '');
     } catch (error) {
       showOrganizationChangeMessageV4_('error', friendlyError(error));
     } finally {
@@ -5370,51 +5385,55 @@
     data = data || {};
     var summary = data.summary || {};
     var activeFilter = String(state.organizationChangeSummaryFilter || 'PENDING');
+    if (['PENDING','HISTORY','FAILED'].indexOf(activeFilter) === -1) activeFilter = 'PENDING';
+    state.organizationChangeSummaryFilter = activeFilter;
     if (elements.organizationChangeSummary) {
       elements.organizationChangeSummary.innerHTML = '<div class="admin-result-grid organization-change-summary-grid organization-summary-action-grid">' +
         organizationChangeSummaryActionV4_('PENDING', '待生效', Number(summary.pendingCount || 0), activeFilter) +
-        organizationChangeSummaryActionV4_('DUE', '今日待處理', Number(summary.dueCount || 0), activeFilter) +
-        organizationChangeSummaryActionV4_('APPLIED', '最近已生效', Number(summary.recentAppliedCount || 0), activeFilter) +
-        organizationChangeSummaryActionV4_('FAILED', '最近失敗', Number(summary.recentFailedCount || 0), activeFilter) + '</div>';
+        organizationChangeSummaryActionV4_('HISTORY', '最近異動', Number(summary.recentHistoryCount || 0), activeFilter) +
+        organizationChangeSummaryActionV4_('FAILED', '執行異常', Number(summary.recentFailedCount || 0), activeFilter) + '</div>';
       Array.prototype.slice.call(elements.organizationChangeSummary.querySelectorAll('[data-org-change-summary-filter]')).forEach(function(button) {
         button.addEventListener('click', function() {
           state.organizationChangeSummaryFilter = String(button.getAttribute('data-org-change-summary-filter') || 'PENDING');
-          renderOrganizationChangeCenterV4_(state.organizationChangeCenter || data);
+          renderOrganizationChangeSummaryListV4_(data, state.organizationChangeSummaryFilter);
           if (elements.organizationChangePendingList && elements.organizationChangePendingList.scrollIntoView) elements.organizationChangePendingList.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       });
     }
     renderOrganizationChangeSummaryListV4_(data, activeFilter);
   }
-
   function organizationChangeSummaryActionV4_(filter, label, value, activeFilter) {
     var active = String(filter || '') === String(activeFilter || '');
     return '<button type="button" class="organization-summary-action' + (active ? ' is-active' : '') + '" data-org-change-summary-filter="' + escapeHtml(filter) + '" aria-pressed="' + (active ? 'true' : 'false') + '"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(String(Number(value || 0))) + '</strong></button>';
+  }
+
+  function organizationChangeBeforeAfterTextV4_(item) {
+    item = item || {};
+    var before = item.before || {}, after = item.after || {};
+    var beforeText = before.role === '區主管' ? [before.area, before.role].filter(Boolean).join('｜') : [joinStore(before.storeCode, before.storeName), before.role].filter(Boolean).join('｜');
+    var afterText = after.role === '區主管' ? [after.area, after.role].filter(Boolean).join('｜') : [joinStore(after.storeCode, after.storeName), after.role].filter(Boolean).join('｜');
+    var suffix = item.primaryManager ? '・考核主責' : (item.primaryAreaSupervisor && after.role === '區主管' ? '・區域主責' : '');
+    return (beforeText || '—') + ' → ' + (afterText || '—') + suffix;
   }
 
   function renderOrganizationChangeSummaryListV4_(data, filter) {
     if (!elements.organizationChangePendingList) return;
     var pending = Array.isArray(data.pending) ? data.pending : [];
     var recent = Array.isArray(data.recent) ? data.recent : [];
-    var today = String(data.today || '');
     var rows = [];
     var title = '待生效異動';
     var emptyTitle = '目前沒有待生效異動';
-    var editable = true;
-    if (filter === 'DUE') {
-      title = '今日待處理';
-      emptyTitle = '目前沒有今日待處理異動';
-      rows = pending.filter(function(order) { return !today || String(order.effectiveDate || '') <= today; });
-    } else if (filter === 'APPLIED') {
-      title = '最近已生效';
-      emptyTitle = '目前沒有最近已生效異動';
-      editable = false;
-      rows = recent.filter(function(order) { return String(order.status || '') === '已生效'; });
+    var mode = 'PENDING';
+    if (filter === 'HISTORY') {
+      title = '最近異動';
+      emptyTitle = '目前沒有最近異動';
+      mode = 'HISTORY';
+      rows = recent.filter(function(order) { return ['已生效','已取消'].indexOf(String(order.status || '')) !== -1; });
     } else if (filter === 'FAILED') {
-      title = '最近失敗';
-      emptyTitle = '目前沒有最近失敗異動';
-      editable = false;
-      rows = recent.filter(function(order) { return String(order.status || '') === '生效失敗'; });
+      title = '執行異常';
+      emptyTitle = '目前沒有執行異常';
+      mode = 'FAILED';
+      rows = Array.isArray(data.failed) ? data.failed : recent.filter(function(order) { return String(order.status || '') === '生效失敗'; });
     } else {
       rows = pending;
     }
@@ -5426,26 +5445,32 @@
     elements.organizationChangePendingList.innerHTML = rows.map(function(order) {
       var details = Array.isArray(order.items) ? order.items : [];
       var preview = details.slice(0, 3).map(function(item) {
-        return '<li>' + escapeHtml(joinText(item.employeeId, item.employeeName)) + '　' + escapeHtml(organizationChangeCompactDestinationV4_(item.after)) + '</li>';
+        return '<li><strong>' + escapeHtml(joinText(item.employeeId, item.employeeName)) + '</strong><span>' + escapeHtml(organizationChangeBeforeAfterTextV4_(item)) + '</span></li>';
       }).join('');
-      var actions = editable ? '<div class="organization-change-order-actions"><button type="button" class="secondary-button secondary-button--small" data-org-order-edit="' + escapeHtml(order.orderId || '') + '">編輯</button><button type="button" class="secondary-button secondary-button--small" data-org-order-cancel="' + escapeHtml(order.orderId || '') + '">取消</button></div>' : '';
-      var statusTag = !editable && order.status ? '<span class="tag' + (order.status === '生效失敗' ? ' tag--warning' : ' tag--success') + '">' + escapeHtml(order.status) + '</span>' : '<span class="tag tag--warning">' + escapeHtml(order.effectiveDate || '') + '</span>';
+      if (details.length > 3) preview += '<li class="organization-change-more-line">另有 ' + (details.length - 3) + ' 人</li>';
+      var actions = '';
+      if (mode === 'PENDING') {
+        actions = '<div class="organization-change-order-actions"><button type="button" class="secondary-button secondary-button--small" data-org-order-edit="' + escapeHtml(order.orderId || '') + '">編輯</button><button type="button" class="secondary-button secondary-button--small" data-org-order-cancel="' + escapeHtml(order.orderId || '') + '">取消</button></div>';
+      } else if (mode === 'FAILED') {
+        actions = '<div class="organization-change-order-actions"><button type="button" class="secondary-button secondary-button--small" data-org-order-recreate="' + escapeHtml(order.orderId || '') + '">重新建立</button></div>';
+      }
+      var statusClass = order.status === '已生效' ? ' tag--success' : (order.status === '生效失敗' ? ' tag--danger' : ' tag--warning');
+      var statusText = mode === 'PENDING' ? (order.effectiveDate || '待生效') : (order.status || '');
       var extra = order.failedReason ? '<p class="organization-change-failure">' + escapeHtml(order.failedReason) + '</p>' : '';
       return '<article class="organization-change-order" data-organization-order="' + escapeHtml(order.orderId || '') + '">' +
-        '<div class="organization-change-order-head"><div>' + statusTag + '<strong>' + escapeHtml(order.reason || '組織異動') + '</strong><small>' + Number(order.peopleCount || details.length || 0) + ' 人' + (order.effectiveDate ? ' · ' + escapeHtml(order.effectiveDate) : '') + '</small></div>' + actions + '</div>' +
-        (preview ? '<ul class="organization-change-order-preview">' + preview + (details.length > 3 ? '<li>另有 ' + (details.length - 3) + ' 人</li>' : '') + '</ul>' : '') + extra +
-      '</article>';
+        '<div class="organization-change-order-head"><div><span class="tag' + statusClass + '">' + escapeHtml(statusText) + '</span><strong>' + escapeHtml(order.reason || '組織異動') + '</strong><small>' + Number(order.peopleCount || details.length || 0) + ' 人' + (mode !== 'PENDING' && order.effectiveDate ? ' · ' + escapeHtml(order.effectiveDate) : '') + '</small></div>' + actions + '</div>' +
+        (preview ? '<ul class="organization-change-order-preview">' + preview + '</ul>' : '') + extra + '</article>';
     }).join('');
-    if (editable) {
-      Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-edit]')).forEach(function(button) {
-        button.addEventListener('click', function() { editOrganizationChangeOrderV4_(button.getAttribute('data-org-order-edit')); });
-      });
-      Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-cancel]')).forEach(function(button) {
-        button.addEventListener('click', function() { cancelOrganizationChangeOrderV4_(button.getAttribute('data-org-order-cancel')); });
-      });
-    }
+    Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-edit]')).forEach(function(button) {
+      button.addEventListener('click', function() { editOrganizationChangeOrderV4_(button.getAttribute('data-org-order-edit')); });
+    });
+    Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-cancel]')).forEach(function(button) {
+      button.addEventListener('click', function() { cancelOrganizationChangeOrderV4_(button.getAttribute('data-org-order-cancel')); });
+    });
+    Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-recreate]')).forEach(function(button) {
+      button.addEventListener('click', function() { recreateOrganizationChangeOrderV4_(button.getAttribute('data-org-order-recreate')); });
+    });
   }
-
   function organizationChangeCompactDestinationV4_(after) {
     after = after || {};
     if (String(after.role || '') === '區主管') return [after.area, after.role].filter(Boolean).join('｜');
@@ -5696,7 +5721,7 @@
     var limit = state.organizationChangeSearchExpanded ? people.length : Math.min(6, people.length);
     var peopleHtml = people.slice(0, limit).map(function(person) {
       var disabled = person.eligible ? '' : ' disabled';
-      return '<button type="button" class="organization-person-option" data-org-person-id="' + escapeHtml(person.employeeId || '') + '"' + disabled + '><span><strong>' + escapeHtml(joinText(person.employeeId, person.employeeName)) + '</strong><small>' + escapeHtml([person.role, joinStore(person.storeCode, person.storeName), person.area].filter(Boolean).join('｜')) + '</small></span>' + (person.eligible ? '<b>加入</b>' : '<b>不可直接異動</b>') + '</button>';
+      return '<button type="button" class="organization-person-option" data-org-person-id="' + escapeHtml(person.employeeId || '') + '"' + disabled + '><span><strong>' + escapeHtml(joinText(person.employeeId, person.employeeName)) + '</strong><small>' + escapeHtml([person.role, joinStore(person.storeCode, person.storeName), person.area, person.scheduledChange && person.scheduledChange.effectiveDate ? (person.scheduledChange.effectiveDate + ' 已有異動') : ''].filter(Boolean).join('｜')) + '</small></span>' + (person.eligible ? '<b>加入</b>' : '<b>不可直接異動</b>') + '</button>';
     }).join('');
     var more = !state.organizationChangeSearchExpanded && people.length > limit ? '<button id="organizationChangeMorePeopleButton" type="button" class="text-button">更多人員</button>' : '';
     var storesHtml = stores.slice(0, 5).map(function(store) {
@@ -5816,7 +5841,7 @@
       showOrganizationChangeMessageV4_('error', friendlyError(error));
     } finally {
       state.organizationChangeLoading = false;
-      setButtonLoading(elements.organizationChangeReviewButton, false, '確認異動');
+      setButtonLoading(elements.organizationChangeReviewButton, false, '預覽異動');
       updateOrganizationChangeReviewStateV4_();
     }
   }
@@ -5838,7 +5863,7 @@
   function renderOrganizationChangeConfirmationV4_(preview) {
     if (!elements.organizationChangeConfirmPanel || !elements.organizationChangeConfirmContent) return;
     var rows = Array.isArray(preview.items) ? preview.items : [];
-    elements.organizationChangeConfirmContent.innerHTML = '<div class="test-dispatch-heading"><div><h4>確認異動</h4><p class="section-help">' + escapeHtml(preview.effectiveDate || '') + ' 生效・' + rows.length + ' 人</p></div></div><div class="organization-change-diff-list">' + rows.map(function(item) {
+    elements.organizationChangeConfirmContent.innerHTML = '<div class="test-dispatch-heading"><div><h4>異動預覽</h4><p class="section-help">' + escapeHtml(preview.effectiveDate || '') + ' 生效・' + rows.length + ' 人</p></div></div><div class="organization-change-diff-list">' + rows.map(function(item) {
       var before = item.before || {}, after = item.after || {};
       var beforeText = before.role === '區主管' ? [before.area, before.role].filter(Boolean).join('｜') : [joinStore(before.storeCode, before.storeName), before.role].filter(Boolean).join('｜');
       var afterText = after.role === '區主管' ? [after.area, after.role].filter(Boolean).join('｜') : [joinStore(after.storeCode, after.storeName), after.role].filter(Boolean).join('｜');
@@ -5846,7 +5871,11 @@
     }).join('') + '</div>' + ((preview.warnings || []).length ? '<div class="organization-change-confirm-warnings">' + preview.warnings.map(function(item) { return '<p>⚠ ' + escapeHtml(item) + '</p>'; }).join('') + '</div>' : '');
     elements.organizationChangeConfirmPanel.hidden = false;
     if (elements.organizationChangeConfirm) elements.organizationChangeConfirm.checked = false;
-    if (elements.organizationChangeSaveButton) elements.organizationChangeSaveButton.disabled = true;
+    if (elements.organizationChangeSaveButton) {
+      elements.organizationChangeSaveButton.disabled = true;
+      var saveLabel = elements.organizationChangeSaveButton.querySelector('.button-label');
+      if (saveLabel) saveLabel.textContent = preview.immediate ? '確認並立即生效' : '確認並排程';
+    }
     if (elements.organizationChangeConfirmPanel.scrollIntoView) elements.organizationChangeConfirmPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -5868,7 +5897,25 @@
       showOrganizationChangeMessageV4_('error', friendlyError(error));
     } finally {
       state.organizationChangeLoading = false;
-      setButtonLoading(elements.organizationChangeSaveButton, false, '建立異動');
+      setButtonLoading(elements.organizationChangeSaveButton, false, state.organizationChangePreview && state.organizationChangePreview.immediate ? '確認並立即生效' : '確認並排程');
+    }
+  }
+
+  function recreateOrganizationChangeOrderV4_(orderId) {
+    var recent = state.organizationChangeCenter && Array.isArray(state.organizationChangeCenter.recent) ? state.organizationChangeCenter.recent : [];
+    var order = recent.filter(function(item) { return String(item.orderId || '') === String(orderId || ''); })[0];
+    if (!order || String(order.status || '') !== '生效失敗') return;
+    var clone = JSON.parse(JSON.stringify(order));
+    clone.orderId = '';
+    clone.effectiveDate = state.organizationChangeCenter && state.organizationChangeCenter.today || '';
+    startOrganizationChangeDraftV4_(clone);
+    state.organizationChangeEditingOrderId = '';
+    if (state.organizationChangeDraft) {
+      state.organizationChangeDraft.orderId = '';
+      state.organizationChangeDraft.effectiveMode = 'NOW';
+      state.organizationChangeDraft.effectiveDate = state.organizationChangeCenter && state.organizationChangeCenter.today || '';
+      if (elements.organizationChangeEditorTitle) elements.organizationChangeEditorTitle.textContent = '新增異動';
+      renderOrganizationChangeDraftV4_();
     }
   }
 
