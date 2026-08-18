@@ -3967,3 +3967,110 @@ body.modal-open {
     grid-template-columns: 1fr;
   }
 }
+
+/* 1.1.1｜門市主管同步管理中心 */
+.organization-management-card { margin-top: 16px; }
+.organization-policy-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0 16px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.organization-policy-strip strong { margin-right: 4px; }
+.organization-policy-strip span {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: .78rem;
+}
+.organization-filter-grid { margin-bottom: 12px; }
+.organization-store-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.organization-store-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+.organization-store-card.has-issues { border-color: var(--warning); }
+.organization-store-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.organization-store-heading > div { display: grid; gap: 5px; min-width: 0; }
+.organization-store-heading strong { font-size: 1rem; }
+.organization-store-heading small { color: var(--muted); }
+.organization-leadership-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.organization-leadership-grid > div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+}
+.organization-leadership-grid span { color: var(--muted); font-size: .76rem; font-weight: 700; }
+.organization-issues,
+.management-warning-list {
+  padding: 10px 12px;
+  border: 1px solid var(--warning);
+  border-radius: 10px;
+  background: var(--warning-soft);
+}
+.organization-issues ul,
+.management-warning-list ul { margin: 7px 0 0 18px; padding: 0; }
+.organization-issues li,
+.management-warning-list li { margin: 4px 0; line-height: 1.5; }
+.organization-store-ok { margin: 0; font-weight: 700; color: var(--success); }
+.organization-editor { margin-top: 16px; }
+.organization-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.organization-editor-wide { grid-column: 1 / -1; }
+.organization-impact-note {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  line-height: 1.8;
+}
+.organization-impact-note span {
+  display: inline-block;
+  margin: 3px 5px 3px 0;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: .78rem;
+}
+.organization-editor-actions { justify-content: flex-end; margin-top: 14px; }
+@media (max-width: 820px) {
+  .organization-store-grid,
+  .organization-editor-grid,
+  .organization-leadership-grid { grid-template-columns: 1fr; }
+  .organization-editor-wide { grid-column: 1; }
+  .organization-store-heading { flex-direction: column; }
+  .organization-store-heading button { width: 100%; }
+  .organization-editor-actions { display: grid; grid-template-columns: 1fr; }
+  .organization-editor-actions button { width: 100%; }
+}
