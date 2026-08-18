@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="light">
   <meta name="robots" content="noindex,nofollow">
   <title>月考核系統</title>
-  <link rel="stylesheet" href="styles.css?v=1.0.12-monthly-plan-flow">
+  <link rel="stylesheet" href="styles.css?v=1.1.1-formal-20260817">
 </head>
 <body>
   <div class="app-shell">
@@ -194,6 +194,11 @@
               <p>檢查必要工作表、考核資料量、停留超過24小時案件與 PDF 失敗數。</p>
               <button id="adminSystemHealthButton" class="primary-button" type="button">執行系統健檢</button>
             </article>
+            <article class="admin-tool-card">
+              <h3>效能基礎修復</h3>
+              <p>重建進行中案件索引並補齊效能紀錄／每日維護排程；不修改考核內容、簽核流程或PDF規則。</p>
+              <button id="adminPerformanceRepairButton" class="secondary-button" type="button">重建索引與效能排程</button>
+            </article>
           </div>
           <div id="adminSystemMessage" class="form-message" role="status" aria-live="polite" hidden></div>
           <article id="adminSystemResult" class="card admin-result-card" hidden></article>
@@ -312,9 +317,9 @@
   <script src="api_config.js?v=1.0.4-ui" defer></script>
   <script src="api_client.js?v=1.0.1" defer></script>
   <script src="auth_service.js?v=1.0.1" defer></script>
-  <script src="workflow_service.js?v=1.0.2-gm-exception" defer></script>
+  <script src="workflow_service.js?v=1.1.1-formal-20260817" defer></script>
   <script src="signature_pad.js?v=1.0.1" defer></script>
   <script src="evaluation_form.js?v=1.0.6-gm-exception" defer></script>
-  <script src="app.js?v=1.0.12-monthly-plan-flow" defer></script>
+  <script src="app.js?v=1.1.1-formal-20260817" defer></script>
 </body>
 </html>
