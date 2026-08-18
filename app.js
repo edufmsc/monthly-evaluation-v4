@@ -64,6 +64,7 @@
     organizationManagement: null,
     organizationManagementLoading: false,
     organizationManagementPage: 1,
+    organizationManagementQuickFilter: '',
     organizationEditingStoreCode: '',
     organizationChangeCenter: null,
     organizationChangeLoading: false,
@@ -72,6 +73,7 @@
     organizationChangeSearchResults: null,
     organizationChangeSearchExpanded: false,
     organizationChangeEditingOrderId: '',
+    organizationChangeSummaryFilter: 'PENDING',
     accountAuditPage: 1,
     accountAuditPageSize: 10,
     accountAuditLoading: false,
@@ -902,7 +904,7 @@
       '<div id="organizationChangeMessage" class="form-message" role="status" aria-live="polite" hidden></div>' +
       '<div id="organizationChangeSummary"></div>' +
       '<div class="organization-change-toolbar"><button id="organizationChangeNewButton" class="primary-button" type="button">新增異動</button></div>' +
-      '<section class="detail-section organization-change-pending"><div class="test-dispatch-heading"><div><h4>待生效異動</h4></div></div><div id="organizationChangePendingList"><div class="empty-state"><h3>目前沒有待生效異動</h3></div></div></section>' +
+      '<section class="detail-section organization-change-pending"><div class="test-dispatch-heading"><div><h4 id="organizationChangeListTitle">待生效異動</h4></div></div><div id="organizationChangePendingList"><div class="empty-state"><h3>目前沒有待生效異動</h3></div></div></section>' +
       '<section id="organizationChangeEditor" class="detail-section organization-change-editor" hidden>' +
         '<div class="test-dispatch-heading"><div><h4 id="organizationChangeEditorTitle">新增異動</h4></div><button id="organizationChangeEditorCloseButton" class="secondary-button secondary-button--small" type="button">關閉</button></div>' +
         '<div class="organization-change-top-grid">' +
@@ -5134,8 +5136,9 @@
         department: normalizeManagementSelectV3_(elements.organizationManagementDepartment && elements.organizationManagementDepartment.value, ''),
         area: normalizeManagementSelectV3_(elements.organizationManagementArea && elements.organizationManagementArea.value, ''),
         enabled: normalizeManagementSelectV3_(elements.organizationManagementEnabled && elements.organizationManagementEnabled.value, 'ALL'),
+        quickFilter: String(state.organizationManagementQuickFilter || ''),
         page: normalizeManagementPageV3_(state.organizationManagementPage),
-        pageSize: 12
+        pageSize: 10
       });
       state.organizationManagement = response.data || {};
       state.organizationManagementPage = Number(state.organizationManagement.pagination && state.organizationManagement.pagination.page || 1);
@@ -5158,10 +5161,24 @@
     var summary = data.summary || {};
     var options = data.options || {};
     if (elements.organizationManagementSummary) {
-      elements.organizationManagementSummary.innerHTML = '<div class="admin-result-grid">' +
-        metaItem('門市總數', summary.total || 0) + metaItem('啟用門市', summary.enabled || 0) +
-        metaItem('店主管已配置', summary.managerConfigured || 0) + metaItem('店主管待配置', summary.managerMissing || 0) +
-        metaItem('區主管已配置', summary.areaSupervisorConfigured || 0) + metaItem('需檢查門市', summary.issueStores || 0) + '</div>';
+      var activeQuickFilter = String(data.activeQuickFilter || state.organizationManagementQuickFilter || '');
+      state.organizationManagementQuickFilter = activeQuickFilter;
+      elements.organizationManagementSummary.innerHTML = '<div class="admin-result-grid organization-summary-action-grid">' +
+        organizationSummaryActionCardV3_('', '門市總數', summary.total || 0, activeQuickFilter) +
+        organizationSummaryActionCardV3_('ENABLED', '啟用門市', summary.enabled || 0, activeQuickFilter) +
+        organizationSummaryActionCardV3_('MANAGER_CONFIGURED', '店主管已配置', summary.managerConfigured || 0, activeQuickFilter) +
+        organizationSummaryActionCardV3_('MANAGER_MISSING', '店主管待配置', summary.managerMissing || 0, activeQuickFilter) +
+        organizationSummaryActionCardV3_('AREA_CONFIGURED', '區主管已配置', summary.areaSupervisorConfigured || 0, activeQuickFilter) +
+        organizationSummaryActionCardV3_('ISSUES', '需檢查門市', summary.issueStores || 0, activeQuickFilter) + '</div>';
+      Array.prototype.slice.call(elements.organizationManagementSummary.querySelectorAll('[data-organization-quick-filter]')).forEach(function(button) {
+        button.addEventListener('click', function() {
+          state.organizationManagementQuickFilter = String(button.getAttribute('data-organization-quick-filter') || '');
+          state.organizationManagementPage = 1;
+          Promise.resolve(loadOrganizationManagementCenterV3_({ quiet: true })).then(function() {
+            if (elements.organizationManagementList && elements.organizationManagementList.scrollIntoView) elements.organizationManagementList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        });
+      });
     }
     setSelectOptionsPreserveValue(elements.organizationManagementDepartment, [{ value: '', label: '全部營業處／部門' }].concat((options.departments || []).map(function(value) { return { value: value, label: value }; })));
     setSelectOptionsPreserveValue(elements.organizationManagementArea, [{ value: '', label: '全部區域' }].concat((options.areas || []).map(function(value) { return { value: value, label: value }; })));
@@ -5185,10 +5202,15 @@
       });
     }
     var pagination = data.pagination || {};
-    if (elements.organizationManagementPagination) elements.organizationManagementPagination.hidden = Number(pagination.total || 0) <= Number(pagination.pageSize || 12);
+    if (elements.organizationManagementPagination) elements.organizationManagementPagination.hidden = Number(pagination.total || 0) <= Number(pagination.pageSize || 10);
     if (elements.organizationManagementPageText) elements.organizationManagementPageText.textContent = '第' + Number(pagination.page || 1) + '頁／共' + Number(pagination.totalPages || 1) + '頁（' + Number(pagination.total || 0) + '間）';
     if (elements.organizationManagementPreviousButton) elements.organizationManagementPreviousButton.disabled = Number(pagination.page || 1) <= 1;
     if (elements.organizationManagementNextButton) elements.organizationManagementNextButton.disabled = Number(pagination.page || 1) >= Number(pagination.totalPages || 1);
+  }
+
+  function organizationSummaryActionCardV3_(filter, label, value, activeFilter) {
+    var active = String(filter || '') === String(activeFilter || '');
+    return '<button type="button" class="organization-summary-action' + (active ? ' is-active' : '') + '" data-organization-quick-filter="' + escapeHtml(filter || '') + '" aria-pressed="' + (active ? 'true' : 'false') + '"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(String(Number(value || 0))) + '</strong></button>';
   }
 
   function getOrganizationStoreFromCurrentPageV3_(storeCode) {
@@ -5347,35 +5369,81 @@
   function renderOrganizationChangeCenterV4_(data) {
     data = data || {};
     var summary = data.summary || {};
+    var activeFilter = String(state.organizationChangeSummaryFilter || 'PENDING');
     if (elements.organizationChangeSummary) {
-      elements.organizationChangeSummary.innerHTML = '<div class="admin-result-grid organization-change-summary-grid">' +
-        metaItem('待生效', Number(summary.pendingCount || 0)) +
-        metaItem('今日待處理', Number(summary.dueCount || 0)) +
-        metaItem('最近已生效', Number(summary.recentAppliedCount || 0)) +
-        metaItem('最近失敗', Number(summary.recentFailedCount || 0)) + '</div>';
+      elements.organizationChangeSummary.innerHTML = '<div class="admin-result-grid organization-change-summary-grid organization-summary-action-grid">' +
+        organizationChangeSummaryActionV4_('PENDING', '待生效', Number(summary.pendingCount || 0), activeFilter) +
+        organizationChangeSummaryActionV4_('DUE', '今日待處理', Number(summary.dueCount || 0), activeFilter) +
+        organizationChangeSummaryActionV4_('APPLIED', '最近已生效', Number(summary.recentAppliedCount || 0), activeFilter) +
+        organizationChangeSummaryActionV4_('FAILED', '最近失敗', Number(summary.recentFailedCount || 0), activeFilter) + '</div>';
+      Array.prototype.slice.call(elements.organizationChangeSummary.querySelectorAll('[data-org-change-summary-filter]')).forEach(function(button) {
+        button.addEventListener('click', function() {
+          state.organizationChangeSummaryFilter = String(button.getAttribute('data-org-change-summary-filter') || 'PENDING');
+          renderOrganizationChangeCenterV4_(state.organizationChangeCenter || data);
+          if (elements.organizationChangePendingList && elements.organizationChangePendingList.scrollIntoView) elements.organizationChangePendingList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
     }
-    var pending = Array.isArray(data.pending) ? data.pending : [];
+    renderOrganizationChangeSummaryListV4_(data, activeFilter);
+  }
+
+  function organizationChangeSummaryActionV4_(filter, label, value, activeFilter) {
+    var active = String(filter || '') === String(activeFilter || '');
+    return '<button type="button" class="organization-summary-action' + (active ? ' is-active' : '') + '" data-org-change-summary-filter="' + escapeHtml(filter) + '" aria-pressed="' + (active ? 'true' : 'false') + '"><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(String(Number(value || 0))) + '</strong></button>';
+  }
+
+  function renderOrganizationChangeSummaryListV4_(data, filter) {
     if (!elements.organizationChangePendingList) return;
-    if (!pending.length) {
-      elements.organizationChangePendingList.innerHTML = '<div class="empty-state compact"><h3>目前沒有待生效異動</h3></div>';
+    var pending = Array.isArray(data.pending) ? data.pending : [];
+    var recent = Array.isArray(data.recent) ? data.recent : [];
+    var today = String(data.today || '');
+    var rows = [];
+    var title = '待生效異動';
+    var emptyTitle = '目前沒有待生效異動';
+    var editable = true;
+    if (filter === 'DUE') {
+      title = '今日待處理';
+      emptyTitle = '目前沒有今日待處理異動';
+      rows = pending.filter(function(order) { return !today || String(order.effectiveDate || '') <= today; });
+    } else if (filter === 'APPLIED') {
+      title = '最近已生效';
+      emptyTitle = '目前沒有最近已生效異動';
+      editable = false;
+      rows = recent.filter(function(order) { return String(order.status || '') === '已生效'; });
+    } else if (filter === 'FAILED') {
+      title = '最近失敗';
+      emptyTitle = '目前沒有最近失敗異動';
+      editable = false;
+      rows = recent.filter(function(order) { return String(order.status || '') === '生效失敗'; });
+    } else {
+      rows = pending;
+    }
+    if (elements.organizationChangeListTitle) elements.organizationChangeListTitle.textContent = title;
+    if (!rows.length) {
+      elements.organizationChangePendingList.innerHTML = '<div class="empty-state compact"><h3>' + escapeHtml(emptyTitle) + '</h3></div>';
       return;
     }
-    elements.organizationChangePendingList.innerHTML = pending.map(function(order) {
-      var rows = Array.isArray(order.items) ? order.items : [];
-      var preview = rows.slice(0, 3).map(function(item) {
+    elements.organizationChangePendingList.innerHTML = rows.map(function(order) {
+      var details = Array.isArray(order.items) ? order.items : [];
+      var preview = details.slice(0, 3).map(function(item) {
         return '<li>' + escapeHtml(joinText(item.employeeId, item.employeeName)) + '　' + escapeHtml(organizationChangeCompactDestinationV4_(item.after)) + '</li>';
       }).join('');
+      var actions = editable ? '<div class="organization-change-order-actions"><button type="button" class="secondary-button secondary-button--small" data-org-order-edit="' + escapeHtml(order.orderId || '') + '">編輯</button><button type="button" class="secondary-button secondary-button--small" data-org-order-cancel="' + escapeHtml(order.orderId || '') + '">取消</button></div>' : '';
+      var statusTag = !editable && order.status ? '<span class="tag' + (order.status === '生效失敗' ? ' tag--warning' : ' tag--success') + '">' + escapeHtml(order.status) + '</span>' : '<span class="tag tag--warning">' + escapeHtml(order.effectiveDate || '') + '</span>';
+      var extra = order.failedReason ? '<p class="organization-change-failure">' + escapeHtml(order.failedReason) + '</p>' : '';
       return '<article class="organization-change-order" data-organization-order="' + escapeHtml(order.orderId || '') + '">' +
-        '<div class="organization-change-order-head"><div><span class="tag tag--warning">' + escapeHtml(order.effectiveDate || '') + '</span><strong>' + escapeHtml(order.reason || '組織異動') + '</strong><small>' + Number(order.peopleCount || rows.length || 0) + ' 人</small></div><div class="organization-change-order-actions"><button type="button" class="secondary-button secondary-button--small" data-org-order-edit="' + escapeHtml(order.orderId || '') + '">編輯</button><button type="button" class="secondary-button secondary-button--small" data-org-order-cancel="' + escapeHtml(order.orderId || '') + '">取消</button></div></div>' +
-        (preview ? '<ul class="organization-change-order-preview">' + preview + (rows.length > 3 ? '<li>另有 ' + (rows.length - 3) + ' 人</li>' : '') + '</ul>' : '') +
+        '<div class="organization-change-order-head"><div>' + statusTag + '<strong>' + escapeHtml(order.reason || '組織異動') + '</strong><small>' + Number(order.peopleCount || details.length || 0) + ' 人' + (order.effectiveDate ? ' · ' + escapeHtml(order.effectiveDate) : '') + '</small></div>' + actions + '</div>' +
+        (preview ? '<ul class="organization-change-order-preview">' + preview + (details.length > 3 ? '<li>另有 ' + (details.length - 3) + ' 人</li>' : '') + '</ul>' : '') + extra +
       '</article>';
     }).join('');
-    Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-edit]')).forEach(function(button) {
-      button.addEventListener('click', function() { editOrganizationChangeOrderV4_(button.getAttribute('data-org-order-edit')); });
-    });
-    Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-cancel]')).forEach(function(button) {
-      button.addEventListener('click', function() { cancelOrganizationChangeOrderV4_(button.getAttribute('data-org-order-cancel')); });
-    });
+    if (editable) {
+      Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-edit]')).forEach(function(button) {
+        button.addEventListener('click', function() { editOrganizationChangeOrderV4_(button.getAttribute('data-org-order-edit')); });
+      });
+      Array.prototype.slice.call(elements.organizationChangePendingList.querySelectorAll('[data-org-order-cancel]')).forEach(function(button) {
+        button.addEventListener('click', function() { cancelOrganizationChangeOrderV4_(button.getAttribute('data-org-order-cancel')); });
+      });
+    }
   }
 
   function organizationChangeCompactDestinationV4_(after) {
@@ -6207,7 +6275,7 @@
   }
 
   function cacheModificationElementsV3_() {
-    ['organizationManagementCard','organizationChangeRefreshButton','organizationChangeMessage','organizationChangeSummary','organizationChangeNewButton','organizationChangePendingList','organizationChangeEditor','organizationChangeEditorTitle','organizationChangeEditorCloseButton','organizationChangeEffectiveMode','organizationChangeEffectiveDateGroup','organizationChangeEffectiveDate','organizationChangeReason','organizationChangeReasonOtherGroup','organizationChangeReasonOther','organizationChangePersonSearch','organizationChangeSearchButton','organizationChangeSearchResults','organizationChangeItems','organizationChangePreviewBox','organizationChangeEditorCancelButton','organizationChangeReviewButton','organizationChangeConfirmPanel','organizationChangeConfirmContent','organizationChangeConfirm','organizationChangeConfirmBackButton','organizationChangeSaveButton','organizationStoreMaintenance','organizationManagementRefreshButton','organizationManagementFilterForm','organizationManagementKeyword','organizationManagementDepartment','organizationManagementArea','organizationManagementEnabled','organizationManagementSearchButton','organizationManagementNewButton','organizationManagementMessage','organizationManagementSummary','organizationManagementList','organizationManagementPagination','organizationManagementPreviousButton','organizationManagementNextButton','organizationManagementPageText','organizationEditor','organizationEditorTitle','organizationEditorCloseButton','organizationEditStoreCode','organizationEditStoreName','organizationEditDepartment','organizationDepartmentOptions','organizationEditArea','organizationAreaOptions','organizationEditManager','organizationEditAreaSupervisor','organizationEditEnabled','organizationPreviousManagerHandling','organizationPreviousAreaSupervisorHandling','organizationSyncAreaSupervisor','organizationEditNote','organizationEditReason','organizationEditReasonOtherGroup','organizationEditReasonOther','organizationEditConfirm','organizationEditorCancelButton','organizationEditorSaveButton','organizationEditorResult','accountStoreOptions','dispatchManagementPageSize','dispatchAttemptPageSize','accountCreatePanel','accountCreateForm','accountCreateEmployeeId','accountCreatePassword','accountCreateEmployeeName','accountCreateRole','accountCreateStoreCode','accountCreateDepartment','accountCreateArea','accountCreateTransferDate','accountCreateNeedsEvaluation','accountCreateDefaultEvaluationVersion','accountCreateEmploymentStatus','accountCreateAccountStatus','accountCreateNotificationEmail','accountCreateNote','accountCreateReason','accountCreateConfirm','accountCreateResetButton','accountCreateSubmitButton','accountCreateMessage','accountCreateResult','accountAuditPageSize','accountAuditPagination','accountAuditPreviousButton','accountAuditNextButton','accountAuditPageText','accountActionEmailGroup','accountActionEmail','accountActionDefaultVersionGroup','accountActionDefaultVersion','pdfManagementYear','pdfManagementMonthNumber','pdfManagementAbnormalButton','notificationManagementCard','notificationSettingsForm','notificationEnabled','notificationSystemUrl','notificationDailyHour','notificationOverdueDays','notificationBatchSize','notificationSaveButton','notificationMessage','notificationSummary','notificationScheduleStatus','notificationRefreshButton','notificationForceResend','notificationSendSelectedButton','notificationSendAllButton','notificationSendOverdueButton','notificationSelectVisibleButton','notificationClearSelectedButton','notificationSelectedCount','notificationRunWorkerButton','notificationScheduleConfirm','notificationInstallScheduleButton','notificationDisableScheduleButton','notificationRecipientList','notificationRecipientPagination','notificationRecipientPreviousButton','notificationRecipientNextButton','notificationRecipientPageText','notificationLogPanel','notificationLogList','notificationLogPagination','notificationLogPreviousButton','notificationLogNextButton','notificationLogPageText','notificationPreviewOverlay','notificationPreviewSummary','notificationPreviewList','notificationPreviewConfirm','notificationPreviewCancelButton','notificationPreviewRunButton','monthlyPlanManagementCard','monthlyPlanRefreshButton','monthlyPlanFilterForm','monthlyPlanMonth','monthlyPlanKeyword','monthlyPlanViewMode','monthlyPlanSearchButton','monthlyPlanMessage','monthlyPlanSummary','monthlyPlanDraftStatus','monthlyPlanDraftHint','monthlyPlanLockStatus','monthlyPlanFinalSummary','monthlyPlanPreflight','monthlyPlanScheduleHint','monthlyPlanReopenReasonPanel','monthlyPlanReason','monthlyPlanReasonOtherGroup','monthlyPlanReasonOther','monthlyPlanConfirm','monthlyPlanConfirmLabel','monthlyPlanActionHint','monthlyPlanSaveButton','monthlyPlanLockButton','monthlyPlanReopenButton','monthlyPlanSelectPageButton','monthlyPlanClearPageButton','monthlyPlanRestorePageButton','monthlyPlanList','monthlyPlanPagination','monthlyPlanPreviousButton','monthlyPlanNextButton','monthlyPlanPageText','dispatchScheduleSection','dispatchScheduleRefreshButton','dispatchScheduleSummary','dispatchSchedulePlanStatus','dispatchScheduleHour','dispatchScheduleConfirm','dispatchScheduleInstallButton','dispatchScheduleDisableButton','outcomeAnalysisCard','outcomeRefreshButton','outcomeFilterForm','outcomeStartMonth','outcomeEndMonth','outcomeVersion','outcomeKeyword','outcomeStoreCode','outcomeArea','outcomeSearchButton','outcomeMessage','outcomeSummary','outcomeMonthlyTrend','outcomeVersionSummary','outcomeStoreRanking','outcomeAreaRanking','outcomeItemGroups','outcomeDetailList','outcomePagination','outcomePreviousButton','outcomeNextButton','outcomePageText','outcomeMetricOverlay','outcomeMetricTitle','outcomeMetricList','outcomeMetricPagination','outcomeMetricPreviousButton','outcomeMetricNextButton','outcomeMetricPageText','outcomeMetricCloseButton','outcomeScoreDistribution','outcomeCompareForm','outcomeCompareMode','outcomeCompareLeftLabel','outcomeCompareRightLabel','outcomeCompareLeft','outcomeCompareRight','outcomeCompareButton','outcomeCompareMessage','outcomeCompareResult','notificationDeliveryStats','notificationFailureReasons','notificationFailedSelectedCount','notificationFailedSelectPageButton','notificationFailedClearButton','notificationFailedList','notificationFailedPagination','notificationFailedPreviousButton','notificationFailedNextButton','notificationFailedPageText','notificationFailedConfirm','notificationRetrySelectedButton','notificationRetryAllButton'].forEach(function(id) {
+    ['organizationManagementCard','organizationChangeRefreshButton','organizationChangeMessage','organizationChangeSummary','organizationChangeNewButton','organizationChangeListTitle','organizationChangePendingList','organizationChangeEditor','organizationChangeEditorTitle','organizationChangeEditorCloseButton','organizationChangeEffectiveMode','organizationChangeEffectiveDateGroup','organizationChangeEffectiveDate','organizationChangeReason','organizationChangeReasonOtherGroup','organizationChangeReasonOther','organizationChangePersonSearch','organizationChangeSearchButton','organizationChangeSearchResults','organizationChangeItems','organizationChangePreviewBox','organizationChangeEditorCancelButton','organizationChangeReviewButton','organizationChangeConfirmPanel','organizationChangeConfirmContent','organizationChangeConfirm','organizationChangeConfirmBackButton','organizationChangeSaveButton','organizationStoreMaintenance','organizationManagementRefreshButton','organizationManagementFilterForm','organizationManagementKeyword','organizationManagementDepartment','organizationManagementArea','organizationManagementEnabled','organizationManagementSearchButton','organizationManagementNewButton','organizationManagementMessage','organizationManagementSummary','organizationManagementList','organizationManagementPagination','organizationManagementPreviousButton','organizationManagementNextButton','organizationManagementPageText','organizationEditor','organizationEditorTitle','organizationEditorCloseButton','organizationEditStoreCode','organizationEditStoreName','organizationEditDepartment','organizationDepartmentOptions','organizationEditArea','organizationAreaOptions','organizationEditManager','organizationEditAreaSupervisor','organizationEditEnabled','organizationPreviousManagerHandling','organizationPreviousAreaSupervisorHandling','organizationSyncAreaSupervisor','organizationEditNote','organizationEditReason','organizationEditReasonOtherGroup','organizationEditReasonOther','organizationEditConfirm','organizationEditorCancelButton','organizationEditorSaveButton','organizationEditorResult','accountStoreOptions','dispatchManagementPageSize','dispatchAttemptPageSize','accountCreatePanel','accountCreateForm','accountCreateEmployeeId','accountCreatePassword','accountCreateEmployeeName','accountCreateRole','accountCreateStoreCode','accountCreateDepartment','accountCreateArea','accountCreateTransferDate','accountCreateNeedsEvaluation','accountCreateDefaultEvaluationVersion','accountCreateEmploymentStatus','accountCreateAccountStatus','accountCreateNotificationEmail','accountCreateNote','accountCreateReason','accountCreateConfirm','accountCreateResetButton','accountCreateSubmitButton','accountCreateMessage','accountCreateResult','accountAuditPageSize','accountAuditPagination','accountAuditPreviousButton','accountAuditNextButton','accountAuditPageText','accountActionEmailGroup','accountActionEmail','accountActionDefaultVersionGroup','accountActionDefaultVersion','pdfManagementYear','pdfManagementMonthNumber','pdfManagementAbnormalButton','notificationManagementCard','notificationSettingsForm','notificationEnabled','notificationSystemUrl','notificationDailyHour','notificationOverdueDays','notificationBatchSize','notificationSaveButton','notificationMessage','notificationSummary','notificationScheduleStatus','notificationRefreshButton','notificationForceResend','notificationSendSelectedButton','notificationSendAllButton','notificationSendOverdueButton','notificationSelectVisibleButton','notificationClearSelectedButton','notificationSelectedCount','notificationRunWorkerButton','notificationScheduleConfirm','notificationInstallScheduleButton','notificationDisableScheduleButton','notificationRecipientList','notificationRecipientPagination','notificationRecipientPreviousButton','notificationRecipientNextButton','notificationRecipientPageText','notificationLogPanel','notificationLogList','notificationLogPagination','notificationLogPreviousButton','notificationLogNextButton','notificationLogPageText','notificationPreviewOverlay','notificationPreviewSummary','notificationPreviewList','notificationPreviewConfirm','notificationPreviewCancelButton','notificationPreviewRunButton','monthlyPlanManagementCard','monthlyPlanRefreshButton','monthlyPlanFilterForm','monthlyPlanMonth','monthlyPlanKeyword','monthlyPlanViewMode','monthlyPlanSearchButton','monthlyPlanMessage','monthlyPlanSummary','monthlyPlanDraftStatus','monthlyPlanDraftHint','monthlyPlanLockStatus','monthlyPlanFinalSummary','monthlyPlanPreflight','monthlyPlanScheduleHint','monthlyPlanReopenReasonPanel','monthlyPlanReason','monthlyPlanReasonOtherGroup','monthlyPlanReasonOther','monthlyPlanConfirm','monthlyPlanConfirmLabel','monthlyPlanActionHint','monthlyPlanSaveButton','monthlyPlanLockButton','monthlyPlanReopenButton','monthlyPlanSelectPageButton','monthlyPlanClearPageButton','monthlyPlanRestorePageButton','monthlyPlanList','monthlyPlanPagination','monthlyPlanPreviousButton','monthlyPlanNextButton','monthlyPlanPageText','dispatchScheduleSection','dispatchScheduleRefreshButton','dispatchScheduleSummary','dispatchSchedulePlanStatus','dispatchScheduleHour','dispatchScheduleConfirm','dispatchScheduleInstallButton','dispatchScheduleDisableButton','outcomeAnalysisCard','outcomeRefreshButton','outcomeFilterForm','outcomeStartMonth','outcomeEndMonth','outcomeVersion','outcomeKeyword','outcomeStoreCode','outcomeArea','outcomeSearchButton','outcomeMessage','outcomeSummary','outcomeMonthlyTrend','outcomeVersionSummary','outcomeStoreRanking','outcomeAreaRanking','outcomeItemGroups','outcomeDetailList','outcomePagination','outcomePreviousButton','outcomeNextButton','outcomePageText','outcomeMetricOverlay','outcomeMetricTitle','outcomeMetricList','outcomeMetricPagination','outcomeMetricPreviousButton','outcomeMetricNextButton','outcomeMetricPageText','outcomeMetricCloseButton','outcomeScoreDistribution','outcomeCompareForm','outcomeCompareMode','outcomeCompareLeftLabel','outcomeCompareRightLabel','outcomeCompareLeft','outcomeCompareRight','outcomeCompareButton','outcomeCompareMessage','outcomeCompareResult','notificationDeliveryStats','notificationFailureReasons','notificationFailedSelectedCount','notificationFailedSelectPageButton','notificationFailedClearButton','notificationFailedList','notificationFailedPagination','notificationFailedPreviousButton','notificationFailedNextButton','notificationFailedPageText','notificationFailedConfirm','notificationRetrySelectedButton','notificationRetryAllButton'].forEach(function(id) {
       elements[id] = document.getElementById(id);
     });
     ['notificationLogFilterForm','notificationLogResult','notificationLogKeyword','notificationLogSearchButton','notificationLogResetButton','backgroundJobCard','backgroundJobFilterForm','backgroundJobType','backgroundJobStatus','backgroundJobKeyword','backgroundJobSearchButton','backgroundJobResetButton','backgroundJobRefreshButton','backgroundJobMessage','backgroundJobSummary','backgroundScheduleHealth','backgroundJobList','backgroundJobPagination','backgroundJobPreviousButton','backgroundJobNextButton','backgroundJobPageText','backgroundJobSelectedCount','backgroundJobSelectPageButton','backgroundJobClearButton','backgroundJobRetrySelectedButton','backgroundJobDetailOverlay','backgroundJobDetailTitle','backgroundJobDetailContent','backgroundJobDetailCloseButton','backgroundJobActionReason','backgroundJobActionConfirm','backgroundJobActionMessage','backgroundJobRetryButton','backgroundJobCancelButton','backgroundJobGoButton','notificationEmailFixOverlay','notificationEmailFixTitle','notificationEmailFixSummary','notificationEmailFixInput','notificationEmailFixReason','notificationEmailFixConfirm','notificationEmailFixMessage','notificationEmailFixSubmitButton','notificationEmailFixCloseButton','schemaManagementCard','schemaManagementRefreshButton','schemaManagementMessage','schemaManagementSummary','schemaSafetyRules','schemaSheetList','schemaRepairPreviewButton','schemaRepairPanel','schemaRepairPreviewContent','schemaRepairReason','schemaRepairConfirm','schemaRepairCancelButton','schemaRepairRunButton','schemaRepairResult','schemaVersionList'].forEach(function(id) {
@@ -6247,7 +6315,7 @@
     if (elements.organizationStoreMaintenance) elements.organizationStoreMaintenance.addEventListener('toggle', function() {
       if (elements.organizationStoreMaintenance.open && !state.organizationManagement) loadOrganizationManagementCenterV3_({ quiet: true });
     });
-    if (elements.organizationManagementFilterForm) elements.organizationManagementFilterForm.addEventListener('submit', function(event) { event.preventDefault(); state.organizationManagementPage = 1; loadOrganizationManagementCenterV3_(); });
+    if (elements.organizationManagementFilterForm) elements.organizationManagementFilterForm.addEventListener('submit', function(event) { event.preventDefault(); state.organizationManagementPage = 1; state.organizationManagementQuickFilter = ''; loadOrganizationManagementCenterV3_(); });
     if (elements.organizationManagementRefreshButton) elements.organizationManagementRefreshButton.addEventListener('click', function() { loadOrganizationManagementCenterV3_(); });
     if (elements.organizationManagementNewButton) elements.organizationManagementNewButton.addEventListener('click', function() { openOrganizationEditorV3_(''); });
     if (elements.organizationManagementPreviousButton) elements.organizationManagementPreviousButton.addEventListener('click', function() { if (state.organizationManagementPage > 1) { state.organizationManagementPage -= 1; loadOrganizationManagementCenterV3_({ quiet: true }); } });
