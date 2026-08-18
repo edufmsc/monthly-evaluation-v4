@@ -59,6 +59,12 @@
     accountManagementPage: 1,
     accountManagementPageSize: 10,
     accountManagementHasSearched: false,
+    organizationReferenceOptions: null,
+    organizationReferenceLoading: false,
+    organizationManagement: null,
+    organizationManagementLoading: false,
+    organizationManagementPage: 1,
+    organizationEditingStoreCode: '',
     accountAuditPage: 1,
     accountAuditPageSize: 10,
     accountAuditLoading: false,
@@ -164,6 +170,7 @@
     retireLegacyDispatchUi();
     ensureDispatchManagementPanel();
     ensureAccountManagementPanel();
+    ensureOrganizationManagementPanelV3_();
     ensurePdfManagementPanel();
     ensureAnnualArchivePanelV3_();
     ensureNotificationManagementPanelV3_();
@@ -300,7 +307,7 @@
         '<label class="field-group"><span>4碼登入密碼</span><input id="accountCreatePassword" required inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="例如：0123"></label>' +
         '<label class="field-group"><span>員工姓名</span><input id="accountCreateEmployeeName" required maxlength="60" placeholder="例如：王小明"></label>' +
         '<label class="field-group"><span>系統角色</span><select id="accountCreateRole" required><option value="">請選擇</option>' + roleOptions + '</select></label>' +
-        '<label class="field-group"><span>店號</span><input id="accountCreateStoreCode" maxlength="20" placeholder="例如：A01；非門市角色可留白"></label>' +
+        '<label class="field-group"><span>店號</span><input id="accountCreateStoreCode" list="accountStoreOptions" maxlength="20" placeholder="例如：A01；非門市角色可留白"></label>' +
         '<label class="field-group"><span>部門／營業處</span><input id="accountCreateDepartment" maxlength="40" placeholder="例如：營一處／教育中心"></label>' +
         '<label class="field-group"><span>區域</span><input id="accountCreateArea" maxlength="40" placeholder="例如：營一區；無區域可留白"></label>' +
         '<label class="field-group"><span>轉任日</span><input id="accountCreateTransferDate" type="date"><small class="field-hint">無轉任日可留白</small></label>' +
@@ -312,7 +319,7 @@
         '<label class="field-group account-create-wide"><span>新增原因</span><textarea id="accountCreateReason" rows="2" maxlength="300" required placeholder="例如：新進人員建立月考核系統帳號"></textarea></label>' +
         '<label class="confirm-row account-create-wide"><input id="accountCreateConfirm" type="checkbox"><span>我已核對工號、姓名、角色、考核權限與密碼。</span></label>' +
         '<div class="test-dispatch-actions account-create-wide"><button id="accountCreateResetButton" class="secondary-button" type="button">清除</button><button id="accountCreateSubmitButton" class="primary-button" type="submit"><span class="button-label">建立帳號</span><span class="button-spinner" aria-hidden="true"></span></button></div>' +
-      '</form><div id="accountCreateMessage" class="form-message" hidden></div><article id="accountCreateResult" class="card admin-result-card" hidden></article></details>' +
+      '</form><datalist id="accountStoreOptions"></datalist><div id="accountCreateMessage" class="form-message" hidden></div><article id="accountCreateResult" class="card admin-result-card" hidden></article></details>' +
       '<section class="detail-section account-credential-section"><div class="test-dispatch-heading"><div><h4>協助查詢登入帳密</h4><p class="section-help">輸入姓名或工號；查詢紀錄不保存密碼內容。</p></div></div><form id="accountCredentialLookupForm" class="account-credential-form"><label class="field-group"><span>員工完整姓名／完整工號</span><input id="accountCredentialLookupQuery" maxlength="80" autocomplete="off"></label><div class="test-dispatch-actions"><button id="accountCredentialLookupButton" class="primary-button primary-button--small" type="submit"><span class="button-label">查詢帳密</span><span class="button-spinner"></span></button><button id="accountCredentialClearButton" class="secondary-button secondary-button--small" type="button">清除結果</button></div></form><div id="accountCredentialLookupMessage" class="form-message" hidden></div><div id="accountCredentialLookupResult" hidden></div></section>' +
       '<form id="accountManagementFilterForm" class="filter-grid"><label class="field-group"><span>工號／姓名／店號或店別</span><input id="accountManagementKeyword" maxlength="80"></label><label class="field-group"><span>系統角色</span><select id="accountManagementRole"><option value="">全部角色</option></select></label><label class="field-group"><span>在職狀態</span><select id="accountManagementEmployment"><option value="">全部狀態</option></select></label><label class="field-group"><span>帳號狀態</span><select id="accountManagementStatus"><option value="">全部狀態</option><option value="啟用">啟用</option><option value="停用">停用</option><option value="鎖定">鎖定</option><option value="未設定">未設定</option></select></label><label class="field-group"><span>登入狀況</span><select id="accountManagementLoginIssue"><option value="">全部登入狀況</option><option value="unlockable">需解鎖／清除錯誤次數</option><option value="locked">目前鎖定</option><option value="password_invalid">密碼格式異常</option><option value="not_login_ready">目前不可登入</option></select></label><label class="field-group"><span>每頁顯示</span><select id="accountManagementPageSize"><option value="10">10人</option><option value="15">15人</option></select></label><div class="test-dispatch-actions account-management-search-actions"><button id="accountManagementSearchButton" class="secondary-button" type="submit"><span class="button-label">查詢帳號</span><span class="button-spinner"></span></button><button id="accountManagementClearButton" class="secondary-button" type="button">清除條件</button></div></form>' +
       '<div class="account-quick-filter-bar"><span>快速處理</span><button id="accountUnlockQuickFilterButton" class="secondary-button secondary-button--small" type="button">查看需解鎖／清除錯誤次數</button></div><div id="accountManagementMessage" class="form-message form-message--info">請設定查詢條件後查詢；系統不會自動載入全部人員。</div><div id="accountManagementSummary" hidden></div><section id="accountManagementList" class="test-dispatch-preview account-management-list"><div class="empty-state"><h3>尚未查詢帳號</h3></div></section><div id="accountManagementPagination" class="account-management-pagination" hidden><button id="accountManagementPreviousButton" class="secondary-button secondary-button--small">上一頁</button><strong id="accountManagementPageText">第1頁</strong><button id="accountManagementNextButton" class="secondary-button secondary-button--small">下一頁</button></div>' +
@@ -874,6 +881,26 @@
     systemPanel.appendChild(article);
   }
 
+  function ensureOrganizationManagementPanelV3_() {
+    if (document.getElementById('organizationManagementCard')) return;
+    var systemPanel = document.getElementById('systemPanel');
+    if (!systemPanel) return;
+    var article = document.createElement('article');
+    article.id = 'organizationManagementCard';
+    article.className = 'card test-dispatch-card organization-management-card';
+    article.innerHTML = '<div class="test-dispatch-heading management-card-heading"><div><p class="step-label">門市主管同步｜1.1</p><h3>門市店長／區主管配置</h3><p>教育中心只需針對實際異動的門市店長／區主管操作一次；系統會同步該特定人員必要欄位、正式主管配置與尚未確認的下月考核草稿。已建立考核與歷史PDF不回溯修改。</p></div><button id="organizationManagementRefreshButton" class="secondary-button secondary-button--small management-refresh-button" type="button">重新整理</button></div>' +
+      '<div class="organization-policy-strip"><strong>同步原則</strong><span>人員資料＝員工主檔</span><span>正式主管配置＝門市資料</span><span>已確認月份只提醒、不偷偷改</span><span>進行中／歷史考核不自動改派</span></div>' +
+      '<form id="organizationManagementFilterForm" class="filter-grid organization-filter-grid"><label class="field-group"><span>店號／店名／主管</span><input id="organizationManagementKeyword" maxlength="80" placeholder="例如：A01、王小明"></label><label class="field-group"><span>營業處／部門</span><select id="organizationManagementDepartment"><option value="">全部營業處／部門</option></select></label><label class="field-group"><span>區域</span><select id="organizationManagementArea"><option value="">全部區域</option></select></label><label class="field-group"><span>門市狀態</span><select id="organizationManagementEnabled"><option value="ALL">全部</option><option value="YES">啟用</option><option value="NO">停用</option></select></label><div class="test-dispatch-actions"><button id="organizationManagementSearchButton" class="secondary-button" type="submit"><span class="button-label">查詢門市</span><span class="button-spinner"></span></button><button id="organizationManagementNewButton" class="primary-button" type="button">新增門市／配置</button></div></form>' +
+      '<div id="organizationManagementMessage" class="form-message form-message--info">只有進入本頁時才載入門市與主管配置；不提供全員工任意欄位編輯。</div><div id="organizationManagementSummary"></div>' +
+      '<section id="organizationManagementList" class="organization-store-grid"><div class="empty-state"><h3>尚未載入門市資料</h3></div></section>' +
+      '<div id="organizationManagementPagination" class="account-management-pagination" hidden><button id="organizationManagementPreviousButton" class="secondary-button secondary-button--small" type="button">上一頁</button><strong id="organizationManagementPageText">第1頁</strong><button id="organizationManagementNextButton" class="secondary-button secondary-button--small" type="button">下一頁</button></div>' +
+      '<section id="organizationEditor" class="detail-section organization-editor" hidden><div class="test-dispatch-heading"><div><p class="step-label">一次修改、自動同步</p><h4 id="organizationEditorTitle">門市與主管配置</h4><p class="section-help">修改後會同步必要的人員與草稿資料；已存在考核表仍保留建立時快照。</p></div><button id="organizationEditorCloseButton" class="secondary-button secondary-button--small" type="button">關閉</button></div>' +
+        '<div class="organization-editor-grid"><label class="field-group"><span>店號</span><input id="organizationEditStoreCode" maxlength="20" required></label><label class="field-group"><span>店名</span><input id="organizationEditStoreName" maxlength="80" required></label><label class="field-group"><span>營業處／部門</span><input id="organizationEditDepartment" list="organizationDepartmentOptions" maxlength="40" required><datalist id="organizationDepartmentOptions"></datalist></label><label class="field-group"><span>區域</span><input id="organizationEditArea" list="organizationAreaOptions" maxlength="40" required><datalist id="organizationAreaOptions"></datalist></label><label class="field-group"><span>門市店主管</span><select id="organizationEditManager"><option value="">未配置</option></select><small class="field-hint">選定後會同步該人員角色、店號、店別、區域、營業處與B版預設。</small></label><label class="field-group"><span>區主管</span><select id="organizationEditAreaSupervisor"><option value="">未配置</option></select><small class="field-hint">預設會同步同一區域的所有啟用／既有門市配置。</small></label><label class="field-group"><span>門市狀態</span><select id="organizationEditEnabled"><option value="YES">啟用</option><option value="NO">停用</option></select></label><label class="field-group"><span>原店主管後續</span><select id="organizationPreviousManagerHandling"><option value="KEEP">保留原人員角色</option><option value="DEMOTE">原店主管轉為受評人員</option></select><small class="field-hint">若原店主管另有調店／升任安排，先保留角色，再到對應門市配置其新職務。</small></label><label class="field-group"><span>原區主管後續</span><select id="organizationPreviousAreaSupervisorHandling"><option value="KEEP">保留原人員角色</option><option value="DEMOTE">若已無其他區域配置，轉為受評人員</option></select><small class="field-hint">若原區主管仍負責其他門市／區域，系統不會誤降任。</small></label><label class="confirm-row organization-editor-wide"><input id="organizationSyncAreaSupervisor" type="checkbox" checked><span>同區域門市同步使用這位區主管；若此區主管原本配置在其他區域，移除其他區域的正式配置。</span></label><label class="field-group organization-editor-wide"><span>備註</span><input id="organizationEditNote" maxlength="300" placeholder="例如：9月組織調整"></label><label class="field-group"><span>異動原因</span><select id="organizationEditReason"><option value="">請選擇原因</option><option value="門市店主管異動">門市店主管異動</option><option value="區主管異動">區主管異動</option><option value="人員調店／職務異動">人員調店／職務異動</option><option value="門市組織調整">門市組織調整</option><option value="新門市建立">新門市建立</option><option value="資料修正">資料修正</option><option value="OTHER">其他</option></select></label><label id="organizationEditReasonOtherGroup" class="field-group" hidden><span>其他原因</span><input id="organizationEditReasonOther" maxlength="300" placeholder="請輸入實際原因"></label><label class="confirm-row organization-editor-wide"><input id="organizationEditConfirm" type="checkbox"><span>我已確認本次門市與主管異動。已建立考核與歷史PDF不會被此操作回溯修改。</span></label></div>' +
+        '<div class="organization-impact-note"><strong>系統會自動處理：</strong><span>員工主檔必要欄位</span><span>門市店長／區主管配置</span><span>尚未確認的下月考核草稿</span><span>登入權限快取與索引</span><br><strong>系統只提醒、不自動更動：</strong><span>已確認月份</span><span>進行中考核</span><span>歷史考核／PDF</span></div>' +
+        '<div class="test-dispatch-actions organization-editor-actions"><button id="organizationEditorCancelButton" class="secondary-button" type="button">取消</button><button id="organizationEditorSaveButton" class="primary-button" type="button" disabled><span class="button-label">確認並同步</span><span class="button-spinner"></span></button></div><article id="organizationEditorResult" class="card admin-result-card" hidden></article></section>';
+    systemPanel.appendChild(article);
+  }
+
   function ensureSystemManagementWorkspaceV3_() {
     if (document.getElementById('systemManagementWorkspace')) return;
     var systemPanel = document.getElementById('systemPanel');
@@ -896,7 +923,7 @@
           '<option value="home">管理首頁</option>' +
           '<optgroup label="每日作業"><option value="jobs">背景工作中心</option><option value="notification">待辦通知中心</option><option value="pdf">PDF處理中心</option></optgroup>' +
           '<optgroup label="每月作業"><option value="monthlyPlan">下月考核名單</option><option value="dispatch">月考核派發</option><option value="outcomes">月考核成果分析</option></optgroup>' +
-          '<optgroup label="系統維護"><option value="accounts">帳號與登入</option><option value="schema">資料結構管理</option><option value="archive">年度封存中心</option><option value="health">系統健檢</option></optgroup></select></div>' +
+          '<optgroup label="系統維護"><option value="accounts">帳號與登入</option><option value="organization">門市主管配置</option><option value="schema">資料結構管理</option><option value="archive">年度封存中心</option><option value="health">系統健檢</option></optgroup></select></div>' +
       '<div class="system-management-layout">' +
         '<nav id="systemManagementNav" class="system-management-nav" aria-label="系統管理功能">' +
           systemManagementNavButtonV3_('home', '管理首頁', '功能總覽與入口') +
@@ -909,7 +936,8 @@
           systemManagementNavButtonV3_('dispatch', '月考核派發', '人工派發、排程與補派') +
           systemManagementNavButtonV3_('outcomes', '月考核成果分析', '分數趨勢與店區比較') +
           systemManagementNavGroupV3_('系統維護') +
-          systemManagementNavButtonV3_('accounts', '帳號與登入', '帳密、解鎖與啟停') +
+          systemManagementNavButtonV3_('accounts', '帳號與登入', '帳密、員工資料與啟停') +
+          systemManagementNavButtonV3_('organization', '門市主管配置', '店長、區主管與必要人員欄位同步') +
           systemManagementNavButtonV3_('schema', '資料結構管理', '工作表健檢與安全補齊') +
           systemManagementNavButtonV3_('archive', '年度封存中心', '年度打包與安全清理') +
           systemManagementNavButtonV3_('health', '系統健檢', '連線、Session與異常檢查') +
@@ -921,6 +949,7 @@
     var pages = workspace.querySelector('#systemManagementPages');
     var homePage = createSystemManagementPageV3_('home');
     var accountsPage = createSystemManagementPageV3_('accounts');
+    var organizationPage = createSystemManagementPageV3_('organization');
     var jobsPage = createSystemManagementPageV3_('jobs');
     var schemaPage = createSystemManagementPageV3_('schema');
     var monthlyPlanPage = createSystemManagementPageV3_('monthlyPlan');
@@ -933,6 +962,7 @@
     pages.appendChild(homePage);
     pages.appendChild(jobsPage);
     pages.appendChild(accountsPage);
+    pages.appendChild(organizationPage);
     pages.appendChild(schemaPage);
     pages.appendChild(monthlyPlanPage);
     pages.appendChild(dispatchPage);
@@ -947,7 +977,8 @@
       '<p>管理功能互相獨立，不會在進入系統管理時一次載入帳號、派發與PDF資料。</p></div></div>' +
       '<div class="system-home-grid">' +
         systemHomeCardV3_('jobs', '背景工作中心', '一頁查看通知、PDF、派發與封存工作狀態。', '異常工作可直接前往對應中心處理，不在此刪除資料') +
-        systemHomeCardV3_('accounts', '帳號與登入', '查詢單一或特定範圍人員；每頁10人，可切換15人。', '帳密查詢、解除鎖定、啟停帳號、強制登出') +
+        systemHomeCardV3_('accounts', '帳號與登入', '查詢、新增與編輯人員；每頁10人，可切換15人。', '員工資料、帳密查詢、解除鎖定、啟停帳號、強制登出') +
+        systemHomeCardV3_('organization', '門市主管配置', '指定店長或區主管後，自動同步必要的人員與門市資料。', '店長／區主管異動只需操作一次，不需再人工改多張Google Sheets') +
         systemHomeCardV3_('monthlyPlan', '下月考核名單', '逐月勾選需要考核的人員並指定考核表類型。', '確認後才會納入每月自動派發') +
         systemHomeCardV3_('dispatch', '月考核派發', '只在進入本頁時載入當月派發狀態。', '每月1～3日排程、人工派發、補派與派發分析') +
         systemHomeCardV3_('outcomes', '月考核成果分析', '依已結案資料查看分數趨勢與組織平均。', '一般與店副理進階月考核表分開分析') +
@@ -961,6 +992,7 @@
     var backgroundJobCard = document.getElementById('backgroundJobCard');
     var schemaManagementCard = document.getElementById('schemaManagementCard');
     var accountCard = document.getElementById('accountManagementCard');
+    var organizationCard = document.getElementById('organizationManagementCard');
     var monthlyPlanCard = document.getElementById('monthlyPlanManagementCard');
     var dispatchCard = document.getElementById('dispatchManagementCard');
     var outcomeCard = document.getElementById('outcomeAnalysisCard');
@@ -970,6 +1002,7 @@
     if (backgroundJobCard) jobsPage.appendChild(backgroundJobCard);
     if (schemaManagementCard) schemaPage.appendChild(schemaManagementCard);
     if (accountCard) accountsPage.appendChild(accountCard);
+    if (organizationCard) organizationPage.appendChild(organizationCard);
     if (monthlyPlanCard) monthlyPlanPage.appendChild(monthlyPlanCard);
     if (dispatchCard) dispatchPage.appendChild(dispatchCard);
     if (outcomeCard) outcomesPage.appendChild(outcomeCard);
@@ -1042,7 +1075,7 @@
       'progressEmployeeId', 'progressEmployeeFilter', 'progressDepartment', 'progressArea', 'progressStatus',
       'progressList', 'progressSummary', 'progressScopeText', 'historyFilterForm', 'historyMonth', 'historyEmployeeId',
       'historyEmployeeFilter', 'historyDepartment', 'historyArea', 'historyStatus', 'historyList', 'historyScopeText',
-      'adminRefreshSessionButton', 'adminHealthCheckButton', 'adminSystemHealthButton',
+      'adminRefreshSessionButton', 'adminHealthCheckButton', 'adminSystemHealthButton', 'adminPerformanceRepairButton',
       'adminSystemMessage', 'adminSystemResult',
       'dispatchManagementCard', 'dispatchManagementRefreshButton', 'dispatchManagementFilterForm',
       'dispatchManagementMonth', 'dispatchManagementKeyword', 'dispatchManagementCategory',
@@ -1117,6 +1150,7 @@
     elements.adminRefreshSessionButton.addEventListener('click', runAdminSessionCheck);
     elements.adminHealthCheckButton.addEventListener('click', runAdminConnectionCheck);
     elements.adminSystemHealthButton.addEventListener('click', runAdminSystemHealth);
+    if (elements.adminPerformanceRepairButton) elements.adminPerformanceRepairButton.addEventListener('click', runAdminPerformanceRepair);
     if (elements.dispatchManagementFilterForm) elements.dispatchManagementFilterForm.addEventListener('submit', function (event) { event.preventDefault(); state.dispatchPersonPage = 1; state.dispatchAttemptPage = 1; loadDispatchManagementCenter(); });
     if (elements.dispatchManagementRefreshButton) elements.dispatchManagementRefreshButton.addEventListener('click', function () { loadDispatchManagementCenter(); loadDispatchScheduleStatusV3_({ quiet: true }); });
     if (elements.dispatchMonthAnalysisButton) elements.dispatchMonthAnalysisButton.addEventListener('click', loadDispatchMonthAnalysis);
@@ -3666,6 +3700,30 @@
     }
   }
 
+
+  async function runAdminPerformanceRepair() {
+    var confirmed = await requestCheckboxConfirmationV3_(
+      '重建效能索引與維護排程',
+      '這會重建「進行中案件索引」、清除主檔快取，並補齊效能紀錄與每日資料整理排程。\n不會修改考核內容、角色權限、簽核流程、PDF格式或每月派發排程。',
+      '我已確認本次只執行效能索引／維護排程修復。',
+      '確認執行'
+    );
+    if (!confirmed) return;
+    showAdminMessage('info', '正在重建效能索引與維護排程，請勿重複操作…');
+    elements.adminPerformanceRepairButton.disabled = true;
+    try {
+      var result = await window.V3WorkflowService.performanceFoundationRepair({ confirmed: true });
+      var data = result.data || {};
+      var indexed = data.activeIndex && Number(data.activeIndex.indexed || 0);
+      showAdminMessage('success', '效能基礎修復完成。進行中案件索引：' + indexed + ' 筆；每日維護：' + (data.maintenance && data.maintenance.installed ? '已安裝' : '請再檢查') + '。');
+      await runAdminSystemHealth();
+    } catch (error) {
+      showAdminMessage('error', friendlyError(error));
+    } finally {
+      elements.adminPerformanceRepairButton.disabled = false;
+    }
+  }
+
   function adminSystemResultHtml(data) {
     var missing = Array.isArray(data.missingSheets) ? data.missingSheets : [];
     var performance = data.performanceOptimization || {};
@@ -4948,6 +5006,265 @@
     return (value / 1024 / 1024).toFixed(1) + ' MB';
   }
 
+  async function loadOrganizationReferenceOptionsV3_() {
+    if (state.organizationReferenceLoading || state.organizationReferenceOptions) return;
+    if (!window.V3WorkflowService || !window.V3WorkflowService.organizationReferenceOptions) return;
+    state.organizationReferenceLoading = true;
+    try {
+      var response = await window.V3WorkflowService.organizationReferenceOptions();
+      state.organizationReferenceOptions = response.data || { stores: [], departments: [], areas: [] };
+      renderAccountStoreReferenceOptionsV3_();
+    } catch (error) {
+      // 參考選單讀取失敗不阻斷帳號頁既有功能；實際儲存仍由後端正式驗證店號。
+      state.organizationReferenceOptions = null;
+    } finally {
+      state.organizationReferenceLoading = false;
+    }
+  }
+
+  function renderAccountStoreReferenceOptionsV3_() {
+    if (!elements.accountStoreOptions || !state.organizationReferenceOptions) return;
+    var stores = Array.isArray(state.organizationReferenceOptions.stores) ? state.organizationReferenceOptions.stores : [];
+    elements.accountStoreOptions.innerHTML = stores.map(function(store) {
+      var label = [store.storeName, store.department, store.area, store.enabled ? '' : '停用'].filter(Boolean).join('｜');
+      return '<option value="' + escapeHtml(store.storeCode || '') + '" label="' + escapeHtml(label) + '"></option>';
+    }).join('');
+  }
+
+  function findOrganizationReferenceStoreV3_(storeCode) {
+    var code = String(storeCode || '').trim();
+    if (!code || !state.organizationReferenceOptions) return null;
+    var stores = Array.isArray(state.organizationReferenceOptions.stores) ? state.organizationReferenceOptions.stores : [];
+    for (var i = 0; i < stores.length; i += 1) if (String(stores[i].storeCode || '').trim() === code) return stores[i];
+    return null;
+  }
+
+  function applyAccountStoreReferenceV3_(mode) {
+    var isCreate = mode === 'create';
+    var codeInput = isCreate ? elements.accountCreateStoreCode : elements.accountProfileStoreCode;
+    var departmentInput = isCreate ? elements.accountCreateDepartment : elements.accountProfileDepartment;
+    var areaInput = isCreate ? elements.accountCreateArea : elements.accountProfileArea;
+    if (!codeInput) return;
+    var store = findOrganizationReferenceStoreV3_(codeInput.value);
+    if (!store) return;
+    if (departmentInput && store.department) departmentInput.value = store.department;
+    if (areaInput && store.area) areaInput.value = store.area;
+    if (!isCreate) updateAccountActionRunState();
+  }
+
+  async function loadOrganizationManagementCenterV3_(options) {
+    var settings = options || {};
+    if (!elements.organizationManagementCard || state.organizationManagementLoading) return;
+    state.organizationManagementLoading = true;
+    setManagementCardLoadingV3_(elements.organizationManagementCard, true, state.organizationManagement ? '正在更新門市與主管配置…' : '正在載入門市與主管配置…');
+    setButtonLoading(elements.organizationManagementSearchButton, true, '查詢中');
+    if (elements.organizationManagementRefreshButton) elements.organizationManagementRefreshButton.disabled = true;
+    if (elements.organizationManagementNewButton) elements.organizationManagementNewButton.disabled = true;
+    try {
+      var response = await window.V3WorkflowService.organizationManagementCenter({
+        keyword: normalizeManagementSearchTextV3_(elements.organizationManagementKeyword && elements.organizationManagementKeyword.value, 80),
+        department: normalizeManagementSelectV3_(elements.organizationManagementDepartment && elements.organizationManagementDepartment.value, ''),
+        area: normalizeManagementSelectV3_(elements.organizationManagementArea && elements.organizationManagementArea.value, ''),
+        enabled: normalizeManagementSelectV3_(elements.organizationManagementEnabled && elements.organizationManagementEnabled.value, 'ALL'),
+        page: normalizeManagementPageV3_(state.organizationManagementPage),
+        pageSize: 12
+      });
+      state.organizationManagement = response.data || {};
+      state.organizationManagementPage = Number(state.organizationManagement.pagination && state.organizationManagement.pagination.page || 1);
+      renderOrganizationManagementCenterV3_(state.organizationManagement);
+      if (!settings.quiet) showOrganizationMessageV3_('success', '門市與主管配置已更新。');
+    } catch (error) {
+      showOrganizationMessageV3_('error', friendlyError(error));
+      if (!state.organizationManagement && elements.organizationManagementList) elements.organizationManagementList.innerHTML = emptyStateHtml('門市配置讀取失敗', friendlyError(error));
+    } finally {
+      state.organizationManagementLoading = false;
+      setManagementCardLoadingV3_(elements.organizationManagementCard, false);
+      setButtonLoading(elements.organizationManagementSearchButton, false, '查詢門市');
+      if (elements.organizationManagementRefreshButton) elements.organizationManagementRefreshButton.disabled = false;
+      if (elements.organizationManagementNewButton) elements.organizationManagementNewButton.disabled = !state.organizationManagement;
+    }
+  }
+
+  function renderOrganizationManagementCenterV3_(data) {
+    data = data || {};
+    var summary = data.summary || {};
+    var options = data.options || {};
+    if (elements.organizationManagementSummary) {
+      elements.organizationManagementSummary.innerHTML = '<div class="admin-result-grid">' +
+        metaItem('門市總數', summary.total || 0) + metaItem('啟用門市', summary.enabled || 0) +
+        metaItem('店主管已配置', summary.managerConfigured || 0) + metaItem('店主管待配置', summary.managerMissing || 0) +
+        metaItem('區主管已配置', summary.areaSupervisorConfigured || 0) + metaItem('需檢查門市', summary.issueStores || 0) + '</div>';
+    }
+    setSelectOptionsPreserveValue(elements.organizationManagementDepartment, [{ value: '', label: '全部營業處／部門' }].concat((options.departments || []).map(function(value) { return { value: value, label: value }; })));
+    setSelectOptionsPreserveValue(elements.organizationManagementArea, [{ value: '', label: '全部區域' }].concat((options.areas || []).map(function(value) { return { value: value, label: value }; })));
+    if (elements.organizationDepartmentOptions) elements.organizationDepartmentOptions.innerHTML = (options.departments || []).map(function(value) { return '<option value="' + escapeHtml(value) + '"></option>'; }).join('');
+    if (elements.organizationAreaOptions) elements.organizationAreaOptions.innerHTML = (options.areas || []).map(function(value) { return '<option value="' + escapeHtml(value) + '"></option>'; }).join('');
+
+    var stores = Array.isArray(data.stores) ? data.stores : [];
+    if (!stores.length) {
+      elements.organizationManagementList.innerHTML = emptyStateHtml('查無符合條件的門市', '可調整營業處、區域或關鍵字後重新查詢。');
+    } else {
+      elements.organizationManagementList.innerHTML = stores.map(function(store) {
+        var issues = Array.isArray(store.issues) ? store.issues : [];
+        return '<article class="organization-store-card' + (issues.length ? ' has-issues' : '') + '">' +
+          '<div class="organization-store-heading"><div><span class="tag' + (store.enabled ? ' tag--success' : ' tag--warning') + '">' + (store.enabled ? '啟用' : '停用') + '</span><strong>' + escapeHtml(joinText(store.storeCode, store.storeName)) + '</strong><small>' + escapeHtml(joinText(store.department, store.area)) + '</small></div><button class="secondary-button secondary-button--small" type="button" data-organization-edit="' + escapeHtml(store.storeCode || '') + '">編輯配置</button></div>' +
+          '<div class="organization-leadership-grid"><div><span>門市店主管</span><strong>' + escapeHtml(joinText(store.managerEmployeeId, store.managerEmployeeName) || '未配置') + '</strong></div><div><span>區主管</span><strong>' + escapeHtml(joinText(store.areaSupervisorEmployeeId, store.areaSupervisorEmployeeName) || '未配置') + '</strong></div></div>' +
+          (issues.length ? '<div class="organization-issues"><strong>需要確認</strong><ul>' + issues.map(function(issue) { return '<li>' + escapeHtml(issue) + '</li>'; }).join('') + '</ul></div>' : '<p class="organization-store-ok">配置一致</p>') +
+          (store.note ? '<p class="section-help">備註：' + escapeHtml(store.note) + '</p>' : '') + '</article>';
+      }).join('');
+      Array.prototype.slice.call(elements.organizationManagementList.querySelectorAll('[data-organization-edit]')).forEach(function(button) {
+        button.addEventListener('click', function() { openOrganizationEditorV3_(button.getAttribute('data-organization-edit')); });
+      });
+    }
+    var pagination = data.pagination || {};
+    if (elements.organizationManagementPagination) elements.organizationManagementPagination.hidden = Number(pagination.total || 0) <= Number(pagination.pageSize || 12);
+    if (elements.organizationManagementPageText) elements.organizationManagementPageText.textContent = '第' + Number(pagination.page || 1) + '頁／共' + Number(pagination.totalPages || 1) + '頁（' + Number(pagination.total || 0) + '間）';
+    if (elements.organizationManagementPreviousButton) elements.organizationManagementPreviousButton.disabled = Number(pagination.page || 1) <= 1;
+    if (elements.organizationManagementNextButton) elements.organizationManagementNextButton.disabled = Number(pagination.page || 1) >= Number(pagination.totalPages || 1);
+  }
+
+  function getOrganizationStoreFromCurrentPageV3_(storeCode) {
+    var code = String(storeCode || '').trim();
+    var stores = state.organizationManagement && Array.isArray(state.organizationManagement.stores) ? state.organizationManagement.stores : [];
+    for (var i = 0; i < stores.length; i += 1) if (String(stores[i].storeCode || '').trim() === code) return stores[i];
+    return null;
+  }
+
+  function buildOrganizationCandidateOptionsUiV3_(candidates, selectedId, selectedName) {
+    var id = String(selectedId || '').trim();
+    var rows = Array.isArray(candidates) ? candidates.slice() : [];
+    if (id && !rows.some(function(item) { return String(item.employeeId || '').trim() === id; })) {
+      rows.unshift({ employeeId: id, employeeName: selectedName || '目前配置人員', role: '目前配置', department: '', area: '', storeCode: '' });
+    }
+    return '<option value="">未配置</option>' + rows.map(function(item) {
+      var org = [item.role, item.department, item.area, item.storeCode].filter(Boolean).join('｜');
+      return '<option value="' + escapeHtml(item.employeeId || '') + '">' + escapeHtml(joinText(item.employeeId, item.employeeName)) + (org ? '｜' + escapeHtml(org) : '') + '</option>';
+    }).join('');
+  }
+
+  function openOrganizationEditorV3_(storeCode) {
+    if (!elements.organizationEditor || !state.organizationManagement) return;
+    var store = getOrganizationStoreFromCurrentPageV3_(storeCode);
+    var isNew = !store;
+    state.organizationEditingStoreCode = store ? String(store.storeCode || '').trim() : '';
+    elements.organizationEditor.hidden = false;
+    elements.organizationEditorTitle.textContent = isNew ? '新增門市與主管配置' : '編輯 ' + joinText(store.storeCode, store.storeName);
+    elements.organizationEditStoreCode.readOnly = !isNew;
+    elements.organizationEditStoreCode.value = store ? String(store.storeCode || '') : '';
+    elements.organizationEditStoreName.value = store ? String(store.storeName || '') : '';
+    elements.organizationEditDepartment.value = store ? String(store.department || '') : '';
+    elements.organizationEditArea.value = store ? String(store.area || '') : '';
+    var options = state.organizationManagement.options || {};
+    elements.organizationEditManager.innerHTML = buildOrganizationCandidateOptionsUiV3_(options.managerCandidates, store && store.managerEmployeeId, store && store.managerEmployeeName);
+    elements.organizationEditAreaSupervisor.innerHTML = buildOrganizationCandidateOptionsUiV3_(options.areaSupervisorCandidates, store && store.areaSupervisorEmployeeId, store && store.areaSupervisorEmployeeName);
+    elements.organizationEditManager.value = store ? String(store.managerEmployeeId || '') : '';
+    elements.organizationEditAreaSupervisor.value = store ? String(store.areaSupervisorEmployeeId || '') : '';
+    elements.organizationEditEnabled.value = !store || store.enabled ? 'YES' : 'NO';
+    elements.organizationPreviousManagerHandling.value = 'KEEP';
+    elements.organizationPreviousAreaSupervisorHandling.value = 'KEEP';
+    elements.organizationSyncAreaSupervisor.checked = true;
+    elements.organizationEditNote.value = store ? String(store.note || '') : '';
+    elements.organizationEditReason.value = isNew ? '新門市建立' : '';
+    elements.organizationEditReasonOther.value = '';
+    elements.organizationEditReasonOtherGroup.hidden = true;
+    elements.organizationEditConfirm.checked = false;
+    elements.organizationEditorResult.hidden = true;
+    elements.organizationEditorResult.innerHTML = '';
+    updateOrganizationSaveStateV3_();
+    if (elements.organizationEditor.scrollIntoView) elements.organizationEditor.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+
+  function closeOrganizationEditorV3_() {
+    state.organizationEditingStoreCode = '';
+    if (!elements.organizationEditor) return;
+    elements.organizationEditor.hidden = true;
+    if (elements.organizationEditConfirm) elements.organizationEditConfirm.checked = false;
+    if (elements.organizationEditorResult) { elements.organizationEditorResult.hidden = true; elements.organizationEditorResult.innerHTML = ''; }
+  }
+
+  function handleOrganizationReasonChangeV3_() {
+    if (!elements.organizationEditReasonOtherGroup) return;
+    var other = String(elements.organizationEditReason && elements.organizationEditReason.value || '') === 'OTHER';
+    elements.organizationEditReasonOtherGroup.hidden = !other;
+    if (!other && elements.organizationEditReasonOther) elements.organizationEditReasonOther.value = '';
+    updateOrganizationSaveStateV3_();
+  }
+
+  function getOrganizationReasonV3_() {
+    var reason = String(elements.organizationEditReason && elements.organizationEditReason.value || '').trim();
+    if (reason === 'OTHER') return String(elements.organizationEditReasonOther && elements.organizationEditReasonOther.value || '').trim();
+    return reason;
+  }
+
+  function updateOrganizationSaveStateV3_() {
+    if (!elements.organizationEditorSaveButton) return;
+    var ready = !state.organizationManagementLoading && Boolean(
+      String(elements.organizationEditStoreCode && elements.organizationEditStoreCode.value || '').trim() &&
+      String(elements.organizationEditStoreName && elements.organizationEditStoreName.value || '').trim() &&
+      String(elements.organizationEditDepartment && elements.organizationEditDepartment.value || '').trim() &&
+      String(elements.organizationEditArea && elements.organizationEditArea.value || '').trim() &&
+      getOrganizationReasonV3_() &&
+      elements.organizationEditConfirm && elements.organizationEditConfirm.checked
+    );
+    elements.organizationEditorSaveButton.disabled = !ready;
+  }
+
+  async function saveOrganizationStoreV3_() {
+    updateOrganizationSaveStateV3_();
+    if (!elements.organizationEditorSaveButton || elements.organizationEditorSaveButton.disabled) return;
+    state.organizationManagementLoading = true;
+    setButtonLoading(elements.organizationEditorSaveButton, true, '同步中');
+    try {
+      var response = await window.V3WorkflowService.organizationSaveStore({
+        storeCode: String(elements.organizationEditStoreCode.value || '').trim(),
+        storeName: String(elements.organizationEditStoreName.value || '').trim(),
+        department: String(elements.organizationEditDepartment.value || '').trim(),
+        area: String(elements.organizationEditArea.value || '').trim(),
+        managerEmployeeId: String(elements.organizationEditManager.value || '').trim(),
+        areaSupervisorEmployeeId: String(elements.organizationEditAreaSupervisor.value || '').trim(),
+        enabled: elements.organizationEditEnabled.value !== 'NO',
+        previousManagerHandling: String(elements.organizationPreviousManagerHandling.value || 'KEEP'),
+        previousAreaSupervisorHandling: String(elements.organizationPreviousAreaSupervisorHandling.value || 'KEEP'),
+        syncAreaSupervisorAcrossArea: Boolean(elements.organizationSyncAreaSupervisor.checked),
+        note: String(elements.organizationEditNote.value || '').trim(),
+        reason: getOrganizationReasonV3_(),
+        confirmed: true
+      }, window.V3ApiClient.createRequestId());
+      var data = response.data || {};
+      var warnings = Array.isArray(data.warnings) ? data.warnings : [];
+      var impactRows = Array.isArray(data.activeEvaluationImpacts) ? data.activeEvaluationImpacts : [];
+      elements.organizationEditorResult.hidden = false;
+      elements.organizationEditorResult.innerHTML = '<h4>同步完成</h4><p>' + escapeHtml(data.message || '門市與主管配置已更新。') + '</p>' +
+        '<div class="admin-result-grid">' + metaItem('同步員工', data.employeeSync && data.employeeSync.changedCount || 0) + metaItem('同步草稿', data.draftPlanSync && data.draftPlanSync.updatedCount || 0) + metaItem('進行中影響提醒', impactRows.reduce(function(total, item) { return total + Number(item.count || 0); }, 0)) + '</div>' +
+        (warnings.length ? '<div class="management-warning-list"><strong>需要後續確認</strong><ul>' + warnings.map(function(warning) { return '<li>' + escapeHtml(warning) + '</li>'; }).join('') + '</ul></div>' : '<p class="organization-store-ok">沒有需要人工補處理的項目。</p>');
+      showOrganizationMessageV3_(warnings.length ? 'warning' : 'success', warnings.length ? '同步已完成，但有需要教育中心確認的提醒。' : '門市、人員與尚未確認的下月草稿已完成同步。');
+      showGlobalNotice(warnings.length ? 'warning' : 'success', '門市主管配置同步完成', warnings.length ? warnings.join('\n') : (data.message || '同步完成。'), true);
+      state.organizationManagementPage = 1;
+      state.organizationManagementLoading = false;
+      await loadOrganizationManagementCenterV3_({ quiet: true });
+      state.organizationReferenceOptions = null;
+      loadOrganizationReferenceOptionsV3_();
+    } catch (error) {
+      elements.organizationEditorResult.hidden = false;
+      elements.organizationEditorResult.innerHTML = '<h4>同步失敗</h4><p>' + escapeHtml(friendlyError(error)) + '</p>';
+      showOrganizationMessageV3_('error', friendlyError(error));
+    } finally {
+      state.organizationManagementLoading = false;
+      setButtonLoading(elements.organizationEditorSaveButton, false, '確認並同步');
+      updateOrganizationSaveStateV3_();
+    }
+  }
+
+  function showOrganizationMessageV3_(type, text) {
+    if (!elements.organizationManagementMessage) return;
+    showMessage(elements.organizationManagementMessage, type, text);
+  }
+
+  function renderManagementWarningsHtmlV3_(warnings) {
+    var rows = Array.isArray(warnings) ? warnings.filter(Boolean) : [];
+    return rows.length ? '<div class="management-warning-list"><strong>同步提醒</strong><ul>' + rows.map(function(item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('') + '</ul></div>' : '';
+  }
+
   function hasAccountManagementSearchCriteriaV3_() {
     return Boolean(
       String(elements.accountManagementKeyword && elements.accountManagementKeyword.value || '').trim() ||
@@ -5203,12 +5520,17 @@
       if (!service) throw new Error('無法辨識帳號管理操作。');
       var result = await service(payload, window.V3ApiClient.createRequestId());
       var data = result.data || {};
-      elements.accountActionResult.innerHTML = '<h4>操作完成</h4><p>' + escapeHtml(data.message || '帳號資料已更新。') + '</p>';
+      var actionWarnings = Array.isArray(data.warnings) ? data.warnings : [];
+      elements.accountActionResult.innerHTML = '<h4>操作完成</h4><p>' + escapeHtml(data.message || '帳號資料已更新。') + '</p>' + renderManagementWarningsHtmlV3_(actionWarnings);
       elements.accountActionResult.hidden = false;
-      showAccountManagementMessage('success', data.message || '帳號資料已更新。');
+      showAccountManagementMessage(actionWarnings.length ? 'warning' : 'success', actionWarnings.length ? '人員資料已更新；另有組織／考核影響提醒，請查看通知。' : (data.message || '帳號資料已更新。'));
+      showGlobalNotice(actionWarnings.length ? 'warning' : 'success', '人員資料更新完成', actionWarnings.length ? actionWarnings.join('\n') : (data.message || '帳號資料已更新。'), true);
+      state.organizationManagement = null;
+      state.organizationReferenceOptions = null;
       state.accountAction = null;
       state.accountManagementLoading = false;
       await loadAccountManagementCenter({ quiet: true });
+      loadOrganizationReferenceOptionsV3_();
       closeAccountActionPanel();
     } catch (error) {
       elements.accountActionResult.innerHTML = '<h4>操作失敗</h4><p>' + escapeHtml(friendlyError(error)) + '</p>';
@@ -5302,7 +5624,7 @@
   }
 
   function cacheModificationElementsV3_() {
-    ['dispatchManagementPageSize','dispatchAttemptPageSize','accountCreatePanel','accountCreateForm','accountCreateEmployeeId','accountCreatePassword','accountCreateEmployeeName','accountCreateRole','accountCreateStoreCode','accountCreateDepartment','accountCreateArea','accountCreateTransferDate','accountCreateNeedsEvaluation','accountCreateDefaultEvaluationVersion','accountCreateEmploymentStatus','accountCreateAccountStatus','accountCreateNotificationEmail','accountCreateNote','accountCreateReason','accountCreateConfirm','accountCreateResetButton','accountCreateSubmitButton','accountCreateMessage','accountCreateResult','accountAuditPageSize','accountAuditPagination','accountAuditPreviousButton','accountAuditNextButton','accountAuditPageText','accountActionEmailGroup','accountActionEmail','accountActionDefaultVersionGroup','accountActionDefaultVersion','pdfManagementYear','pdfManagementMonthNumber','pdfManagementAbnormalButton','notificationManagementCard','notificationSettingsForm','notificationEnabled','notificationSystemUrl','notificationDailyHour','notificationOverdueDays','notificationBatchSize','notificationSaveButton','notificationMessage','notificationSummary','notificationScheduleStatus','notificationRefreshButton','notificationForceResend','notificationSendSelectedButton','notificationSendAllButton','notificationSendOverdueButton','notificationSelectVisibleButton','notificationClearSelectedButton','notificationSelectedCount','notificationRunWorkerButton','notificationScheduleConfirm','notificationInstallScheduleButton','notificationDisableScheduleButton','notificationRecipientList','notificationRecipientPagination','notificationRecipientPreviousButton','notificationRecipientNextButton','notificationRecipientPageText','notificationLogPanel','notificationLogList','notificationLogPagination','notificationLogPreviousButton','notificationLogNextButton','notificationLogPageText','notificationPreviewOverlay','notificationPreviewSummary','notificationPreviewList','notificationPreviewConfirm','notificationPreviewCancelButton','notificationPreviewRunButton','monthlyPlanManagementCard','monthlyPlanRefreshButton','monthlyPlanFilterForm','monthlyPlanMonth','monthlyPlanKeyword','monthlyPlanViewMode','monthlyPlanSearchButton','monthlyPlanMessage','monthlyPlanSummary','monthlyPlanDraftStatus','monthlyPlanDraftHint','monthlyPlanLockStatus','monthlyPlanFinalSummary','monthlyPlanScheduleHint','monthlyPlanReopenReasonPanel','monthlyPlanReason','monthlyPlanReasonOtherGroup','monthlyPlanReasonOther','monthlyPlanConfirm','monthlyPlanConfirmLabel','monthlyPlanActionHint','monthlyPlanSaveButton','monthlyPlanLockButton','monthlyPlanReopenButton','monthlyPlanSelectPageButton','monthlyPlanClearPageButton','monthlyPlanRestorePageButton','monthlyPlanList','monthlyPlanPagination','monthlyPlanPreviousButton','monthlyPlanNextButton','monthlyPlanPageText','dispatchScheduleSection','dispatchScheduleRefreshButton','dispatchScheduleSummary','dispatchSchedulePlanStatus','dispatchScheduleHour','dispatchScheduleConfirm','dispatchScheduleInstallButton','dispatchScheduleDisableButton','outcomeAnalysisCard','outcomeRefreshButton','outcomeFilterForm','outcomeStartMonth','outcomeEndMonth','outcomeVersion','outcomeKeyword','outcomeStoreCode','outcomeArea','outcomeSearchButton','outcomeMessage','outcomeSummary','outcomeMonthlyTrend','outcomeVersionSummary','outcomeStoreRanking','outcomeAreaRanking','outcomeItemGroups','outcomeDetailList','outcomePagination','outcomePreviousButton','outcomeNextButton','outcomePageText','outcomeMetricOverlay','outcomeMetricTitle','outcomeMetricList','outcomeMetricPagination','outcomeMetricPreviousButton','outcomeMetricNextButton','outcomeMetricPageText','outcomeMetricCloseButton','outcomeScoreDistribution','outcomeCompareForm','outcomeCompareMode','outcomeCompareLeftLabel','outcomeCompareRightLabel','outcomeCompareLeft','outcomeCompareRight','outcomeCompareButton','outcomeCompareMessage','outcomeCompareResult','notificationDeliveryStats','notificationFailureReasons','notificationFailedSelectedCount','notificationFailedSelectPageButton','notificationFailedClearButton','notificationFailedList','notificationFailedPagination','notificationFailedPreviousButton','notificationFailedNextButton','notificationFailedPageText','notificationFailedConfirm','notificationRetrySelectedButton','notificationRetryAllButton'].forEach(function(id) {
+    ['organizationManagementCard','organizationManagementRefreshButton','organizationManagementFilterForm','organizationManagementKeyword','organizationManagementDepartment','organizationManagementArea','organizationManagementEnabled','organizationManagementSearchButton','organizationManagementNewButton','organizationManagementMessage','organizationManagementSummary','organizationManagementList','organizationManagementPagination','organizationManagementPreviousButton','organizationManagementNextButton','organizationManagementPageText','organizationEditor','organizationEditorTitle','organizationEditorCloseButton','organizationEditStoreCode','organizationEditStoreName','organizationEditDepartment','organizationDepartmentOptions','organizationEditArea','organizationAreaOptions','organizationEditManager','organizationEditAreaSupervisor','organizationEditEnabled','organizationPreviousManagerHandling','organizationPreviousAreaSupervisorHandling','organizationSyncAreaSupervisor','organizationEditNote','organizationEditReason','organizationEditReasonOtherGroup','organizationEditReasonOther','organizationEditConfirm','organizationEditorCancelButton','organizationEditorSaveButton','organizationEditorResult','accountStoreOptions','dispatchManagementPageSize','dispatchAttemptPageSize','accountCreatePanel','accountCreateForm','accountCreateEmployeeId','accountCreatePassword','accountCreateEmployeeName','accountCreateRole','accountCreateStoreCode','accountCreateDepartment','accountCreateArea','accountCreateTransferDate','accountCreateNeedsEvaluation','accountCreateDefaultEvaluationVersion','accountCreateEmploymentStatus','accountCreateAccountStatus','accountCreateNotificationEmail','accountCreateNote','accountCreateReason','accountCreateConfirm','accountCreateResetButton','accountCreateSubmitButton','accountCreateMessage','accountCreateResult','accountAuditPageSize','accountAuditPagination','accountAuditPreviousButton','accountAuditNextButton','accountAuditPageText','accountActionEmailGroup','accountActionEmail','accountActionDefaultVersionGroup','accountActionDefaultVersion','pdfManagementYear','pdfManagementMonthNumber','pdfManagementAbnormalButton','notificationManagementCard','notificationSettingsForm','notificationEnabled','notificationSystemUrl','notificationDailyHour','notificationOverdueDays','notificationBatchSize','notificationSaveButton','notificationMessage','notificationSummary','notificationScheduleStatus','notificationRefreshButton','notificationForceResend','notificationSendSelectedButton','notificationSendAllButton','notificationSendOverdueButton','notificationSelectVisibleButton','notificationClearSelectedButton','notificationSelectedCount','notificationRunWorkerButton','notificationScheduleConfirm','notificationInstallScheduleButton','notificationDisableScheduleButton','notificationRecipientList','notificationRecipientPagination','notificationRecipientPreviousButton','notificationRecipientNextButton','notificationRecipientPageText','notificationLogPanel','notificationLogList','notificationLogPagination','notificationLogPreviousButton','notificationLogNextButton','notificationLogPageText','notificationPreviewOverlay','notificationPreviewSummary','notificationPreviewList','notificationPreviewConfirm','notificationPreviewCancelButton','notificationPreviewRunButton','monthlyPlanManagementCard','monthlyPlanRefreshButton','monthlyPlanFilterForm','monthlyPlanMonth','monthlyPlanKeyword','monthlyPlanViewMode','monthlyPlanSearchButton','monthlyPlanMessage','monthlyPlanSummary','monthlyPlanDraftStatus','monthlyPlanDraftHint','monthlyPlanLockStatus','monthlyPlanFinalSummary','monthlyPlanScheduleHint','monthlyPlanReopenReasonPanel','monthlyPlanReason','monthlyPlanReasonOtherGroup','monthlyPlanReasonOther','monthlyPlanConfirm','monthlyPlanConfirmLabel','monthlyPlanActionHint','monthlyPlanSaveButton','monthlyPlanLockButton','monthlyPlanReopenButton','monthlyPlanSelectPageButton','monthlyPlanClearPageButton','monthlyPlanRestorePageButton','monthlyPlanList','monthlyPlanPagination','monthlyPlanPreviousButton','monthlyPlanNextButton','monthlyPlanPageText','dispatchScheduleSection','dispatchScheduleRefreshButton','dispatchScheduleSummary','dispatchSchedulePlanStatus','dispatchScheduleHour','dispatchScheduleConfirm','dispatchScheduleInstallButton','dispatchScheduleDisableButton','outcomeAnalysisCard','outcomeRefreshButton','outcomeFilterForm','outcomeStartMonth','outcomeEndMonth','outcomeVersion','outcomeKeyword','outcomeStoreCode','outcomeArea','outcomeSearchButton','outcomeMessage','outcomeSummary','outcomeMonthlyTrend','outcomeVersionSummary','outcomeStoreRanking','outcomeAreaRanking','outcomeItemGroups','outcomeDetailList','outcomePagination','outcomePreviousButton','outcomeNextButton','outcomePageText','outcomeMetricOverlay','outcomeMetricTitle','outcomeMetricList','outcomeMetricPagination','outcomeMetricPreviousButton','outcomeMetricNextButton','outcomeMetricPageText','outcomeMetricCloseButton','outcomeScoreDistribution','outcomeCompareForm','outcomeCompareMode','outcomeCompareLeftLabel','outcomeCompareRightLabel','outcomeCompareLeft','outcomeCompareRight','outcomeCompareButton','outcomeCompareMessage','outcomeCompareResult','notificationDeliveryStats','notificationFailureReasons','notificationFailedSelectedCount','notificationFailedSelectPageButton','notificationFailedClearButton','notificationFailedList','notificationFailedPagination','notificationFailedPreviousButton','notificationFailedNextButton','notificationFailedPageText','notificationFailedConfirm','notificationRetrySelectedButton','notificationRetryAllButton'].forEach(function(id) {
       elements[id] = document.getElementById(id);
     });
     ['notificationLogFilterForm','notificationLogResult','notificationLogKeyword','notificationLogSearchButton','notificationLogResetButton','backgroundJobCard','backgroundJobFilterForm','backgroundJobType','backgroundJobStatus','backgroundJobKeyword','backgroundJobSearchButton','backgroundJobResetButton','backgroundJobRefreshButton','backgroundJobMessage','backgroundJobSummary','backgroundScheduleHealth','backgroundJobList','backgroundJobPagination','backgroundJobPreviousButton','backgroundJobNextButton','backgroundJobPageText','backgroundJobSelectedCount','backgroundJobSelectPageButton','backgroundJobClearButton','backgroundJobRetrySelectedButton','backgroundJobDetailOverlay','backgroundJobDetailTitle','backgroundJobDetailContent','backgroundJobDetailCloseButton','backgroundJobActionReason','backgroundJobActionConfirm','backgroundJobActionMessage','backgroundJobRetryButton','backgroundJobCancelButton','backgroundJobGoButton','notificationEmailFixOverlay','notificationEmailFixTitle','notificationEmailFixSummary','notificationEmailFixInput','notificationEmailFixReason','notificationEmailFixConfirm','notificationEmailFixMessage','notificationEmailFixSubmitButton','notificationEmailFixCloseButton','schemaManagementCard','schemaManagementRefreshButton','schemaManagementMessage','schemaManagementSummary','schemaSafetyRules','schemaSheetList','schemaRepairPreviewButton','schemaRepairPanel','schemaRepairPreviewContent','schemaRepairReason','schemaRepairConfirm','schemaRepairCancelButton','schemaRepairRunButton','schemaRepairResult','schemaVersionList'].forEach(function(id) {
@@ -5311,6 +5633,18 @@
   }
 
   function bindModificationEventsV3_() {
+    if (elements.organizationManagementFilterForm) elements.organizationManagementFilterForm.addEventListener('submit', function(event) { event.preventDefault(); state.organizationManagementPage = 1; loadOrganizationManagementCenterV3_(); });
+    if (elements.organizationManagementRefreshButton) elements.organizationManagementRefreshButton.addEventListener('click', function() { loadOrganizationManagementCenterV3_(); });
+    if (elements.organizationManagementNewButton) elements.organizationManagementNewButton.addEventListener('click', function() { openOrganizationEditorV3_(''); });
+    if (elements.organizationManagementPreviousButton) elements.organizationManagementPreviousButton.addEventListener('click', function() { if (state.organizationManagementPage > 1) { state.organizationManagementPage -= 1; loadOrganizationManagementCenterV3_({ quiet: true }); } });
+    if (elements.organizationManagementNextButton) elements.organizationManagementNextButton.addEventListener('click', function() { var pages = Number(state.organizationManagement && state.organizationManagement.pagination && state.organizationManagement.pagination.totalPages || 1); if (state.organizationManagementPage < pages) { state.organizationManagementPage += 1; loadOrganizationManagementCenterV3_({ quiet: true }); } });
+    if (elements.organizationEditorCloseButton) elements.organizationEditorCloseButton.addEventListener('click', closeOrganizationEditorV3_);
+    if (elements.organizationEditorCancelButton) elements.organizationEditorCancelButton.addEventListener('click', closeOrganizationEditorV3_);
+    if (elements.organizationEditReason) elements.organizationEditReason.addEventListener('change', handleOrganizationReasonChangeV3_);
+    ['organizationEditStoreCode','organizationEditStoreName','organizationEditDepartment','organizationEditArea','organizationEditManager','organizationEditAreaSupervisor','organizationEditEnabled','organizationPreviousManagerHandling','organizationPreviousAreaSupervisorHandling','organizationSyncAreaSupervisor','organizationEditNote','organizationEditReasonOther','organizationEditConfirm'].forEach(function(id) { if (elements[id]) { elements[id].addEventListener('input', updateOrganizationSaveStateV3_); elements[id].addEventListener('change', updateOrganizationSaveStateV3_); } });
+    if (elements.organizationEditorSaveButton) elements.organizationEditorSaveButton.addEventListener('click', saveOrganizationStoreV3_);
+    if (elements.accountCreateStoreCode) { elements.accountCreateStoreCode.addEventListener('change', function() { applyAccountStoreReferenceV3_('create'); }); elements.accountCreateStoreCode.addEventListener('blur', function() { applyAccountStoreReferenceV3_('create'); }); }
+    if (elements.accountProfileStoreCode) { elements.accountProfileStoreCode.addEventListener('change', function() { applyAccountStoreReferenceV3_('profile'); }); elements.accountProfileStoreCode.addEventListener('blur', function() { applyAccountStoreReferenceV3_('profile'); }); }
     if (elements.dispatchManagementPageSize) elements.dispatchManagementPageSize.addEventListener('change', function() {
       state.dispatchPersonPageSize = Number(elements.dispatchManagementPageSize.value) === 10 ? 10 : 15;
       state.dispatchPersonPage = 1; loadDispatchManagementCenter();
@@ -5485,9 +5819,13 @@
       var response = await window.V3WorkflowService.accountCreate(payload, window.V3ApiClient.createRequestId());
       var data = response.data || {}; var account = data.account || {};
       elements.accountCreateResult.hidden = false;
-      elements.accountCreateResult.innerHTML = '<h4>帳號建立完成</h4><div class="admin-result-grid">' + metaItem('員工', joinText(account.employeeId, account.employeeName)) + metaItem('角色', account.role) + metaItem('通知Email', account.notificationEmailMasked || '未設定') + metaItem('是否需要考核', account.needsEvaluation || payload.needsEvaluation) + metaItem('預設考核表', String(account.defaultEvaluationVersion || payload.defaultEvaluationVersion || 'A') === 'B' ? '店副理進階月考核表' : '一般月考核表') + metaItem('帳號狀態', account.accountStatus) + '</div><p>' + escapeHtml(data.message || '') + '</p>';
-      showMessage(elements.accountCreateMessage, 'success', '帳號已建立。');
-      showGlobalNotice('success', '帳號建立完成', data.message || joinText(account.employeeId, account.employeeName) + ' 已建立。', true);
+      var createWarnings = Array.isArray(data.warnings) ? data.warnings : [];
+      elements.accountCreateResult.innerHTML = '<h4>帳號建立完成</h4><div class="admin-result-grid">' + metaItem('員工', joinText(account.employeeId, account.employeeName)) + metaItem('角色', account.role) + metaItem('通知Email', account.notificationEmailMasked || '未設定') + metaItem('是否需要考核', account.needsEvaluation || payload.needsEvaluation) + metaItem('預設考核表', String(account.defaultEvaluationVersion || payload.defaultEvaluationVersion || 'A') === 'B' ? '店副理進階月考核表' : '一般月考核表') + metaItem('帳號狀態', account.accountStatus) + '</div><p>' + escapeHtml(data.message || '') + '</p>' + renderManagementWarningsHtmlV3_(createWarnings);
+      showMessage(elements.accountCreateMessage, createWarnings.length ? 'warning' : 'success', createWarnings.length ? '帳號已建立，另有組織同步提醒。' : '帳號已建立。');
+      showGlobalNotice(createWarnings.length ? 'warning' : 'success', '帳號建立完成', createWarnings.length ? createWarnings.join('\n') : (data.message || joinText(account.employeeId, account.employeeName) + ' 已建立。'), true);
+      state.organizationManagement = null;
+      state.organizationReferenceOptions = null;
+      loadOrganizationReferenceOptionsV3_();
       state.accountAuditPage = 1;
       if (elements.accountAuditPanel && elements.accountAuditPanel.open) loadAccountAuditPageV3_();
     } catch (error) {
@@ -7499,13 +7837,13 @@
   }
 
   function resolveSystemManagementPageFromHashV3_() {
-    var match = String(window.location.hash || '').match(/^#system\/(home|jobs|accounts|schema|monthlyPlan|dispatch|outcomes|notification|pdf|archive|health)$/);
+    var match = String(window.location.hash || '').match(/^#system\/(home|jobs|accounts|organization|schema|monthlyPlan|dispatch|outcomes|notification|pdf|archive|health)$/);
     return match ? match[1] : (state.activeSystemPage || 'home');
   }
 
   function switchSystemManagementPageV3_(page, options) {
     var settings = options || {};
-    var allowed = ['home', 'jobs', 'accounts', 'schema', 'monthlyPlan', 'dispatch', 'outcomes', 'notification', 'pdf', 'archive', 'health'];
+    var allowed = ['home', 'jobs', 'accounts', 'organization', 'schema', 'monthlyPlan', 'dispatch', 'outcomes', 'notification', 'pdf', 'archive', 'health'];
     var target = allowed.indexOf(String(page || '')) !== -1 ? String(page) : 'home';
     state.activeSystemPage = target;
     (elements.systemPagePanels || Array.prototype.slice.call(document.querySelectorAll('[data-system-page-panel]'))).forEach(function (panel) {
@@ -7520,6 +7858,7 @@
       window.history.replaceState(null, '', window.location.pathname + window.location.search + '#system/' + target);
     }
     if (!settings.skipLoad && target === 'jobs' && !state.backgroundJobs) loadBackgroundJobCenterV3_({ quiet: true });
+    if (!settings.skipLoad && target === 'organization' && !state.organizationManagement) loadOrganizationManagementCenterV3_({ quiet: true });
     if (!settings.skipLoad && target === 'schema' && !state.schemaManagement) loadSchemaManagementCenterV3_({ quiet: true });
     if (!settings.skipLoad && target === 'monthlyPlan' && !state.monthlyPlan) loadMonthlyPlanCenterV3_({ quiet: true });
     if (!settings.skipLoad && target === 'dispatch') { if (!state.dispatchManagement) loadDispatchManagementCenter({ quiet: true }); if (!state.dispatchSchedule) loadDispatchScheduleStatusV3_({ quiet: true }); }
@@ -7534,8 +7873,9 @@
       }, 0);
     }
     // 帳號頁刻意不自動載入，必須由管理者設定條件後查詢。
-    if (target === 'accounts' && !state.accountManagementHasSearched) {
-      showAccountManagementMessage('info', '請設定查詢條件後按「查詢帳號」；不會自動載入全公司名單。');
+    if (target === 'accounts') {
+      loadOrganizationReferenceOptionsV3_();
+      if (!state.accountManagementHasSearched) showAccountManagementMessage('info', '請設定查詢條件後按「查詢帳號」；不會自動載入全公司名單。新增／編輯人員時可直接選擇或輸入店號，營業處與區域會自動帶入。');
     }
   }
 
