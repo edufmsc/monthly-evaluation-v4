@@ -12,3 +12,18 @@ window.V3_CONFIG = Object.freeze({
   REQUEST_TIMEOUT_MS: 30000,
   SESSION_STORAGE_KEY: 'monthlyEvaluationV4Session'
 });
+
+/*
+ * 資料一致性修正層（2026-09-01）
+ * - 新增帳號轉任日：統一民國 YYY/MM/DD，並相容舊頁面西元日期。
+ * - 組織異動：依異動後門市補齊營業處／區域／店名／單位代碼。
+ *
+ * 由獨立檔載入，避免直接大幅改動主程式；修正檔會等待 V3ApiClient 載入完成後再掛載。
+ */
+(function () {
+  var script = document.createElement('script');
+  script.src = 'data_consistency_hotfix.js?v=20260901-1';
+  script.async = true;
+  script.defer = true;
+  document.head.appendChild(script);
+})();
